@@ -1,0 +1,11 @@
+# Ignore nested .git directories (e.g. from subfolders that were separate repos)
+**/.git/
+
+# Common ignores
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+*.log
+.DS_Store
