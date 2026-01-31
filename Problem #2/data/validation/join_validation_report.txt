@@ -1,0 +1,15 @@
+EP–OEWS join validation
+========================
+
+EP occupations (total):     0
+OEWS national occupations:  1395
+Joined (matched) rows:      0
+% of EP matched to OEWS:    0.00%
+
+Top 10 unmatched EP occupation codes (often aggregation/detail differences):
+
+Employment comparison (joined rows):
+  Correlation (OEWS emp vs EP emp_2024): None
+  Median ratio (OEWS emp / EP emp_2024): None
+
+Limitation: OEWS is establishment-based wage-and-salary employment; EP is 'all jobs' (includes self-employed, etc.). Levels are not expected to match exactly.
