@@ -1,0 +1,27 @@
+{
+  "features": [
+    "writing_intensity",
+    "tool_technology",
+    "physical_manual",
+    "social_perceptiveness",
+    "creativity_originality"
+  ],
+  "sign_convention": [
+    1.0,
+    1.0,
+    -1.0,
+    -1.0,
+    -1.0
+  ],
+  "weight_raw": [
+    0.0,
+    0.06454382271295994,
+    0.20310288855573597,
+    0.018916661776032365,
+    0.0
+  ],
+  "intercept_raw": 0.23706575975516614,
+  "p90_positive_netrisk": 0.8003222389829121,
+  "s_moderate": 0.01874245056474092,
+  "s_high": 0.03748490112948184
+}

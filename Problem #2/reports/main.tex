@@ -121,6 +121,18 @@ Table~\ref{tab:netrisk_summary} provides summary statistics for the \NetRisk{} d
 \label{fig:netrisk_hist}
 \end{figure}
 
+\subsection{External calibration to AI applicability}
+To improve rigor, we calibrate the mechanism weights against an external occupation-level AI applicability measure from the \emph{Working with AI} dataset (Tomlinson et al., 2025), which provides SOC-level applicability scores derived from real-world GenAI usage patterns \citep{tomlinson2025working}. We fit nonnegative weights on the five dimensions with defense dimensions entering with negative sign. Table~\ref{tab:calibration_summary} reports the calibrated weights and fit metrics; Figure~\ref{fig:calibration_scatter} shows observed vs.\ predicted applicability.
+
+\IfFileExists{tables/calibration_summary.tex}{\input{tables/calibration_summary.tex}}{}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\linewidth]{figures/calibration_scatter.png}
+\caption{Calibration fit: observed vs.\ predicted AI applicability (from \texttt{data/calibration\_fit.csv}).}
+\label{fig:calibration_scatter}
+\end{figure}
+
 \subsection{Scenario employment projection}
 Let \(\Emp{2024}\) be the 2024 employment level (from OEWS levels) and \(\gbase\) the EP annual baseline growth. For a scenario parameter \(s\ge 0\), define adjusted growth:
 \[
@@ -129,7 +141,7 @@ Let \(\Emp{2024}\) be the 2024 employment level (from OEWS levels) and \(\gbase\
     \gbase + 0.2 s \cdot (-\NetRisk) & \text{if } \NetRisk < 0 
   \end{cases}
 \]
-We use \(s \in \{0.015, 0.03\}\) for Moderate and High disruption. The factor \(0.2\) scales complementarity: while GenAI may help sheltered occupations, we assume the demand boost is smaller than the substitution effect for exposed ones. We project 2034 employment as \(\Emp{2034} = \Emp{2024}(1+\gadj)^{10}\). We treat \(s\) as a scenario knob rather than an estimated causal effect; Section~\ref{sec:robustness} reports a sensitivity grid.
+We use \(s \in \{0.015, 0.03\}\) for Moderate and High disruption, then rescale these values using the calibrated \NetRisk{} distribution so that the 90th-percentile exposed occupation experiences a 1.5\% or 3\% annual growth headwind. The factor \(0.2\) scales complementarity: while GenAI may help sheltered occupations, we assume the demand boost is smaller than the substitution effect for exposed ones. We project 2034 employment as \(\Emp{2034} = \Emp{2024}(1+\gadj)^{10}\). We treat \(s\) as a scenario knob rather than an estimated causal effect; Section~\ref{sec:robustness} reports a sensitivity grid.
 
 \section{Results}
 \label{sec:results}
@@ -146,7 +158,7 @@ Table~\ref{tab:scenario_summary} reports baseline vs.\ disruption outcomes compu
 \end{figure}
 
 \subsection{Dynamic Adoption}
-The scenarios above assume immediate adoption of GenAI at full impact. In reality, adoption may ramp gradually over the decade. Table~\ref{tab:scenario_summary} includes `Ramp Moderate'' and `Ramp High'' scenarios that model gradual adoption, where disruption effects increase linearly from zero in 2024 to full scenario strength by 2034. Under gradual adoption, Software Developers show intermediate outcomes between baseline and immediate-disruption scenarios (e.g., Ramp High yields 1864k employment vs.\ 1752k under immediate High Disruption). Electricians remain robust across all scenarios, with Ramp High producing 953k employment (vs.\ 1027k under immediate High Disruption). Writers and Authors benefit modestly from gradual adoption: Ramp High yields 1371k employment (vs.\ 1333k under immediate High Disruption), though still below baseline. These ramp scenarios suggest that institutions have a window to adapt curricula and program structures as adoption accelerates, rather than facing immediate disruption.
+The scenarios above assume immediate adoption of GenAI at full impact. In reality, adoption may ramp gradually over the decade. Table~\ref{tab:scenario_summary} includes `Ramp Moderate'' and `Ramp High'' scenarios that model gradual adoption, where disruption effects increase linearly from zero in 2024 to full scenario strength by 2034. Across all three careers, the ramp outcomes lie between the baseline and immediate-disruption outcomes reported in Table~\ref{tab:scenario_summary}, consistent with a gradual diffusion of GenAI impacts over time. These ramp scenarios suggest that institutions have a window to adapt curricula and program structures as adoption accelerates, rather than facing immediate disruption.
 
 \subsection{Job openings and program sizing}
 Beyond net employment growth, annual job openings drive training demand. Table~\ref{tab:openings_summary} reports annual openings from EP projections and their implications for program sizing decisions.
@@ -155,19 +167,20 @@ Beyond net employment growth, annual job openings drive training demand. Table~\
 
 \subsection{Sensitivity and sanity checks}
 \label{sec:robustness}
-We include two compact robustness checks: (i) a sensitivity grid over plausible \(s\) values (Table~\ref{tab:sensitivity_grid}); and (ii) a sanity-check table listing the most exposed and most sheltered occupations by \(\NetRisk\) in the full scored set (Table~\ref{tab:top_exposed_sheltered}).
+We include three compact robustness checks: (i) a sensitivity grid over plausible \(s\) values (Table~\ref{tab:sensitivity_grid}); (ii) a sanity-check table listing the most exposed and most sheltered occupations by \(\NetRisk\) in the full scored set (Table~\ref{tab:top_exposed_sheltered}); and (iii) Monte Carlo uncertainty intervals for 2034 employment under Moderate and High disruption (Table~\ref{tab:uncertainty_summary}).
 
 \IfFileExists{tables/sensitivity_grid.tex}{\input{tables/sensitivity_grid.tex}}{}
 \IfFileExists{tables/weight_sensitivity.tex}{\input{tables/weight_sensitivity.tex}}{}
 \IfFileExists{tables/top_exposed_sheltered.tex}{\input{tables/top_exposed_sheltered.tex}}{}
+\IfFileExists{tables/uncertainty_summary.tex}{\input{tables/uncertainty_summary.tex}}{}
 
 \section{Institution-specific recommendations}
 \label{sec:recommendations}
 Recommendations are organized to answer the prompt: (i) whether to grow or shrink program size and how, and (ii) what to teach about GenAI to best support employability, tied back to model outputs and local context.
 
-Table~\ref{tab:local_context} provides local labor market context. We define an auxiliary \textit{Attractiveness Score} to inform positioning:
-\[ \text{Attractiveness} = 0.5 \cdot (\text{Wage Premium}) + 0.5 \cdot (\text{Normalized Local Emp}) \]
-where normalized employment is min-max scaled across the three institutions. Table~\ref{tab:program_sizing} provides quantitative guidance on program sizing (annual intake) derived from estimated local annual openings.
+Table~\ref{tab:local_context} provides local labor market context including location quotients (LQ). We define an auxiliary \textit{Attractiveness Score} to inform positioning:
+\[ \text{Attractiveness} = 0.4 \cdot (\text{Wage Premium}) + 0.3 \cdot (\text{Normalized Local Emp}) + 0.3 \cdot (\text{Normalized LQ}) \]
+where normalized employment and LQ are min-max scaled across the three institutions. Table~\ref{tab:program_sizing} provides quantitative guidance on program sizing (annual intake) derived from estimated local annual openings.
 
 \IfFileExists{tables/local_context.tex}{\input{tables/local_context.tex}}{}
 \IfFileExists{tables/program_sizing.tex}{\input{tables/program_sizing.tex}}{}
@@ -209,6 +222,17 @@ Employability is necessary but not sufficient. We propose additional success met
 When \(w_I\) increases, we recommend stricter disclosure/audit requirements and assessment designs robust to code/text generation; when \(w_S\) increases, we recommend lower-compute tools and fewer `always-on'' GenAI requirements, especially in resource-constrained settings. Table~\ref{tab:policy_regimes} summarizes how our recommendations shift under these alternative weight regimes.
 
 \IfFileExists{tables/policy_regimes.tex}{\input{tables/policy_regimes.tex}}{}
+
+We also formalize the trade-offs with a simple multi-objective decision model that scores three policy regimes (Ban, Allow-with-Audit, Require) for each institution under alternative weight regimes. Table~\ref{tab:policy_decision} reports the recommended policy per institution; Figure~\ref{fig:policy_tradeoff} visualizes the balanced-case trade-offs.
+
+\IfFileExists{tables/policy_decision.tex}{\input{tables/policy_decision.tex}}{}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\linewidth]{figures/policy_tradeoff.png}
+\caption{Policy trade-offs under balanced weights (generated from \texttt{data/policy\_decision\_scores.csv}).}
+\label{fig:policy_tradeoff}
+\end{figure}
 
 \section{Generalization}
 \label{sec:generalization}

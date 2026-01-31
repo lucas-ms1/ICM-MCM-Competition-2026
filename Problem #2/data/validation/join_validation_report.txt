@@ -2,7 +2,7 @@ EP–OEWS join validation
 ========================
 
 EP occupations (total):     1112
-OEWS national occupations:  1395
+OEWS national occupations:  1396
 Joined (matched) rows:      1117
 % of EP matched to OEWS:    99.82%
 

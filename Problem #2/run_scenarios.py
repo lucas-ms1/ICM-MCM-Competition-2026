@@ -17,8 +17,8 @@ OUT_DIR = DATA_DIR
 # If Net_Risk is 1.0 (max), growth reduces by X% per year.
 SCENARIOS = {
     "No_GenAI_Baseline": 0.0,
-    "Moderate_Substitution": 0.015,  # 1.5% annual growth reduction for max risk
-    "High_Disruption": 0.03,         # 3% annual growth reduction for max risk
+    "Moderate_Substitution": 0.015,  # default; may be overwritten by calibration
+    "High_Disruption": 0.03,         # default; may be overwritten by calibration
 }
 
 # Dynamic adoption ramp scenarios: target shock factor at 2034
@@ -114,7 +114,7 @@ def main():
         return
     mech = pd.read_csv(mech_path)
     
-    # Compute Risk Index on the full mechanism mechanism dataframe first (for reference)
+    # Compute Risk Index on the full mechanism dataframe first (for reference)
     # Norm cols are 0-1 percentiles
     
     # Handle missing cols
@@ -125,10 +125,39 @@ def main():
     mech["substitution_score"] = (mech["writing_intensity"] + mech["tool_technology"]) / 2
     mech["defense_score"] = (mech["physical_manual"] + mech["social_perceptiveness"] + mech["creativity_originality"]) / 3
     mech["net_risk"] = mech["substitution_score"] - mech["defense_score"]
+
+    # If calibrated NetRisk is available, use it for scenarios
+    calib_risk_path = DATA_DIR / "mechanism_risk_calibrated.csv"
+    if calib_risk_path.exists():
+        calib = pd.read_csv(calib_risk_path)
+        if "occ_code" in calib.columns and "net_risk_calibrated" in calib.columns:
+            mech = mech.merge(
+                calib[["occ_code", "net_risk_calibrated"]],
+                on="occ_code",
+                how="left",
+            )
+            mech["net_risk_uncalibrated"] = mech["net_risk"]
+            mech["net_risk"] = mech["net_risk_calibrated"].combine_first(mech["net_risk"])
+            mech["net_risk_source"] = np.where(
+                mech["net_risk_calibrated"].notna(), "calibrated", "uncalibrated"
+            )
     
     # Save the scored mechanism layer
     mech.to_csv(DATA_DIR / "mechanism_risk_scored.csv", index=False)
     print("Wrote mechanism_risk_scored.csv")
+
+    # If calibrated scenario strengths are available, override defaults
+    s_path = DATA_DIR / "calibration_recommended_s.csv"
+    if s_path.exists():
+        try:
+            s_df = pd.read_csv(s_path)
+            s_map = dict(zip(s_df["scenario"], s_df["s_value"]))
+            if "Moderate_Substitution" in s_map:
+                SCENARIOS["Moderate_Substitution"] = float(s_map["Moderate_Substitution"])
+            if "High_Disruption" in s_map:
+                SCENARIOS["High_Disruption"] = float(s_map["High_Disruption"])
+        except Exception:
+            pass
 
     # 2. Process each career
     careers = ["software_engineer", "electrician", "writer"]

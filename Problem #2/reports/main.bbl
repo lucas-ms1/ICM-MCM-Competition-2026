@@ -1,4 +1,4 @@
-\begin{thebibliography}{8}
+\begin{thebibliography}{9}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -45,6 +45,15 @@ Erik Brynjolfsson, Danielle Li, and Lindsey Raymond.
   large language models.
 \newblock \url{https://openai.com/index/gpts-are-gpts/}, 2023.
 \newblock Accessed 2026-01-31.
+
+\bibitem[Tomlinson et~al.(2025)Tomlinson, Jaffe, Wang, Counts, and
+  Suri]{tomlinson2025working}
+Kiran Tomlinson, Sonia Jaffe, Will Wang, Scott Counts, and Siddharth Suri.
+\newblock Working with ai: Measuring the applicability of generative ai to
+  occupations.
+\newblock \url{https://arxiv.org/abs/2507.07935}, 2025.
+\newblock Data and code: \url{https://github.com/microsoft/working-with-ai}.
+  Accessed 2026-01-31.
 
 \bibitem[{U.S. Bureau of Labor
   Statistics}(2024{\natexlab{a}})]{bls_ep_table110}

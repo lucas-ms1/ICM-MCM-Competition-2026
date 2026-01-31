@@ -24,6 +24,7 @@ from pathlib import Path
 from typing import Iterable
 
 import math
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -444,6 +445,14 @@ def build_local_context_table() -> None:
     - Attractiveness score
     """
     CAREERS_DIR = DATA_DIR / "careers"
+    oews_local = _load_required_csv(DATA_DIR / "oews_institution_local.csv")
+    oews_nat = _load_required_csv(DATA_DIR / "oews_national.csv")
+    oews_local["area_code"] = oews_local["area_code"].astype(str).str.strip()
+    oews_nat["occ_code"] = oews_nat["occ_code"].astype(str).str.strip()
+    oews_local["occ_code"] = oews_local["occ_code"].astype(str).str.strip()
+
+    nat_total_row = oews_nat[oews_nat["occ_code"] == "00-0000"]
+    nat_total_emp = float(nat_total_row.iloc[0]["emp"]) if not nat_total_row.empty else np.nan
     
     # Institution definitions: career file, area_code, institution name
     institutions = [
@@ -490,6 +499,18 @@ def build_local_context_table() -> None:
         
         # Compute wage premium (1.0 when using national fallback)
         wage_premium = local_wage / national_wage if national_wage > 0 else 1.0
+
+        # Location quotient (LQ): (local share of occ) / (national share of occ)
+        nat_occ_emp = float(national["emp"])
+        local_total_row = oews_local[
+            (oews_local["area_code"].astype(str) == str(local["area_code"]))
+            & (oews_local["occ_code"] == "00-0000")
+        ]
+        local_total_emp = float(local_total_row.iloc[0]["emp"]) if not local_total_row.empty else np.nan
+        if not np.isnan(local_total_emp) and not np.isnan(nat_total_emp) and local_total_emp > 0 and nat_total_emp > 0 and nat_occ_emp > 0:
+            lq = (local_emp / local_total_emp) / (nat_occ_emp / nat_total_emp)
+        else:
+            lq = 1.0
         
         # Normalize local employment (min-max normalization across all three institutions)
         # We'll compute this after collecting all local_emp values
@@ -500,6 +521,7 @@ def build_local_context_table() -> None:
             "local_wage": local_wage,
             "national_wage": national_wage,
             "wage_premium": wage_premium,
+            "lq": lq,
         })
     
     # Normalize employment across all institutions for scoring
@@ -509,10 +531,17 @@ def build_local_context_table() -> None:
     emp_range = emp_max - emp_min if emp_max > emp_min else 1.0
     
     # Compute attractiveness scores
+    lq_values = [r["lq"] for r in rows]
+    lq_min = min(lq_values)
+    lq_max = max(lq_values)
+    lq_range = lq_max - lq_min if lq_max > lq_min else 1.0
+
     for r in rows:
         normalized_emp = (r["local_emp"] - emp_min) / emp_range if emp_range > 0 else 0.5
-        attractiveness_score = (r["wage_premium"] * 0.5) + (normalized_emp * 0.5)
+        normalized_lq = (r["lq"] - lq_min) / lq_range if lq_range > 0 else 0.5
+        attractiveness_score = (r["wage_premium"] * 0.4) + (normalized_emp * 0.3) + (normalized_lq * 0.3)
         r["normalized_emp"] = normalized_emp
+        r["normalized_lq"] = normalized_lq
         r["attractiveness_score"] = attractiveness_score
     
     # Build LaTeX table
@@ -522,9 +551,9 @@ def build_local_context_table() -> None:
     lines.append("\\caption{Local labor market context for each institution (from \\texttt{data/careers/*.csv}).}")
     lines.append("\\label{tab:local_context}")
     lines.append("\\resizebox{\\textwidth}{!}{%")
-    lines.append("\\begin{tabular}{llrrr}")
+    lines.append("\\begin{tabular}{llrrrr}")
     lines.append("\\toprule")
-    lines.append("Institution & Metro & Local Emp & Wage Premium & Attractiveness Score\\\\")
+    lines.append("Institution & Metro & Local Emp & Wage Premium & LQ & Attractiveness Score\\\\")
     lines.append("\\midrule")
     
     for r in rows:
@@ -535,6 +564,7 @@ def build_local_context_table() -> None:
                     _latex_escape(r["metro"]),
                     _fmt_int(r["local_emp"]),
                     _fmt_float(r["wage_premium"], 3),
+                    _fmt_float(r["lq"], 3),
                     _fmt_float(r["attractiveness_score"], 3),
                 ]
             )
@@ -557,6 +587,14 @@ def build_program_sizing_table() -> None:
     """
     CAREERS_DIR = DATA_DIR / "careers"
     ep = _load_required_csv(DATA_DIR / "ep_baseline.csv")
+    oews_local = _load_required_csv(DATA_DIR / "oews_institution_local.csv")
+    oews_nat = _load_required_csv(DATA_DIR / "oews_national.csv")
+    oews_local["area_code"] = oews_local["area_code"].astype(str).str.strip()
+    oews_local["occ_code"] = oews_local["occ_code"].astype(str).str.strip()
+    oews_nat["occ_code"] = oews_nat["occ_code"].astype(str).str.strip()
+
+    nat_total_row = oews_nat[oews_nat["occ_code"] == "00-0000"]
+    nat_total_emp = float(nat_total_row.iloc[0]["emp"]) if not nat_total_row.empty else np.nan
     
     institutions = [
         {"career_file": "software_engineer.csv", "area_code": "41740", "state_code": "6", "inst": "SDSU", "career_soc": "15-1252"},
@@ -594,10 +632,27 @@ def build_program_sizing_table() -> None:
         if local_row.empty:
             local_emp = nat_emp
             local_share_of_nat = 1.0
+            area_for_lq = None
         else:
             local_emp = float(local_row.iloc[0]["emp"])
             local_share_of_nat = (local_emp / nat_emp) if nat_emp > 0 else 0.0
-        est_local_openings = nat_openings * local_share_of_nat
+            area_for_lq = str(local_row.iloc[0]["area_code"])
+        # Location quotient adjustment
+        if area_for_lq is not None:
+            local_total_row = oews_local[
+                (oews_local["area_code"].astype(str) == area_for_lq)
+                & (oews_local["occ_code"] == "00-0000")
+            ]
+            local_total_emp = float(local_total_row.iloc[0]["emp"]) if not local_total_row.empty else np.nan
+            if not np.isnan(local_total_emp) and not np.isnan(nat_total_emp) and local_total_emp > 0 and nat_total_emp > 0 and nat_emp > 0:
+                lq = (local_emp / local_total_emp) / (nat_emp / nat_total_emp)
+            else:
+                lq = 1.0
+        else:
+            lq = 1.0
+        lq_adj = min(max(lq, 0.5), 1.5)
+
+        est_local_openings = nat_openings * local_share_of_nat * lq_adj
         
         # 3. Calculate seats
         seat_recs = []
@@ -634,7 +689,7 @@ def build_program_sizing_table() -> None:
         )
         
     lines.append("\\bottomrule")
-    lines.append("\\multicolumn{5}{l}{\\footnotesize Local openings estimated by scaling national annual openings by OEWS employment share: $O_{local}=O_{nat}\\cdot(E_{local}/E_{nat})$.}\\\\")
+    lines.append("\\multicolumn{5}{l}{\\footnotesize Local openings estimated by scaling national openings by OEWS employment share and LQ: $O_{local}=O_{nat}\\cdot(E_{local}/E_{nat})\\cdot\\text{LQ}_{clipped}$.}\\\\")
     lines.append("\\multicolumn{5}{l}{\\footnotesize Seats are annual cohort intake; assumes 80\\% completion and 75\\% placement (net efficiency $\\approx$ 0.6).}\\\\")
     lines.append("\\end{tabular}%")
     lines.append("}")
@@ -952,6 +1007,214 @@ def build_onet_elements_appendix() -> None:
     _write_text(TABLES_DIR / "onet_elements_appendix.tex", "\n".join(lines))
 
 
+def build_calibration_summary_table() -> None:
+    """Build table summarizing calibrated weights and fit metrics."""
+    results_path = DATA_DIR / "calibration_results.csv"
+    weights_path = DATA_DIR / "calibration_weights.csv"
+    if not results_path.exists() or not weights_path.exists():
+        return
+
+    results = pd.read_csv(results_path)
+    weights = pd.read_csv(weights_path)
+
+    dim_label = {
+        "writing_intensity": "Writing",
+        "tool_technology": "Tool/Tech",
+        "physical_manual": "Physical",
+        "social_perceptiveness": "Social",
+        "creativity_originality": "Creativity",
+    }
+
+    def _metric(name: str) -> str:
+        row = results[results["metric"] == name]
+        if row.empty:
+            return ""
+        return _fmt_float(row.iloc[0]["value"], 3)
+
+    n_samples = results[results["metric"] == "n_samples"]["value"]
+    n_samples = int(n_samples.iloc[0]) if not n_samples.empty else 0
+
+    lines: list[str] = []
+    lines.append("\\begin{table}[H]")
+    lines.append("\\centering")
+    lines.append("\\caption{Calibration of mechanism weights to external AI applicability scores (Tomlinson et al., 2025).}")
+    lines.append("\\label{tab:calibration_summary}")
+    lines.append("\\begin{tabular}{lcr}")
+    lines.append("\\toprule")
+    lines.append("Dimension & Sign & Weight\\\\")
+    lines.append("\\midrule")
+    for _, r in weights.iterrows():
+        dim = dim_label.get(r["feature"], r["feature"])
+        sign = "+" if float(r["sign_convention"]) > 0 else "-"
+        weight = _fmt_float(r["weight_raw"], 3)
+        lines.append(f"{_latex_escape(dim)} & {sign} & {weight}\\\\")
+    lines.append("\\midrule")
+    lines.append(
+        f"\\multicolumn{{3}}{{l}}{{\\footnotesize Fit: $R^2$={_metric('r2')}, MAE={_metric('mae')}, RMSE={_metric('rmse')}, $n$={n_samples}}}\\\\"
+    )
+    lines.append("\\bottomrule")
+    lines.append("\\end{tabular}")
+    lines.append("\\end{table}")
+    lines.append("")
+
+    _write_text(TABLES_DIR / "calibration_summary.tex", "\n".join(lines))
+
+
+def build_calibration_scatter_figure() -> None:
+    """Scatter plot of observed vs predicted AI applicability."""
+    fit_path = DATA_DIR / "calibration_fit.csv"
+    if not fit_path.exists():
+        return
+    df = pd.read_csv(fit_path)
+    if df.empty:
+        return
+
+    x = df["ai_applicability"].astype(float)
+    y = df["ai_applicability_pred"].astype(float)
+
+    plt.figure(figsize=(4.2, 4.0))
+    plt.scatter(x, y, s=10, alpha=0.5, edgecolor="none")
+    lims = [min(x.min(), y.min()), max(x.max(), y.max())]
+    plt.plot(lims, lims, "k--", linewidth=1)
+    plt.xlabel("Observed AI applicability")
+    plt.ylabel("Predicted AI applicability")
+    plt.title("Calibration fit")
+    plt.tight_layout()
+
+    FIGURES_DIR.mkdir(parents=True, exist_ok=True)
+    out = FIGURES_DIR / "calibration_scatter.png"
+    plt.savefig(out, dpi=200)
+    plt.close()
+
+
+def build_uncertainty_summary_table() -> None:
+    """Build a table of uncertainty intervals for scenario employment."""
+    path = DATA_DIR / "uncertainty_summary.csv"
+    if not path.exists():
+        return
+    df = pd.read_csv(path)
+    if df.empty:
+        return
+
+    career_label = {
+        "software_engineer": "Software Developers",
+        "electrician": "Electricians",
+        "writer": "Writers and Authors",
+    }
+    df["career_label"] = df["career"].map(career_label).fillna(df["career"])
+
+    order = ["software_engineer", "electrician", "writer"]
+    df["__ord"] = df["career"].apply(lambda x: order.index(x) if x in order else 999)
+    df = df.sort_values(["__ord", "scenario"]).drop(columns="__ord")
+
+    lines: list[str] = []
+    lines.append("\\begin{table}[H]")
+    lines.append("\\centering")
+    lines.append("\\caption{Uncertainty intervals for 2034 employment under Moderate and High disruption (Monte Carlo).}")
+    lines.append("\\label{tab:uncertainty_summary}")
+    lines.append("\\resizebox{\\textwidth}{!}{%")
+    lines.append("\\begin{tabular}{llrrr}")
+    lines.append("\\toprule")
+    lines.append("Career & Scenario & $E_{2034}$ P5 & P50 & P95\\\\")
+    lines.append("\\midrule")
+
+    for _, r in df.iterrows():
+        scen = str(r["scenario"]).replace("_", " ")
+        lines.append(
+            " & ".join(
+                [
+                    _latex_escape(r["career_label"]),
+                    _latex_escape(scen),
+                    _fmt_int(r["emp_p05"]),
+                    _fmt_int(r["emp_p50"]),
+                    _fmt_int(r["emp_p95"]),
+                ]
+            )
+            + "\\\\"
+        )
+
+    lines.append("\\bottomrule")
+    lines.append("\\end{tabular}%")
+    lines.append("}")
+    lines.append("\\end{table}")
+    lines.append("")
+
+    _write_text(TABLES_DIR / "uncertainty_summary.tex", "\n".join(lines))
+
+
+def build_policy_decision_table() -> None:
+    """Build a table of recommended policy regimes by weight regime."""
+    path = DATA_DIR / "policy_decision_summary.csv"
+    if not path.exists():
+        return
+    df = pd.read_csv(path)
+    if df.empty:
+        return
+
+    lines: list[str] = []
+    lines.append("\\begin{table}[H]")
+    lines.append("\\centering")
+    lines.append("\\caption{Recommended policy regime by institution under alternative objective weights.}")
+    lines.append("\\label{tab:policy_decision}")
+    lines.append("\\begin{tabular}{lll}")
+    lines.append("\\toprule")
+    lines.append("Institution & Weight Regime & Recommended Policy\\\\")
+    lines.append("\\midrule")
+
+    for _, r in df.iterrows():
+        lines.append(
+            " & ".join(
+                [
+                    _latex_escape(r["institution"]),
+                    _latex_escape(r["weight_regime"].replace("_", " ")),
+                    _latex_escape(r["policy_regime"].replace("_", " ")),
+                ]
+            )
+            + "\\\\"
+        )
+
+    lines.append("\\bottomrule")
+    lines.append("\\end{tabular}")
+    lines.append("\\end{table}")
+    lines.append("")
+
+    _write_text(TABLES_DIR / "policy_decision.tex", "\n".join(lines))
+
+
+def build_policy_tradeoff_figure() -> None:
+    """Bar chart of policy scores under Balanced weights."""
+    path = DATA_DIR / "policy_decision_scores.csv"
+    if not path.exists():
+        return
+    df = pd.read_csv(path)
+    if df.empty:
+        return
+    df = df[df["weight_regime"] == "Balanced"].copy()
+    if df.empty:
+        return
+
+    institutions = df["institution"].unique().tolist()
+    policies = ["Ban", "Allow_with_Audit", "Require"]
+    x = np.arange(len(institutions))
+    w = 0.25
+
+    plt.figure(figsize=(7.0, 3.2))
+    for i, policy in enumerate(policies):
+        vals = [df[(df["institution"] == inst) & (df["policy_regime"] == policy)]["score"].mean() for inst in institutions]
+        plt.bar(x + (i - 1) * w, vals, width=w, label=policy.replace("_", " "))
+
+    plt.xticks(x, institutions)
+    plt.ylabel("Objective score (Balanced)")
+    plt.title("Policy trade-offs by institution")
+    plt.legend(frameon=False, ncol=3, fontsize=8)
+    plt.tight_layout()
+
+    FIGURES_DIR.mkdir(parents=True, exist_ok=True)
+    out = FIGURES_DIR / "policy_tradeoff.png"
+    plt.savefig(out, dpi=200)
+    plt.close()
+
+
 def main() -> None:
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
     TABLES_DIR.mkdir(parents=True, exist_ok=True)
@@ -971,6 +1234,11 @@ def main() -> None:
     build_netrisk_summary_table()
     build_netrisk_interpretation()
     build_onet_elements_appendix()
+    build_calibration_summary_table()
+    build_calibration_scatter_figure()
+    build_uncertainty_summary_table()
+    build_policy_decision_table()
+    build_policy_tradeoff_figure()
     print("Wrote report artifacts to", REPORTS_DIR)
 
 

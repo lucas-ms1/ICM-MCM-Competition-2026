@@ -1,0 +1,3 @@
+scenario,target_delta_g_at_p90,p90_positive_netrisk,s_value
+Moderate_Substitution,0.015,0.8003222389829121,0.01874245056474092
+High_Disruption,0.03,0.8003222389829121,0.03748490112948184

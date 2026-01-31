@@ -393,7 +393,8 @@ def main():
     OUT_DIR.mkdir(parents=True, exist_ok=True)
 
     # 1. Clean OEWS into baseline (levels + wages + wage distribution), two geography extracts
-    full, national, institution_local = clean_oews_baseline(keep_all_occupations=False)
+    #    Keep "All occupations" rows to support LQ calculations in report artifacts.
+    full, national, institution_local = clean_oews_baseline(keep_all_occupations=True)
     full.to_csv(OUT_DIR / "oews_baseline.csv", index=False)
     full.to_excel(OUT_DIR / "oews_baseline.xlsx", index=False)
     print("Wrote oews_baseline (cleaned, all geos):", full.shape)
