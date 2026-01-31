@@ -16,6 +16,17 @@
 - **validation/join_validation_report.txt** — Explicit validation: % of EP occupations matched to OEWS, top 10 unmatched EP codes (usually aggregation differences), employment comparison (OEWS vs EP), and limitation note (OEWS establishment wage-and-salary vs EP “all jobs”).
 - **validation/ep_unmatched_top10.csv** — Top 10 unmatched EP occupation codes (occ_code, occ_title, emp_2024) for inspection.
 
+### Career views (3 chosen careers)
+- **careers/software_engineer.csv** / **.xlsx** — STEM: SOC 15-1252 (Software Developers). National + state/metro rows; EP merged.
+- **careers/electrician.csv** / **.xlsx** — Trade: SOC 47-2111 (Electricians). National + state/metro rows; EP merged.
+- **careers/writer.csv** / **.xlsx** — Arts: SOC 27-3043 (Writers and Authors). National + state/metro rows; EP merged.
+
+Each career view has one SOC (or small bundle); rows = national + institution state/metro from OEWS, with EP columns (emp_2024, g_baseline, etc.) left-joined. See **careers/README.md**.
+
+### Mechanism layer (tasks/skills/tools for GenAI “why”)
+- **mechanism_scores.csv** / **.xlsx** — Raw and normalized O*NET-based scores per occupation (occ_code, occ_title, raw_* and norm_*).
+- **mechanism_layer.csv** / **.xlsx** — Merge-ready: occ_code + 5 normalized scores (0–1): writing_intensity, social_perceptiveness, physical_manual, creativity_originality, tool_technology. Join on occ_code for substitution vs complementarity variables. See **mechanism_layer_README.md** and `python build_mechanism_layer.py`.
+
 ## Populating ep_baseline
 
 BLS blocks automated downloads. To build **ep_baseline**:

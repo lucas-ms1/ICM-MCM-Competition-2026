@@ -1,0 +1,65 @@
+\begin{thebibliography}{8}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Brynjolfsson et~al.(2023)Brynjolfsson, Li, and
+  Raymond]{nber_generative_ai_at_work}
+Erik Brynjolfsson, Danielle Li, and Lindsey Raymond.
+\newblock Generative ai at work.
+\newblock \url{https://www.nber.org/papers/w31161}, 2023.
+\newblock NBER Working Paper 31161. Accessed 2026-01-31.
+
+\bibitem[{MIT Shaping the Future of Work}(2026)]{mit_tasks_based_framing}
+{MIT Shaping the Future of Work}.
+\newblock Why are there still so many jobs? the history and future of workplace
+  automation.
+\newblock
+  \url{https://shapingwork.mit.edu/research/why-are-there-still-so-many-jobs-the-history-and-future-of-workplace-automation/},
+  2026.
+\newblock Accessed 2026-01-31.
+
+\bibitem[{O*NET Resource Center}(2026{\natexlab{a}})]{onet_database}
+{O*NET Resource Center}.
+\newblock O*net database.
+\newblock \url{https://www.onetcenter.org/database.html}, 2026{\natexlab{a}}.
+\newblock Accessed 2026-01-31.
+
+\bibitem[{O*NET Resource Center}(2026{\natexlab{b}})]{onet_license}
+{O*NET Resource Center}.
+\newblock O*net\textsuperscript{\textregistered} database content license.
+\newblock \url{https://www.onetcenter.org/license_db.html}, 2026{\natexlab{b}}.
+\newblock Accessed 2026-01-31.
+
+\bibitem[{O*NET Resource Center}(2026{\natexlab{c}})]{onet_taxonomy}
+{O*NET Resource Center}.
+\newblock O*net-soc taxonomy.
+\newblock \url{https://www.onetcenter.org/taxonomy.html}, 2026{\natexlab{c}}.
+\newblock Accessed 2026-01-31.
+
+\bibitem[{OpenAI}(2023)]{openai_llm_exposure}
+{OpenAI}.
+\newblock Gpts are gpts: An early look at the labor market impact potential of
+  large language models.
+\newblock \url{https://openai.com/index/gpts-are-gpts/}, 2023.
+\newblock Accessed 2026-01-31.
+
+\bibitem[{U.S. Bureau of Labor
+  Statistics}(2024{\natexlab{a}})]{bls_ep_table110}
+{U.S. Bureau of Labor Statistics}.
+\newblock Occupational separations and openings, 2024--2034 (table 1.10).
+\newblock
+  \url{https://www.bls.gov/emp/tables/occupational-separations-and-openings.htm},
+  2024{\natexlab{a}}.
+\newblock Accessed 2026-01-31.
+
+\bibitem[{U.S. Bureau of Labor Statistics}(2024{\natexlab{b}})]{bls_oews_tec}
+{U.S. Bureau of Labor Statistics}.
+\newblock Technical notes for may 2024 oews estimates.
+\newblock \url{https://www.bls.gov/oes/2024/may/oes_tec.htm},
+  2024{\natexlab{b}}.
+\newblock Accessed 2026-01-31.
+
+\end{thebibliography}

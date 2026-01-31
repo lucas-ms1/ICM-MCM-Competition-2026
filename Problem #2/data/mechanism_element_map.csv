@@ -1,0 +1,27 @@
+dimension,domain_file,element_id,element_name,match_rule
+creativity_originality,Work Activities,4.A.2.b.2,Thinking Creatively,Thinking Creatively
+physical_manual,Work Activities,4.A.3.a.1,Performing General Physical Activities,Performing General Physical Activities
+physical_manual,Work Activities,4.A.3.a.2,Handling and Moving Objects,Handling and Moving Objects
+tool_technology,Work Activities,4.A.3.b.1,Working with Computers,Working with Computers
+physical_manual,Work Activities,4.A.3.b.4,Repairing and Maintaining Mechanical Equipment,Repairing and Maintaining Mechanical Equipment
+physical_manual,Work Activities,4.A.3.b.5,Repairing and Maintaining Electronic Equipment,Repairing and Maintaining Electronic Equipment
+writing_intensity,Work Activities,4.A.3.b.6,Documenting/Recording Information,Documenting/Recording Information
+social_perceptiveness,Work Activities,4.A.4.a.3,Communicating with People Outside the Organization,Communicating with People Outside the Organization
+social_perceptiveness,Work Activities,4.A.4.a.4,Establishing and Maintaining Interpersonal Relationships,Establishing and Maintaining Interpersonal Relationships
+social_perceptiveness,Work Activities,4.A.4.a.5,Assisting and Caring for Others,Assisting and Caring for Others
+social_perceptiveness,Work Activities,4.A.4.a.8,Performing for or Working Directly with the Public,Performing for or Working Directly with the Public
+writing_intensity,Work Activities,4.A.4.c.1,Performing Administrative Activities,Performing Administrative Activities
+writing_intensity,Abilities,1.A.1.a.4,Written Expression,Written Expression
+creativity_originality,Abilities,1.A.1.b.1,Fluency of Ideas,Fluency of Ideas
+creativity_originality,Abilities,1.A.1.b.2,Originality,Originality
+physical_manual,Abilities,1.A.2.a.1,Arm-Hand Steadiness,Arm-Hand Steadiness
+physical_manual,Abilities,1.A.2.a.2,Manual Dexterity,Manual Dexterity
+physical_manual,Abilities,1.A.2.a.3,Finger Dexterity,Finger Dexterity
+physical_manual,Abilities,1.A.3.a.1,Static Strength,Static Strength
+physical_manual,Abilities,1.A.3.a.4,Trunk Strength,Trunk Strength
+physical_manual,Abilities,1.A.3.b.1,Stamina,Stamina
+writing_intensity,Skills,2.A.1.c,Writing,Writing
+social_perceptiveness,Skills,2.B.1.a,Social Perceptiveness,Social Perceptiveness
+tool_technology,Skills,2.B.3.b,Technology Design,Technology Design
+tool_technology,Skills,2.B.3.e,Programming,Programming
+physical_manual,Skills,2.B.3.l,Repairing,Repairing and Maintaining Mechanical Equipment

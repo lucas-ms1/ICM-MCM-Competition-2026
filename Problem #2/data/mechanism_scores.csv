@@ -1,0 +1,4 @@
+occ_code,occ_title,raw_writing_intensity,raw_social_perceptiveness,raw_physical_manual,raw_creativity_originality,raw_tool_technology,norm_writing_intensity,norm_social_perceptiveness,norm_physical_manual,norm_creativity_originality,norm_tool_technology
+15-1252,Software Developers,55.5,36.8,10.818181818181818,64.0,75.0,0.22330097087378642,0.0,0.0,0.29545454545454536,1.0
+47-2111,Electricians,49.75,58.0,64.0909090909091,55.333333333333336,20.666666666666668,0.0,1.0,1.0,0.0,0.0
+27-3043,Writers and Authors,75.5,44.6,14.545454545454545,84.66666666666667,35.333333333333336,1.0,0.36792452830188693,0.06996587030716722,1.0,0.2699386503067485

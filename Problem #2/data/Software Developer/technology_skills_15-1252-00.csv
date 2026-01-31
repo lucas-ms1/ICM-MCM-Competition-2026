@@ -1,0 +1,170 @@
+Section,Category,Example
+Technology,Access software,Citrix cloud computing software
+Technology,Access software,PuTTY
+Technology,Administration software,Software distribution management software
+Technology,Analytical or scientific software,IBM SPSS Statistics
+Technology,Analytical or scientific software,SAS
+Technology,Analytical or scientific software,TensorFlow
+Technology,Analytical or scientific software,The MathWorks MATLAB
+Technology,Application server software,Atlassian Bitbucket
+Technology,Application server software,GitLab
+Technology,Application server software,Kubernetes
+Technology,Application server software,Red Hat OpenShift
+Technology,Authentication server software,Single sign-on SSO
+Technology,Backup or archival software,Backup and archival software
+Technology,Backup or archival software,Veritas NetBackup
+Technology,Business intelligence and data analysis software,Alteryx software
+Technology,Business intelligence and data analysis software,IBM Cognos Impromptu
+Technology,Business intelligence and data analysis software,Microsoft Power BI
+Technology,Business intelligence and data analysis software,Tableau
+Technology,Cloud-based data access and sharing software,Dropbox
+Technology,Cloud-based data access and sharing software,Google Drive
+Technology,Cloud-based data access and sharing software,Platform as a service PaaS
+Technology,Cloud-based data access and sharing software,Slack
+Technology,Cloud-based management software,Amazon Web Services AWS CloudFormation
+Technology,Cloud-based management software,IBM WebSphere MQ
+Technology,Cloud-based management software,Oracle Cloud software
+Technology,Cloud-based management software,Splunk Enterprise
+Technology,Clustering software,VMware
+Technology,Communications server software,IBM Domino
+Technology,Computer based training software,Moodle
+Technology,Configuration management software,Chef
+Technology,Configuration management software,IBM Terraform
+Technology,Configuration management software,Perforce Helix software
+Technology,Configuration management software,Puppet
+Technology,Content workflow software,Atlassian JIRA
+Technology,Content workflow software,Emerald Software Group Emerald Green Office
+Technology,Customer relationship management CRM software,Blackbaud The Raiser's Edge
+Technology,Customer relationship management CRM software,Oracle Eloqua
+Technology,Customer relationship management CRM software,Salesforce software
+Technology,Data base management system software,Amazon DynamoDB
+Technology,Data base management system software,Oracle Database
+Technology,Data base management system software,Oracle PL/SQL
+Technology,Data base management system software,Redis
+Technology,Data base reporting software,Microsoft SQL Server Reporting Services SSRS
+Technology,Data base reporting software,Oracle Business Intelligence Discoverer
+Technology,Data base reporting software,SAP Business Intelligence
+Technology,Data base reporting software,SAP Crystal Reports
+Technology,Data base user interface and query software,Airtable
+Technology,Data base user interface and query software,Blackboard software
+Technology,Data base user interface and query software,GraphQL
+Technology,Data base user interface and query software,PyTorch
+Technology,Data mining software,Google Analytics
+Technology,Data mining software,Snowflake
+Technology,Desktop communications software,Skype
+Technology,Desktop publishing software,Adobe InDesign
+Technology,Desktop publishing software,Microsoft Publisher
+Technology,Development environment software,Apache Kafka
+Technology,Development environment software,Apache Maven
+Technology,Development environment software,Oracle Java 2 Platform Enterprise Edition J2EE
+Technology,Development environment software,Oracle SQL Developer
+Technology,Device drivers or system software,Microsoft DirectX
+Technology,Document management software,Adobe Acrobat
+Technology,Document management software,Document management system software
+Technology,Document management software,Microsoft SharePoint
+Technology,Electronic mail software,Google Gmail
+Technology,Electronic mail software,IBM Notes
+Technology,Electronic mail software,Microsoft Exchange
+Technology,Electronic mail software,Microsoft Outlook
+Technology,Enterprise application integration software,Extensible markup language XML
+Technology,Enterprise application integration software,Jenkins CI
+Technology,Enterprise application integration software,Microsoft Power Automate
+Technology,Enterprise application integration software,Microsoft SQL Server Integration Services SSIS
+Technology,Enterprise resource planning ERP software,Oracle PeopleSoft
+Technology,Enterprise resource planning ERP software,SAP ERP
+Technology,Enterprise resource planning ERP software,SAP software
+Technology,Enterprise resource planning ERP software,Workday software
+Technology,Enterprise system management software,IBM Power Systems software
+Technology,Expert system software,Ansible software
+Technology,File versioning software,Apache Subversion SVN
+Technology,File versioning software,Git
+Technology,File versioning software,Version control software
+Technology,Filesystem software,File server software
+Technology,Financial analysis software,Delphi Technology
+Technology,Financial analysis software,Oracle E-Business Suite Financials
+Technology,Graphical user interface development software,Figma
+Technology,Graphical user interface development software,Graphical user interface GUI builder software
+Technology,Graphical user interface development software,Graphical user interface GUI design software
+Technology,Graphical user interface development software,Salesforce Visualforce
+Technology,Graphics or photo imaging software,Adobe Creative Cloud software
+Technology,Graphics or photo imaging software,Adobe Illustrator
+Technology,Graphics or photo imaging software,JamBoard
+Technology,Graphics or photo imaging software,Trimble SketchUp Pro
+Technology,Information retrieval or search software,Apache Avro
+Technology,Information retrieval or search software,LexisNexis
+Technology,Instant messaging software,Blink
+Technology,Instant messaging software,GroupMe
+Technology,Internet directory services software,Microsoft Active Directory
+Technology,Internet protocol IP multimedia subsystem software,Voice over internet protocol VoIP system software
+Technology,Map creation software,ESRI ArcGIS software
+Technology,Metadata management software,Informatica software
+Technology,Metadata management software,Quest Erwin Data Modeler
+Technology,Metadata management software,Talend Data Fabric
+Technology,Network conferencing software,LogMeIn GoToWebinar
+Technology,Network monitoring software,Nagios
+Technology,Network monitoring software,Wireshark
+Technology,Network operation system software,IBM z/OS operating systems
+Technology,Network security and virtual private network VPN equipment software,Firewall software
+Technology,Network security and virtual private network VPN equipment software,Virtual private networking VPN software
+Technology,Object or component oriented development software,Apache Spark
+Technology,Object or component oriented development software,jQuery
+Technology,Object or component oriented development software,Scala
+Technology,Object or component oriented development software,TypeScript
+Technology,Object oriented data base management software,Hibernate ORM
+Technology,Object oriented data base management software,PostgreSQL
+Technology,Office suite software,LibreOffice
+Technology,Office suite software,Microsoft Office software
+Technology,Operating system software,Apple iOS
+Technology,Operating system software,Google Android
+Technology,Operating system software,Microsoft Windows Server
+Technology,Operating system software,UNIX Shell
+Technology,Platform interconnectivity software,Migration software
+Technology,Portal server software,Apache HTTP Server
+Technology,Presentation software,Google Slides
+Technology,Presentation software,Microsoft PowerPoint
+Technology,Procedure management software,Apache Airflow
+Technology,Process mapping and design software,Microsoft Visio
+Technology,Program testing software,Hewlett Packard LoadRunner
+Technology,Program testing software,JUnit
+Technology,Program testing software,Selenium
+Technology,Program testing software,SonarQube
+Technology,Project management software,Atlassian Confluence
+Technology,Project management software,Microsoft Team Foundation Server
+Technology,Project management software,Microsoft Teams
+Technology,Project management software,Oracle Primavera Enterprise Project Portfolio Management
+Technology,Requirements analysis and system architecture software,IBM Rational RequisitePro
+Technology,Requirements analysis and system architecture software,Requirements management software
+Technology,Requirements analysis and system architecture software,Unified modeling language UML
+Technology,Sales and marketing software,Marketo Marketing Automation
+Technology,Spreadsheet software,Google Sheets
+Technology,Spreadsheet software,Microsoft Excel
+Technology,Storage networking software,Amazon Simple Storage Service S3
+Technology,Storage networking software,Storage area network SAN software
+Technology,Switch or router software,Border Gateway Protocol BGP
+Technology,Transaction security and virus protection software,Encryption software
+Technology,Transaction security and virus protection software,McAfee
+Technology,Transaction security and virus protection software,NortonLifeLock cybersecurity software
+Technology,Transaction server software,Customer information control system CICS
+Technology,Transaction server software,IBM Middleware
+Technology,Transaction server software,Microsoft Internet Information Services (IIS)
+Technology,Transaction server software,Object Management Group Object Request Broker
+Technology,Video conferencing software,Cisco Webex
+Technology,Video conferencing software,Google Meet
+Technology,Video conferencing software,LogMeIn GoToMeeting
+Technology,Video conferencing software,Zoom
+Technology,Video creation and editing software,Adobe After Effects
+Technology,Video creation and editing software,Flipgrid
+Technology,Video creation and editing software,Screencastify
+Technology,Video creation and editing software,YouTube
+Technology,Web page creation and editing software,Adobe Dreamweaver
+Technology,Web page creation and editing software,Google Sites
+Technology,Web page creation and editing software,Social media sites
+Technology,Web page creation and editing software,WordPress
+Technology,Web platform development software,Bootstrap
+Technology,Web platform development software,React
+Technology,Web platform development software,Spring Framework
+Technology,Web platform development software,Vue.js
+Technology,Word processing software,3M Post-it App
+Technology,Word processing software,Google Docs
+Technology,Word processing software,Microsoft OneNote
+Technology,Word processing software,Microsoft Word

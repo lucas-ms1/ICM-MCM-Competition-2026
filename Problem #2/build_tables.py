@@ -12,11 +12,23 @@ OES_PATH = DATA_DIR / "oesm24all" / "oesm24all" / "all_data_M_2024.xlsx"
 EP_PATH = DATA_DIR / "occupation.xlsx"
 OUT_DIR = DATA_DIR
 
-# BLS OEWS area type codes (typical): 1=National, 2=State, 3=Metropolitan, 4=Nonmetropolitan
+# BLS OEWS area type codes vary by file/vintage.
+# For the OEWS "all data" extract used here (May 2024), we observe:
+#   1 = National (U.S.)
+#   2 = State
+#   4 = Metropolitan (CBSA)
+#   6 = Nonmetropolitan
 AREA_TYPE_NATIONAL = 1
 AREA_TYPE_STATE = 2
-AREA_TYPE_METRO = 3
-AREA_TYPE_NONMETRO = 4
+AREA_TYPE_METRO = 4
+AREA_TYPE_NONMETRO = 6
+
+# Three careers: STEM (software engineer), trade (electrician), arts (writer). One SOC each (2018 SOC).
+CAREER_SOC = {
+    "software_engineer": ["15-1252"],   # Software Developers
+    "electrician": ["47-2111"],         # Electricians
+    "writer": ["27-3043"],              # Writers and Authors
+}
 
 # Special values in OEWS wage/employment fields (treated as missing)
 OEWS_SPECIAL_VALUES = {"*", "#", "**", "~", "annual not available", "hourly not available", "n/a", ""}
@@ -121,25 +133,27 @@ def build_occ_key_from_oews(
 
 
 def _ep_map_table_110_columns(df: pd.DataFrame) -> dict:
-    """Map BLS Table 1.10 column names to standard names (flexible match)."""
+    """Map BLS Table 1.10 column names to standard names (flexible match).
+    BLS occupation.xlsx Table 1.10 uses header row with e.g. '2024 National Employment Matrix code',
+    'Employment, 2024', 'Occupational openings, 2024–34 annual average', etc."""
     col_map = {}
     for c in df.columns:
-        s = str(c).lower().replace("\n", " ").replace("\r", " ")
-        if "matrix code" in s or ("occupation" in s and "code" in s and "title" not in s):
+        s = str(c).lower().replace("\n", " ").replace("\r", " ").replace("\u2013", "-").replace("\u2014", "-")
+        if "matrix code" in s or "employment matrix code" in s or ("occupation" in s and "code" in s and "title" not in s):
             col_map[c] = "occ_code"
-        elif "matrix title" in s or ("occupation" in s and "title" in s):
+        elif "matrix title" in s or "employment matrix title" in s or ("occupation" in s and "title" in s):
             col_map[c] = "occ_title"
-        elif "employment, 2024" in s or ("employment" in s and "2024" in s and "change" not in s and "2034" not in s):
+        elif "employment, 2024" in s or (s.startswith("employment") and "2024" in s and "change" not in s and "2034" not in s):
             col_map[c] = "emp_2024"
         elif "employment, 2034" in s or ("employment" in s and "2034" in s and "change" not in s):
             col_map[c] = "emp_2034"
         elif "change, percent" in s or ("employment change" in s and "percent" in s):
             col_map[c] = "pct_change"
-        elif "labor force exits" in s and "rate" not in s:
+        elif "labor force exits" in s and "annual average" in s:
             col_map[c] = "labor_force_exits"
-        elif "occupational transfers" in s and "rate" not in s:
+        elif "occupational transfers" in s and "annual average" in s:
             col_map[c] = "occupational_transfers"
-        elif "total occupational separations" in s and "rate" not in s:
+        elif "total occupational separations" in s and "annual average" in s:
             col_map[c] = "total_separations"
         elif "occupational openings" in s or ("openings" in s and "annual" in s):
             col_map[c] = "annual_openings"
@@ -164,9 +178,12 @@ def build_ep_baseline_table_110() -> pd.DataFrame | None:
     )
     if not tbl110:
         tbl110 = next((n for n in xl.sheet_names if "1.10" in n or "separations" in str(n).lower()), xl.sheet_names[0])
-    df = pd.read_excel(EP_PATH, sheet_name=tbl110)
+    # BLS Table 1.10 has a title row (row 0) then column headers (row 1)
+    df = pd.read_excel(EP_PATH, sheet_name=tbl110, header=1)
     col_map = _ep_map_table_110_columns(df)
     df = df.rename(columns={k: v for k, v in col_map.items() if v})
+    # Keep first occurrence if any duplicate standard names after rename
+    df = df.loc[:, ~df.columns.duplicated(keep="first")]
     # Keep only requested columns
     want = [
         "occ_code",
@@ -181,10 +198,25 @@ def build_ep_baseline_table_110() -> pd.DataFrame | None:
     ]
     have = [c for c in want if c in df.columns]
     out = df[have].copy()
+
+    # Fallback: if occ_code was not mapped (e.g. different Excel layout), try column index 1 (BLS often puts code there)
+    if "occ_code" not in out.columns and len(df.columns) >= 2:
+        cand = df.iloc[:, 1]
+        if cand.astype(str).str.match(r"^\d{2}-\d{4}", na=False).any():
+            out["occ_code"] = cand.astype(str).str.strip()
+        if "occ_title" not in out.columns and len(df.columns) >= 1:
+            out["occ_title"] = df.iloc[:, 0].astype(str).str.strip()
+    if "occ_code" not in out.columns:
+        print("EP Table 1.10: no occ_code column found after mapping; skipping EP baseline.")
+        return None
+
     # Coerce numerics (BLS employment in thousands)
     for c in ["emp_2024", "emp_2034", "pct_change", "annual_openings", "labor_force_exits", "occupational_transfers", "total_separations"]:
         if c in out.columns:
-            out[c] = pd.to_numeric(out[c], errors="coerce")
+            ser = out[c].squeeze() if hasattr(out[c], "squeeze") else out[c]
+            if hasattr(ser, "iloc"):  # DataFrame -> take first column
+                ser = ser.iloc[:, 0] if ser.ndim > 1 else ser
+            out[c] = pd.to_numeric(ser, errors="coerce")
     # 3.2 Baseline growth rate (10-year): g_baseline = (emp_2034/emp_2024)^(1/10) - 1
     if "emp_2024" in out.columns and "emp_2034" in out.columns:
         e24 = out["emp_2024"]
@@ -195,6 +227,8 @@ def build_ep_baseline_table_110() -> pd.DataFrame | None:
             np.nan,
         )
     out["occ_code"] = out["occ_code"].astype(str).str.strip()
+    # Drop footers/source lines and any non-SOC codes (these can appear in the Excel sheet).
+    out = out.loc[out["occ_code"].str.match(r"^\d{2}-\d{4}$", na=False)].copy()
     # Drop "All occupations" (00-0000) for consistency with oews_baseline
     out = out.loc[out["occ_code"] != "00-0000"].copy()
     return out if not out.empty and "occ_code" in out.columns else None
@@ -317,6 +351,43 @@ def write_join_validation_report(results: dict, out_path: Path) -> None:
     out_path.write_text("\n".join(lines), encoding="utf-8")
 
 
+def build_career_view(
+    oews_full: pd.DataFrame,
+    ep: pd.DataFrame | None,
+    soc_codes: list[str],
+    *,
+    area_types: tuple[int, ...] = (AREA_TYPE_NATIONAL, AREA_TYPE_STATE, AREA_TYPE_METRO),
+) -> pd.DataFrame:
+    """
+    Filter OEWS to one career: chosen SOC(s) and national + state/metro rows.
+    Left-join EP (national) on occ_code so each row has EP columns (emp_2024, g_baseline, etc.).
+    """
+    soc_set = {str(c).strip() for c in soc_codes}
+    mask = (oews_full["occ_code"].astype(str).str.strip().isin(soc_set)) & (
+        oews_full["area_type"].isin(area_types)
+    )
+    view = oews_full.loc[mask].copy()
+    if ep is not None and not ep.empty and "occ_code" in ep.columns:
+        ep_numeric = [c for c in ["emp_2024", "emp_2034", "pct_change", "annual_openings", "labor_force_exits", "occupational_transfers", "total_separations", "g_baseline"] if c in ep.columns]
+        if ep_numeric:
+            ep_sub = ep[["occ_code"] + ep_numeric].drop_duplicates(subset=["occ_code"])
+            view = view.merge(ep_sub, on="occ_code", how="left")
+    return view
+
+
+def build_career_views(
+    oews_full: pd.DataFrame,
+    ep: pd.DataFrame | None,
+    career_soc: dict[str, list[str]] | None = None,
+) -> dict[str, pd.DataFrame]:
+    """Build filtered view per career: national + institution state/metro rows, EP merged. Returns {career_name: df}."""
+    career_soc = career_soc or CAREER_SOC
+    return {
+        name: build_career_view(oews_full, ep, codes)
+        for name, codes in career_soc.items()
+    }
+
+
 def main():
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     OUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -374,6 +445,15 @@ def main():
                 OUT_DIR / "validation" / "ep_unmatched_top10.csv", index=False
             )
             print("Wrote validation/ep_unmatched_top10.csv")
+
+    # 5. Career views: STEM (software engineer), trade (electrician), arts (writer). National + state/metro, EP merged.
+    careers_dir = OUT_DIR / "careers"
+    careers_dir.mkdir(parents=True, exist_ok=True)
+    career_views = build_career_views(full, ep)
+    for name, df in career_views.items():
+        df.to_csv(careers_dir / f"{name}.csv", index=False)
+        df.to_excel(careers_dir / f"{name}.xlsx", index=False)
+        print("Wrote careers/", name, ":", df.shape)
 
     print("Done. Outputs in", OUT_DIR)
 

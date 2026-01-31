@@ -1,0 +1,195 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{siunitx}
+\usepackage[numbers]{natbib}
+
+\hypersetup{colorlinks=true, linkcolor=blue, urlcolor=blue, citecolor=blue}
+\sisetup{detect-weight=true, detect-family=true}
+
+% ---------- Convenience macros ----------
+\newcommand{\NetRisk}{\mathrm{NetRisk}}
+\newcommand{\SubScore}{\mathrm{Sub}}
+\newcommand{\DefScore}{\mathrm{Def}}
+\newcommand{\Emp}[1]{E_{#1}} % employment level at year
+\newcommand{\gbase}{g_{\mathrm{base}}}
+\newcommand{\gadj}{g_{\mathrm{adj}}}
+
+% ---------- Auto-generated tables/figures (from build_report_artifacts.py) ----------
+% NOTE: these files contain full LaTeX environments, so they must be \input
+% inside the document body (not in the preamble).
+
+\title{ICM 2026 Problem F: To Gen-AI, or Not To Gen-AI?\\
+\large A data-informed model of GenAI exposure and institution-specific educational recommendations}
+\author{Team \#\_\_\_\_}
+\date{}
+
+\begin{document}
+\maketitle
+
+% ============================================================
+% 1) One-page Summary Sheet (written last; placed first)
+% ============================================================
+\section*{Summary Sheet}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Careers and institutions.} We study a STEM career (Software Developers; San Diego State University), a trade career (Electricians; Los Angeles Trade--Technical College), and an arts career (Writers and Authors; Academy of Art University).
+  \item \textbf{Data.} We combine BLS Occupational Employment and Wage Statistics (OEWS) for local labor market context with BLS Employment Projections (EP) for national 2024--2034 baselines, and O*NET 30.1 descriptors to build a mechanism layer explaining substitution vs.\ complementarity \citep{bls_oews_tec, bls_ep_table110, onet_database, onet_taxonomy, onet_license}.
+  \item \textbf{Model.} We define five O*NET-based dimensions, compute percentiles across occupations, and form a \emph{Net Risk} index:
+  \[
+    \NetRisk = \underbrace{\frac{\mathrm{Writing} + \mathrm{ToolTech}}{2}}_{\SubScore} - \underbrace{\frac{\mathrm{Physical} + \mathrm{Social} + \mathrm{Creativity}}{3}}_{\DefScore}.
+  \]
+  Scenario employment uses baseline EP annual growth \(\gbase\) adjusted by a scenario parameter \(s\): \(\gadj = \gbase - s \cdot \NetRisk\), with \(s\in\{0, 0.015, 0.03\}\) representing moderate and high disruption (not ``estimated truth''). See Table~\ref{tab:scenario_summary}.
+  \item \textbf{Headline findings.} Under high disruption, Software Developers remain growing but with a materially reduced decade growth rate; Electricians are comparatively sheltered; Writers and Authors can flip from slight growth to slight contraction (Table~\ref{tab:scenario_summary}).
+  \item \textbf{Program-size decisions.} SDSU CS: maintain/slight growth; LATTC Electric: grow aggressively; Academy of Art Writing: consolidate/specialize toward higher-originality niches and editing/production workflows (Section~\ref{sec:recommendations}).
+\end{itemize}
+\newpage
+
+% ============================================================
+% Table of Contents (required)
+% ============================================================
+\tableofcontents
+\newpage
+
+% ============================================================
+% Main report
+% ============================================================
+\section{Problem framing and choices}
+\label{sec:framing}
+We aim to advise leaders of three post-secondary programs on how to address GenAI, using an auditable model grounded in public labor-market data and an explainable O*NET mechanism layer. Our framing follows tasks-based technology theories: GenAI can substitute for some language/cognitive tasks while complementing others, changing task composition and productivity rather than deterministically eliminating whole occupations \citep{mit_tasks_based_framing, openai_llm_exposure, nber_generative_ai_at_work}. We choose the three careers to match the prompt's STEM/trade/arts categories and to span a wide range of task structures (software = tool/knowledge work; electricians = physical/manual, onsite; writers = writing-intensive creative production).
+
+\section{Data and preprocessing}
+\label{sec:data}
+\subsection{BLS OEWS (local labor market context)}
+OEWS provides local (state and metropolitan) employment and wage levels for occupations. We use these as the institution-specific context inputs: the ``local'' employment level and wages for each program's regional labor market \citep{bls_oews_tec}.
+
+\subsection{BLS Employment Projections (national baseline trend)}
+EP provides national occupational employment projections over 2024--2034, which we convert to an annual baseline growth rate \(\gbase\). National trajectories use EP (all jobs) for consistency with baseline growth rates; OEWS (wage-and-salary) is used for local labor-market context. We use EP as the no-GenAI baseline trajectory for each focal occupation \citep{bls_ep_table110}.
+
+\subsection{O*NET mechanism layer (why substitution vs.\ complementarity)}
+We use O*NET 30.1 ``Importance'' ratings from Work Activities, Abilities, and Skills to construct five dimensions. We compute each dimension score per occupation and convert to a percentile across occupations (0--1). This produces interpretable inputs for \(\NetRisk\) \citep{onet_database, onet_taxonomy, onet_license}.
+
+\paragraph{Attribution.} O*NET\textsuperscript{\textregistered} data used under the O*NET Database Content License; see References \citep{onet_license}.
+
+\subsection{Crosswalks and coverage (what gets dropped)}
+Occupational taxonomies differ between OEWS/EP (SOC-based) and O*NET (O*NET-SOC). We align them at the SOC occupation code level used in BLS tables by slicing O*NET-SOC codes (e.g., \texttt{15-1252.00}) to their 7-character SOC stem (e.g., \texttt{15-1252}). This merges multiple O*NET-SOC specialties into one SOC occupation, which is appropriate because BLS publishes OEWS/EP at the SOC level.\par
+Not every SOC appears in every data source: some SOC codes present in O*NET do not appear in OEWS or EP tables (and vice versa), and some are aggregation/detail differences. Table~\ref{tab:mechanism_coverage} reports counts at each stage (O*NET-SOC $\to$ SOC slice $\to$ relevant elements $\to$ mechanism-scored occupations $\to$ overlap with OEWS/EP) so that any ``dropped'' occupations are transparent and auditable.
+
+\IfFileExists{tables/mechanism_coverage.tex}{\input{tables/mechanism_coverage.tex}}{}
+
+\section{Model}
+\label{sec:model}
+\subsection{Mechanism dimensions}
+Let \(d\in\{\mathrm{Writing},\mathrm{ToolTech},\mathrm{Physical},\mathrm{Social},\mathrm{Creativity}\}\) be the five dimensions. For each occupation \(i\), we compute a raw mean importance score from selected O*NET elements, then convert to a percentile across the occupation set:
+\[
+  x_{i,d} \in [0,1] \quad \text{(percentile among occupations)}.
+\]
+
+\subsection{Net Risk index}
+Define substitution and defense scores:
+\[
+  \SubScore_i = \frac{x_{i,\mathrm{Writing}} + x_{i,\mathrm{ToolTech}}}{2}, \qquad
+  \DefScore_i = \frac{x_{i,\mathrm{Physical}} + x_{i,\mathrm{Social}} + x_{i,\mathrm{Creativity}}}{3},
+\]
+and \(\NetRisk_i = \SubScore_i - \DefScore_i\). Positive \(\NetRisk\) implies higher exposure to substitution; negative \(\NetRisk\) implies relative sheltering/complementarity.
+
+\subsection{Scenario employment projection}
+Let \(\Emp{2024}\) be the 2024 employment level (from OEWS levels) and \(\gbase\) the EP annual baseline growth. For a scenario parameter \(s\ge 0\), define adjusted growth:
+\[
+  \gadj = \gbase - s\cdot \NetRisk.
+\]
+We project 2034 employment as \(\Emp{2034} = \Emp{2024}(1+\gadj)^{10}\). We treat \(s\) as a scenario knob rather than an estimated causal effect; Section~\ref{sec:robustness} reports a sensitivity grid.
+
+\section{Results}
+\label{sec:results}
+\subsection{National outcomes for the three careers}
+Table~\ref{tab:scenario_summary} reports baseline vs.\ disruption outcomes computed from the reproducible pipeline artifacts.
+
+\IfFileExists{tables/scenario_summary.tex}{\input{tables/scenario_summary.tex}}{}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\linewidth]{figures/scenario_bar.png}
+\caption{2034 employment for the three careers under baseline, moderate, and high disruption (generated from \texttt{data/scenario\_summary.csv}).}
+\label{fig:scenario_bar}
+\end{figure}
+
+\subsection{Sensitivity and sanity checks}
+\label{sec:robustness}
+We include two compact robustness checks: (i) a sensitivity grid over plausible \(s\) values (Table~\ref{tab:sensitivity_grid}); and (ii) a sanity-check table listing the most exposed and most sheltered occupations by \(\NetRisk\) in the full scored set (Table~\ref{tab:top_exposed_sheltered}).
+
+\IfFileExists{tables/sensitivity_grid.tex}{\input{tables/sensitivity_grid.tex}}{}
+\IfFileExists{tables/top_exposed_sheltered.tex}{\input{tables/top_exposed_sheltered.tex}}{}
+
+\section{Institution-specific recommendations}
+\label{sec:recommendations}
+Recommendations are organized to answer the prompt: (i) whether to grow or shrink program size and how, and (ii) what to teach about GenAI to best support employability, tied back to model outputs and local context.
+
+\subsection{SDSU (Software Developers)}
+\textbf{Program size.} Maintain or modestly grow cohorts; disruption primarily reduces growth rate rather than reversing demand (Table~\ref{tab:scenario_summary}).\par
+\textbf{Curriculum.} Shift emphasis from boilerplate coding to system design, testing, security, and AI-assisted development with audit trails; make students fluent in evaluating and verifying model outputs.\par
+\textbf{Policy.} Permit GenAI use in advanced courses with required disclosure and reproducibility; constrain use in early courses to ensure fundamentals.
+
+\subsection{LATTC (Electricians)}
+\textbf{Program size.} Grow capacity and apprenticeship pathways; the occupation is sheltered by high physical/manual defense and remains strong across scenarios (Table~\ref{tab:scenario_summary}).\par
+\textbf{Curriculum.} Double down on hands-on competencies while adding ``AI as a tool'' modules for diagnostics, scheduling, documentation, and code-compliant planning.\par
+\textbf{Policy.} Teach safe, privacy-preserving, low-compute uses (templates, checklists) appropriate for small contractors.
+
+\subsection{Academy of Art University (Writers and Authors)}
+\textbf{Program size.} Consolidate and specialize toward higher-originality work and editing/production roles; high disruption can flip the field to contraction (Table~\ref{tab:scenario_summary}).\par
+\textbf{Curriculum.} Emphasize narrative strategy, editing, and provenance-aware workflows. Teach students to use GenAI as a draft accelerator while differentiating through voice, revision quality, and IP-aware sourcing.\par
+\textbf{Policy.} Require disclosure and provenance in portfolios; adopt rubrics that reward originality and documented creative process.
+
+\subsubsection{Transition Plan}
+For students currently enrolled in the Writers and Authors program, we recommend redirecting to absorber programs with lower \NetRisk{} due to higher tool complementarity and stronger defense dimensions. Specific transition pathways include:
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{UX Writing.} Redirect students toward user experience writing programs, which exhibit lower \NetRisk{} due to higher \DefScore{} components: elevated Social dimension (user research, cross-functional collaboration) and Creativity dimension (design thinking, user-centered storytelling). The Writing component remains relevant but is complemented by collaborative and research-intensive workflows that GenAI augments rather than substitutes.
+  
+  \item \textbf{Technical Communication.} Transition students to technical communication programs, which show reduced \NetRisk{} through higher Social dimension scores (stakeholder communication, documentation for diverse audiences) and ToolTech complementarity (GenAI assists in documentation generation while human expertise ensures accuracy, clarity, and domain-specific nuance). The combination of social coordination and tool-assisted workflows creates a complementary rather than substitutive dynamic.
+  
+  \item \textbf{Digital Media Production.} Redirect toward digital media production programs, which demonstrate lower \NetRisk{} via elevated Physical dimension (hands-on production work, equipment operation) and Creativity dimension (multimedia storytelling, visual narrative). The physical and creative defense dimensions provide sheltering that pure writing-intensive programs lack, while maintaining narrative and content creation skills.
+\end{itemize}
+
+These absorber programs are justified by the model: each exhibits a \NetRisk{} profile more favorable than Writers and Authors due to higher \DefScore{} (particularly Social and Creativity dimensions) relative to \SubScore{}, indicating that GenAI serves as a complementary tool rather than a direct substitute for core competencies.
+
+\section{Beyond employability: other success metrics}
+\label{sec:other_factors}
+Employability is necessary but not sufficient. We propose additional success metrics the prompt highlights: learning integrity and attribution compliance, equity/access, and sustainability (energy/water/compute cost). A simple program objective is:
+\[
+  \mathrm{Score} = w_E \cdot \mathrm{Employability} - w_I \cdot \mathrm{IntegrityRisk} - w_S \cdot \mathrm{SustainabilityCost}.
+\]
+When \(w_I\) increases, we recommend stricter disclosure/audit requirements and assessment designs robust to code/text generation; when \(w_S\) increases, we recommend lower-compute tools and fewer ``always-on'' GenAI requirements, especially in resource-constrained settings.
+
+\section{Generalization}
+\label{sec:generalization}
+The mechanism layer and scenario framework generalize to other programs by: (i) swapping the occupation(s), (ii) recomputing local OEWS context for the institution's region, and (iii) choosing scenario parameters \(s\) appropriate for the institution's risk tolerance. Institution-specific recommendations vary primarily through local labor market demand, program mission, and constraints (e.g., resources, accreditation, student population).
+
+\section{Prompt coverage checklist}
+\label{sec:checklist}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Grow/shrink programs and transitions:} Section~\ref{sec:recommendations}.
+  \item \textbf{What to teach about GenAI (including energy/water + attribution):} Sections~\ref{sec:recommendations} and \ref{sec:other_factors}.
+  \item \textbf{Other success metrics beyond employment and how recs change:} Section~\ref{sec:other_factors}.
+  \item \textbf{Generalization beyond one institution/program:} Section~\ref{sec:generalization}.
+\end{itemize}
+
+\newpage
+\section*{References}
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+% AI Use Report (does not count toward 25 pages)
+\clearpage
+\appendix
+\section*{AI Use Report}
+\input{ai_use_report.tex}
+
+\end{document}

@@ -1,0 +1,13 @@
+Scenario Calibration Check
+==========================
+Equation: g_adj = g_base - s * max(NetRisk, 0) + 0.2*s * max(-NetRisk, 0)
+
+Career: software_engineer, NetRisk: 0.380
+  Moderate_Substitution (s=0.015): g_base=0.0148 -> g_adj=0.0091 (delta=-0.0057)
+  High_Disruption (s=0.03): g_base=0.0148 -> g_adj=0.0034 (delta=-0.0114)
+Career: electrician, NetRisk: -0.461
+  Moderate_Substitution (s=0.015): g_base=0.0091 -> g_adj=0.0105 (delta=0.0014)
+  High_Disruption (s=0.03): g_base=0.0091 -> g_adj=0.0118 (delta=0.0028)
+Career: writer, NetRisk: 0.170
+  Moderate_Substitution (s=0.015): g_base=0.0036 -> g_adj=0.0010 (delta=-0.0026)
+  High_Disruption (s=0.03): g_base=0.0036 -> g_adj=-0.0016 (delta=-0.0051)

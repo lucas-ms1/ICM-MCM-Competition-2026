@@ -1,0 +1,88 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\citation{bls_oews_tec,bls_ep_table110,onet_database,onet_taxonomy,onet_license}
+\citation{mit_tasks_based_framing,openai_llm_exposure,nber_generative_ai_at_work}
+\citation{bls_oews_tec}
+\citation{bls_ep_table110}
+\citation{onet_database,onet_taxonomy,onet_license}
+\citation{onet_license}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Problem framing and choices}{3}{section.1}\protected@file@percent }
+\newlabel{sec:framing}{{1}{3}{Problem framing and choices}{section.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Data and preprocessing}{3}{section.2}\protected@file@percent }
+\newlabel{sec:data}{{2}{3}{Data and preprocessing}{section.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}BLS OEWS (local labor market context)}{3}{subsection.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}BLS Employment Projections (national baseline trend)}{3}{subsection.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}O*NET mechanism layer (why substitution vs.\ complementarity)}{3}{subsection.2.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Attribution.}{3}{section*.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}Crosswalks and coverage (what gets dropped)}{3}{subsection.2.4}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Coverage and mapping audit: O*NET \textrightarrow {} SOC \textrightarrow {} scored mechanism layer \textrightarrow {} BLS tables.}}{4}{table.caption.4}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{tab:mechanism_coverage}{{1}{4}{Coverage and mapping audit: O*NET \textrightarrow {} SOC \textrightarrow {} scored mechanism layer \textrightarrow {} BLS tables}{table.caption.4}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}Model}{4}{section.3}\protected@file@percent }
+\newlabel{sec:model}{{3}{4}{Model}{section.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Mechanism dimensions}{4}{subsection.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Net Risk index}{4}{subsection.3.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Summary statistics for NetRisk scores (from \texttt  {data/mechanism\_risk\_scored.csv}).}}{4}{table.caption.5}\protected@file@percent }
+\newlabel{tab:netrisk_summary}{{2}{4}{Summary statistics for NetRisk scores (from \texttt {data/mechanism\_risk\_scored.csv})}{table.caption.5}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Distribution of NetRisk scores across all occupations in the mechanism layer (from \texttt  {data/mechanism\_risk\_scored.csv}).}}{5}{figure.caption.6}\protected@file@percent }
+\newlabel{fig:netrisk_hist}{{1}{5}{Distribution of NetRisk scores across all occupations in the mechanism layer (from \texttt {data/mechanism\_risk\_scored.csv})}{figure.caption.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Scenario employment projection}{5}{subsection.3.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4}Results}{6}{section.4}\protected@file@percent }
+\newlabel{sec:results}{{4}{6}{Results}{section.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}National outcomes for the three careers}{6}{subsection.4.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces National 2034 employment under GenAI disruption scenarios (from \texttt  {data/scenario\_summary.csv}).}}{6}{table.caption.7}\protected@file@percent }
+\newlabel{tab:scenario_summary}{{3}{6}{National 2034 employment under GenAI disruption scenarios (from \texttt {data/scenario\_summary.csv})}{table.caption.7}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces 2034 employment for the three careers under baseline, moderate, and high disruption (generated from \texttt  {data/scenario\_summary.csv}).}}{6}{figure.caption.8}\protected@file@percent }
+\newlabel{fig:scenario_bar}{{2}{6}{2034 employment for the three careers under baseline, moderate, and high disruption (generated from \texttt {data/scenario\_summary.csv})}{figure.caption.8}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Dynamic Adoption}{6}{subsection.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Job openings and program sizing}{6}{subsection.4.3}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Annual openings and program sizing implications (from \texttt  {data/ep\_baseline.csv}).}}{7}{table.caption.9}\protected@file@percent }
+\newlabel{tab:openings_summary}{{4}{7}{Annual openings and program sizing implications (from \texttt {data/ep\_baseline.csv})}{table.caption.9}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Sensitivity and sanity checks}{7}{subsection.4.4}\protected@file@percent }
+\newlabel{sec:robustness}{{4.4}{7}{Sensitivity and sanity checks}{subsection.4.4}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Sensitivity of 2034 employment to the scenario parameter $s$ (using piecewise mapping: $s_{sub}=s, s_{comp}=0.2s$).}}{7}{table.caption.10}\protected@file@percent }
+\newlabel{tab:sensitivity_grid}{{5}{7}{Sensitivity of 2034 employment to the scenario parameter $s$ (using piecewise mapping: $s_{sub}=s, s_{comp}=0.2s$)}{table.caption.10}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces Sensitivity of High Disruption scenario ($s=0.03$) to weight parameters in $\ensuremath  {\mathrm  {NetRisk}}= a \cdot \ensuremath  {\mathrm  {Sub}}- b \cdot \ensuremath  {\mathrm  {Def}}$ (with piecewise mapping). Shows whether employment change sign flips compared to base case ($a=1.0$, $b=1.0$).}}{7}{table.caption.11}\protected@file@percent }
+\newlabel{tab:weight_sensitivity}{{6}{7}{Sensitivity of High Disruption scenario ($s=0.03$) to weight parameters in $\NetRisk = a \cdot \SubScore - b \cdot \DefScore $ (with piecewise mapping). Shows whether employment change sign flips compared to base case ($a=1.0$, $b=1.0$)}{table.caption.11}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Sanity check: most exposed vs. most sheltered occupations by Net Risk (computed from \texttt  {data/mechanism\_risk\_scored.csv}).}}{8}{table.caption.12}\protected@file@percent }
+\newlabel{tab:top_exposed_sheltered}{{7}{8}{Sanity check: most exposed vs. most sheltered occupations by Net Risk (computed from \texttt {data/mechanism\_risk\_scored.csv})}{table.caption.12}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Institution-specific recommendations}{8}{section.5}\protected@file@percent }
+\newlabel{sec:recommendations}{{5}{8}{Institution-specific recommendations}{section.5}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces Local labor market context for each institution (from \texttt  {data/careers/*.csv}).}}{9}{table.caption.13}\protected@file@percent }
+\newlabel{tab:local_context}{{8}{9}{Local labor market context for each institution (from \texttt {data/careers/*.csv})}{table.caption.13}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces Recommended annual program intake (seats) based on local openings share.}}{9}{table.caption.14}\protected@file@percent }
+\newlabel{tab:program_sizing}{{9}{9}{Recommended annual program intake (seats) based on local openings share}{table.caption.14}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}SDSU (Software Developers)}{9}{subsection.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}LATTC (Electricians)}{9}{subsection.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Academy of Art University (Writers and Authors)}{9}{subsection.5.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.3.1}Transition Plan}{10}{subsubsection.5.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6}Beyond employability: other success metrics}{10}{section.6}\protected@file@percent }
+\newlabel{sec:other_factors}{{6}{10}{Beyond employability: other success metrics}{section.6}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {10}{\ignorespaces Recommended policy shifts under alternative objective function weights.}}{11}{table.caption.15}\protected@file@percent }
+\newlabel{tab:policy_regimes}{{10}{11}{Recommended policy shifts under alternative objective function weights}{table.caption.15}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {7}Generalization}{11}{section.7}\protected@file@percent }
+\newlabel{sec:generalization}{{7}{11}{Generalization}{section.7}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {8}Prompt coverage checklist}{11}{section.8}\protected@file@percent }
+\newlabel{sec:checklist}{{8}{11}{Prompt coverage checklist}{section.8}{}}
+\bibstyle{plainnat}
+\bibdata{references}
+\bibcite{nber_generative_ai_at_work}{{1}{2023}{{Brynjolfsson et~al.}}{{Brynjolfsson, Li, and Raymond}}}
+\bibcite{mit_tasks_based_framing}{{2}{2026}{{MIT Shaping the Future of Work}}{{}}}
+\bibcite{onet_database}{{3}{2026{}}{{O*NET Resource Center}}{{}}}
+\bibcite{onet_license}{{4}{2026{}}{{O*NET Resource Center}}{{}}}
+\bibcite{onet_taxonomy}{{5}{2026{}}{{O*NET Resource Center}}{{}}}
+\bibcite{openai_llm_exposure}{{6}{2023}{{OpenAI}}{{}}}
+\bibcite{bls_ep_table110}{{7}{2024{}}{{U.S. Bureau of Labor Statistics}}{{}}}
+\bibcite{bls_oews_tec}{{8}{2024{}}{{U.S. Bureau of Labor Statistics}}{{}}}
+\gdef \LT@i {\LT@entry 
+    {4}{115.78186pt}\LT@entry 
+    {4}{87.22054pt}\LT@entry 
+    {1}{68.9055pt}\LT@entry 
+    {1}{182.71652pt}}
+\@writefile{toc}{\contentsline {section}{\numberline {A}Mechanism Layer Details}{13}{appendix.A}\protected@file@percent }
+\newlabel{app:mechanism}{{A}{13}{Mechanism Layer Details}{appendix.A}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {11}{\ignorespaces O*NET Elements mapped to Mechanism Dimensions (using Importance scale).}}{13}{table.11}\protected@file@percent }
+\newlabel{tab:onet_elements_appendix}{{11}{13}{Mechanism Layer Details}{table.11}{}}
+\gdef \@abspage@last{13}
