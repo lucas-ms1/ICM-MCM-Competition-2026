@@ -8,107 +8,123 @@
 \citation{bls_ep_table110}
 \citation{onet_database,onet_taxonomy,onet_license}
 \citation{onet_license}
-\@writefile{toc}{\contentsline {section}{\numberline {1}Problem framing and choices}{3}{section.1}\protected@file@percent }
-\newlabel{sec:framing}{{1}{3}{Problem framing and choices}{section.1}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {2}Data and preprocessing}{3}{section.2}\protected@file@percent }
-\newlabel{sec:data}{{2}{3}{Data and preprocessing}{section.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}BLS OEWS (local labor market context)}{3}{subsection.2.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}BLS Employment Projections (national baseline trend)}{3}{subsection.2.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}O*NET mechanism layer (why substitution vs.\ complementarity)}{3}{subsection.2.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Attribution.}{3}{section*.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}Crosswalks and coverage (what gets dropped)}{3}{subsection.2.4}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Coverage and mapping audit: O*NET \textrightarrow {} SOC \textrightarrow {} scored mechanism layer \textrightarrow {} BLS tables.}}{4}{table.caption.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {1}Problem framing and choices}{5}{section.1}\protected@file@percent }
+\newlabel{sec:framing}{{1}{5}{Problem framing and choices}{section.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Data and preprocessing}{5}{section.2}\protected@file@percent }
+\newlabel{sec:data}{{2}{5}{Data and preprocessing}{section.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}BLS OEWS (local labor market context)}{5}{subsection.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}BLS Employment Projections (national baseline trend)}{5}{subsection.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}O*NET mechanism layer (why substitution vs.\ complementarity)}{5}{subsection.2.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Attribution.}{5}{section*.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}Crosswalks and coverage (what gets dropped)}{5}{subsection.2.4}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Coverage and mapping audit: O*NET \textrightarrow {} SOC \textrightarrow {} scored mechanism layer \textrightarrow {} BLS tables.}}{6}{table.caption.5}\protected@file@percent }
 \providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
-\newlabel{tab:mechanism_coverage}{{1}{4}{Coverage and mapping audit: O*NET \textrightarrow {} SOC \textrightarrow {} scored mechanism layer \textrightarrow {} BLS tables}{table.caption.4}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {3}Model}{4}{section.3}\protected@file@percent }
-\newlabel{sec:model}{{3}{4}{Model}{section.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Mechanism dimensions}{4}{subsection.3.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Net Risk index}{4}{subsection.3.2}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Summary statistics for NetRisk scores (from \texttt  {data/mechanism\_risk\_scored.csv}).}}{4}{table.caption.5}\protected@file@percent }
-\newlabel{tab:netrisk_summary}{{2}{4}{Summary statistics for NetRisk scores (from \texttt {data/mechanism\_risk\_scored.csv})}{table.caption.5}{}}
+\newlabel{tab:mechanism_coverage}{{1}{6}{Coverage and mapping audit: O*NET \textrightarrow {} SOC \textrightarrow {} scored mechanism layer \textrightarrow {} BLS tables}{table.caption.5}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}Model}{6}{section.3}\protected@file@percent }
+\newlabel{sec:model}{{3}{6}{Model}{section.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Mechanism dimensions}{6}{subsection.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Net Risk index}{6}{subsection.3.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Summary statistics for NetRisk scores (from \texttt  {data/mechanism\_risk\_scored.csv}).}}{6}{table.caption.6}\protected@file@percent }
+\newlabel{tab:netrisk_summary}{{2}{6}{Summary statistics for NetRisk scores (from \texttt {data/mechanism\_risk\_scored.csv})}{table.caption.6}{}}
 \citation{tomlinson2025working}
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Distribution of NetRisk scores across all occupations in the mechanism layer (from \texttt  {data/mechanism\_risk\_scored.csv}).}}{5}{figure.caption.6}\protected@file@percent }
-\newlabel{fig:netrisk_hist}{{1}{5}{Distribution of NetRisk scores across all occupations in the mechanism layer (from \texttt {data/mechanism\_risk\_scored.csv})}{figure.caption.6}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}External calibration to AI applicability}{5}{subsection.3.3}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Calibration of mechanism weights to external AI applicability scores (Tomlinson et al., 2025).}}{6}{table.caption.7}\protected@file@percent }
-\newlabel{tab:calibration_summary}{{3}{6}{Calibration of mechanism weights to external AI applicability scores (Tomlinson et al., 2025)}{table.caption.7}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Calibration fit: observed vs.\ predicted AI applicability (from \texttt  {data/calibration\_fit.csv}).}}{6}{figure.caption.8}\protected@file@percent }
-\newlabel{fig:calibration_scatter}{{2}{6}{Calibration fit: observed vs.\ predicted AI applicability (from \texttt {data/calibration\_fit.csv})}{figure.caption.8}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Scenario employment projection}{6}{subsection.3.4}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Scenario strength parameters used by the pipeline (from \texttt  {data/scenario\_parameters.csv}).}}{7}{table.caption.9}\protected@file@percent }
-\newlabel{tab:scenario_params}{{4}{7}{Scenario strength parameters used by the pipeline (from \texttt {data/scenario\_parameters.csv})}{table.caption.9}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4}Results}{7}{section.4}\protected@file@percent }
-\newlabel{sec:results}{{4}{7}{Results}{section.4}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}National outcomes for the three careers}{7}{subsection.4.1}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces National 2034 employment under immediate vs. ramped GenAI disruption scenarios (from \texttt  {data/scenario\_summary.csv}). Careers are SOC bundles; employment-weighted outcomes; $\ensuremath  {\mathrm  {NetRisk}}$ range is min--max across the bundle.}}{7}{table.caption.10}\protected@file@percent }
-\newlabel{tab:scenario_summary}{{5}{7}{National 2034 employment under immediate vs. ramped GenAI disruption scenarios (from \texttt {data/scenario\_summary.csv}). Careers are SOC bundles; employment-weighted outcomes; $\NetRisk $ range is min--max across the bundle}{table.caption.10}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces 2034 employment for the three careers under baseline, moderate, and high disruption (generated from \texttt  {data/scenario\_summary.csv}).}}{8}{figure.caption.11}\protected@file@percent }
-\newlabel{fig:scenario_bar}{{3}{8}{2034 employment for the three careers under baseline, moderate, and high disruption (generated from \texttt {data/scenario\_summary.csv})}{figure.caption.11}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Dynamic Adoption}{8}{subsection.4.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Job openings and program sizing}{8}{subsection.4.3}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces Annual openings and program sizing implications (from \texttt  {data/ep\_baseline.csv}).}}{8}{table.caption.12}\protected@file@percent }
-\newlabel{tab:openings_summary}{{6}{8}{Annual openings and program sizing implications (from \texttt {data/ep\_baseline.csv})}{table.caption.12}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Sensitivity and sanity checks}{8}{subsection.4.4}\protected@file@percent }
-\newlabel{sec:robustness}{{4.4}{8}{Sensitivity and sanity checks}{subsection.4.4}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.4.1}Mechanism Layer Stability}{9}{subsubsection.4.4.1}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Sensitivity of NetRisk mechanism to descriptor perturbations (leave-one-out) and normalization choices.}}{9}{table.caption.13}\protected@file@percent }
-\newlabel{tab:mechanism_sensitivity}{{7}{9}{Sensitivity of NetRisk mechanism to descriptor perturbations (leave-one-out) and normalization choices}{table.caption.13}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.4.2}Calibration Validation}{9}{subsubsection.4.4.2}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces Calibration Validation: Out-of-sample performance (5-fold CV) and Baseline Comparisons.}}{9}{table.caption.14}\protected@file@percent }
-\newlabel{tab:calibration_validation}{{8}{9}{Calibration Validation: Out-of-sample performance (5-fold CV) and Baseline Comparisons}{table.caption.14}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.4.3}Scenario and Parameter Sensitivity}{10}{subsubsection.4.4.3}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces Sensitivity of 2034 employment to the scenario parameter $s$ (using piecewise mapping: $s_{sub}=s, s_{comp}=0.2s$).}}{10}{table.caption.15}\protected@file@percent }
-\newlabel{tab:sensitivity_grid}{{9}{10}{Sensitivity of 2034 employment to the scenario parameter $s$ (using piecewise mapping: $s_{sub}=s, s_{comp}=0.2s$)}{table.caption.15}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {10}{\ignorespaces Sensitivity to the complementarity cap in the scenario mapping (varies the multiplier on the uplift term for $\ensuremath  {\mathrm  {NetRisk}}<0$; baseline uses 0.2).}}{10}{table.caption.16}\protected@file@percent }
-\newlabel{tab:comp_factor_sensitivity}{{10}{10}{Sensitivity to the complementarity cap in the scenario mapping (varies the multiplier on the uplift term for $\NetRisk <0$; baseline uses 0.2)}{table.caption.16}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {11}{\ignorespaces Sensitivity of High Disruption scenario ($s=0.0375$ (calibrated)) to weight parameters in $\ensuremath  {\mathrm  {NetRisk}}= a \cdot \ensuremath  {\mathrm  {Sub}}- b \cdot \ensuremath  {\mathrm  {Def}}$ (with piecewise mapping). Shows whether employment change sign flips compared to base case ($a=1.0$, $b=1.0$).}}{10}{table.caption.17}\protected@file@percent }
-\newlabel{tab:weight_sensitivity}{{11}{10}{Sensitivity of High Disruption scenario ($s=0.0375$ (calibrated)) to weight parameters in $\NetRisk = a \cdot \SubScore - b \cdot \DefScore $ (with piecewise mapping). Shows whether employment change sign flips compared to base case ($a=1.0$, $b=1.0$)}{table.caption.17}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {12}{\ignorespaces Sanity check: most exposed vs. most sheltered occupations by Net Risk (computed from \texttt  {data/mechanism\_risk\_scored.csv}).}}{11}{table.caption.18}\protected@file@percent }
-\newlabel{tab:top_exposed_sheltered}{{12}{11}{Sanity check: most exposed vs. most sheltered occupations by Net Risk (computed from \texttt {data/mechanism\_risk\_scored.csv})}{table.caption.18}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {13}{\ignorespaces Uncertainty intervals for 2034 employment under Moderate and High disruption (Monte Carlo).}}{11}{table.caption.19}\protected@file@percent }
-\newlabel{tab:uncertainty_summary}{{13}{11}{Uncertainty intervals for 2034 employment under Moderate and High disruption (Monte Carlo)}{table.caption.19}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {5}Institution-specific recommendations}{11}{section.5}\protected@file@percent }
-\newlabel{sec:recommendations}{{5}{11}{Institution-specific recommendations}{section.5}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {14}{\ignorespaces Local labor market context for each institution (from \texttt  {data/careers/*.csv}).}}{12}{table.caption.20}\protected@file@percent }
-\newlabel{tab:local_context}{{14}{12}{Local labor market context for each institution (from \texttt {data/careers/*.csv})}{table.caption.20}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {15}{\ignorespaces Recommended annual program intake ranges (seats) accounting for efficiency uncertainty.}}{12}{table.caption.21}\protected@file@percent }
-\newlabel{tab:program_sizing}{{15}{12}{Recommended annual program intake ranges (seats) accounting for efficiency uncertainty}{table.caption.21}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}SDSU (Software Developers)}{12}{subsection.5.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}LATTC (Electricians)}{13}{subsection.5.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Academy of Art University (Writers and Authors)}{13}{subsection.5.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.3.1}Transition Plan}{14}{subsubsection.5.3.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {6}Beyond employability: other success metrics}{14}{section.6}\protected@file@percent }
-\newlabel{sec:other_factors}{{6}{14}{Beyond employability: other success metrics}{section.6}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {16}{\ignorespaces Recommended policy shifts under alternative objective function weights.}}{15}{table.caption.22}\protected@file@percent }
-\newlabel{tab:policy_regimes}{{16}{15}{Recommended policy shifts under alternative objective function weights}{table.caption.22}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {17}{\ignorespaces Recommended policy regime by institution under alternative objective weights.}}{15}{table.caption.23}\protected@file@percent }
-\newlabel{tab:policy_decision}{{17}{15}{Recommended policy regime by institution under alternative objective weights}{table.caption.23}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {18}{\ignorespaces Robustness of policy recommendations to modest perturbations of institution capacity parameters (audit and sustainability varied by $\pm 0.1$; 9 combinations per cell).}}{16}{table.caption.24}\protected@file@percent }
-\newlabel{tab:policy_sensitivity}{{18}{16}{Robustness of policy recommendations to modest perturbations of institution capacity parameters (audit and sustainability varied by $\pm 0.1$; 9 combinations per cell)}{table.caption.24}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Policy trade-offs under balanced weights (generated from \texttt  {data/policy\_decision\_scores.csv}).}}{16}{figure.caption.25}\protected@file@percent }
-\newlabel{fig:policy_tradeoff}{{4}{16}{Policy trade-offs under balanced weights (generated from \texttt {data/policy\_decision\_scores.csv})}{figure.caption.25}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {7}Generalization}{16}{section.7}\protected@file@percent }
-\newlabel{sec:generalization}{{7}{16}{Generalization}{section.7}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {8}Prompt coverage checklist}{16}{section.8}\protected@file@percent }
-\newlabel{sec:checklist}{{8}{16}{Prompt coverage checklist}{section.8}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Distribution of NetRisk scores across all occupations in the mechanism layer (from \texttt  {data/mechanism\_risk\_scored.csv}).}}{7}{figure.caption.7}\protected@file@percent }
+\newlabel{fig:netrisk_hist}{{1}{7}{Distribution of NetRisk scores across all occupations in the mechanism layer (from \texttt {data/mechanism\_risk\_scored.csv})}{figure.caption.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}External calibration to AI applicability}{7}{subsection.3.3}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Calibration of mechanism weights to external AI applicability scores (Tomlinson et al., 2025).}}{8}{table.caption.8}\protected@file@percent }
+\newlabel{tab:calibration_summary}{{3}{8}{Calibration of mechanism weights to external AI applicability scores (Tomlinson et al., 2025)}{table.caption.8}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Comparison of the interpretability (uncalibrated) NetRisk index vs. the calibrated (predictive) NetRisk index across occupations (from \texttt  {data/mechanism\_risk\_scored.csv}).}}{8}{table.caption.9}\protected@file@percent }
+\newlabel{tab:netrisk_index_compare}{{4}{8}{Comparison of the interpretability (uncalibrated) NetRisk index vs. the calibrated (predictive) NetRisk index across occupations (from \texttt {data/mechanism\_risk\_scored.csv})}{table.caption.9}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Examples where the calibrated vs. uncalibrated NetRisk indices disagree most (ranked by $|\Delta |$; primary filter is opposite sign when available).}}{8}{table.caption.10}\protected@file@percent }
+\newlabel{tab:netrisk_index_disagree}{{5}{8}{Examples where the calibrated vs. uncalibrated NetRisk indices disagree most (ranked by $|\Delta |$; primary filter is opposite sign when available)}{table.caption.10}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Calibration fit: observed vs.\ predicted AI applicability (from \texttt  {data/calibration\_fit.csv}).}}{9}{figure.caption.11}\protected@file@percent }
+\newlabel{fig:calibration_scatter}{{2}{9}{Calibration fit: observed vs.\ predicted AI applicability (from \texttt {data/calibration\_fit.csv})}{figure.caption.11}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Scenario employment projection}{9}{subsection.3.4}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces Components of the occupation-level complementarity cap for the three focal career bundles (employment-weighted over SOCs using EP $E_{2024}$ shares). $B$ is a bottleneck index; $\tilde  {\varepsilon }$ is a normalized demand-responsiveness proxy (not a literal elasticity); $m_{\mathrm  {eff}}=\min (m_{\max },(1-B)\tilde  {\varepsilon })$ with baseline $m_{\max }=0.2$. Reported for auditability; used only when $\ensuremath  {\mathrm  {NetRisk}}<0$.}}{10}{table.caption.12}\protected@file@percent }
+\newlabel{tab:comp_cap_components}{{6}{10}{Components of the occupation-level complementarity cap for the three focal career bundles (employment-weighted over SOCs using EP $E_{2024}$ shares). $B$ is a bottleneck index; $\tilde {\varepsilon }$ is a normalized demand-responsiveness proxy (not a literal elasticity); $m_{\mathrm {eff}}=\min (m_{\max },(1-B)\tilde {\varepsilon })$ with baseline $m_{\max }=0.2$. Reported for auditability; used only when $\NetRisk <0$}{table.caption.12}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Scenario strength parameters used by the pipeline (from \texttt  {data/scenario\_parameters.csv}).}}{11}{table.caption.13}\protected@file@percent }
+\newlabel{tab:scenario_params}{{7}{11}{Scenario strength parameters used by the pipeline (from \texttt {data/scenario\_parameters.csv})}{table.caption.13}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Results}{11}{section.4}\protected@file@percent }
+\newlabel{sec:results}{{4}{11}{Results}{section.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}National outcomes for the three careers}{11}{subsection.4.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces National 2034 employment under immediate vs. ramped GenAI disruption scenarios (from \texttt  {data/scenario\_summary.csv}). Careers are SOC bundles; employment-weighted outcomes; $\ensuremath  {\mathrm  {NetRisk}}$ range is min--max across the bundle. $\ensuremath  {\mathrm  {NetRisk}}$ values use the calibrated index when available; otherwise the uncalibrated mechanism index (see Definitions \& Provenance).}}{11}{table.caption.14}\protected@file@percent }
+\newlabel{tab:scenario_summary}{{8}{11}{National 2034 employment under immediate vs. ramped GenAI disruption scenarios (from \texttt {data/scenario\_summary.csv}). Careers are SOC bundles; employment-weighted outcomes; $\NetRisk $ range is min--max across the bundle. $\NetRisk $ values use the calibrated index when available; otherwise the uncalibrated mechanism index (see Definitions \& Provenance)}{table.caption.14}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces 2034 employment for the three careers under baseline, moderate, and high disruption (generated from \texttt  {data/scenario\_summary.csv}).}}{12}{figure.caption.15}\protected@file@percent }
+\newlabel{fig:scenario_bar}{{3}{12}{2034 employment for the three careers under baseline, moderate, and high disruption (generated from \texttt {data/scenario\_summary.csv})}{figure.caption.15}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Dynamic Adoption}{12}{subsection.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Job openings and program sizing}{12}{subsection.4.3}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces Annual openings and program sizing implications (from \texttt  {data/ep\_baseline.csv}).}}{12}{table.caption.16}\protected@file@percent }
+\newlabel{tab:openings_summary}{{9}{12}{Annual openings and program sizing implications (from \texttt {data/ep\_baseline.csv})}{table.caption.16}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Sensitivity and sanity checks}{12}{subsection.4.4}\protected@file@percent }
+\newlabel{sec:robustness}{{4.4}{12}{Sensitivity and sanity checks}{subsection.4.4}{}}
+\citation{felten2021aioe}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.4.1}Mechanism Layer Stability}{13}{subsubsection.4.4.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {10}{\ignorespaces Sensitivity of the \emph  {uncalibrated} (mechanism) NetRisk index to descriptor perturbations (leave-one-out) and normalization choices at the SOC-occupation level. Normalization variants include percentiles, z-score mapped via Normal CDF, min--max scaling, and within-major-group percentile ranks.}}{13}{table.caption.17}\protected@file@percent }
+\newlabel{tab:mechanism_sensitivity}{{10}{13}{Sensitivity of the \emph {uncalibrated} (mechanism) NetRisk index to descriptor perturbations (leave-one-out) and normalization choices at the SOC-occupation level. Normalization variants include percentiles, z-score mapped via Normal CDF, min--max scaling, and within-major-group percentile ranks}{table.caption.17}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.4.2}Calibration Validation}{13}{subsubsection.4.4.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {11}{\ignorespaces Calibration Validation: Out-of-sample performance (5-fold CV) and Baseline Comparisons.}}{13}{table.caption.18}\protected@file@percent }
+\newlabel{tab:calibration_validation}{{11}{13}{Calibration Validation: Out-of-sample performance (5-fold CV) and Baseline Comparisons}{table.caption.18}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.4.3}External benchmark reality check}{14}{subsubsection.4.4.3}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {12}{\ignorespaces External reality check: correlation between our NetRisk indices and the Felten--Raj--Seamans AI Occupational Exposure (AIOE) score (from \texttt  {data/netrisk\_vs\_aioe.csv}).}}{14}{table.caption.19}\protected@file@percent }
+\newlabel{tab:external_benchmark}{{12}{14}{External reality check: correlation between our NetRisk indices and the Felten--Raj--Seamans AI Occupational Exposure (AIOE) score (from \texttt {data/netrisk\_vs\_aioe.csv})}{table.caption.19}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {13}{\ignorespaces Examples of disagreement between NetRisk ranking and AIOE ranking (largest absolute rank gaps; NetRisk uses net\_risk\_calibrated).}}{14}{table.caption.20}\protected@file@percent }
+\newlabel{tab:external_benchmark_disagree}{{13}{14}{Examples of disagreement between NetRisk ranking and AIOE ranking (largest absolute rank gaps; NetRisk uses net\_risk\_calibrated)}{table.caption.20}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.4.4}Scenario and Parameter Sensitivity}{14}{subsubsection.4.4.4}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {14}{\ignorespaces Sensitivity of 2034 employment to the scenario parameter $s$ (using piecewise mapping: $s_{sub}=s, s_{comp}=m\cdot s$ with $m\le m_{\max }=0.2$; $m$ varies by occupation bundle based on bottlenecks and coarse demand elasticity).}}{15}{table.caption.21}\protected@file@percent }
+\newlabel{tab:sensitivity_grid}{{14}{15}{Sensitivity of 2034 employment to the scenario parameter $s$ (using piecewise mapping: $s_{sub}=s, s_{comp}=m\cdot s$ with $m\le m_{\max }=0.2$; $m$ varies by occupation bundle based on bottlenecks and coarse demand elasticity)}{table.caption.21}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {15}{\ignorespaces Sensitivity to the complementarity cap in the scenario mapping (varies the bound $m_{\max }$ applied to the occupation-level uplift multiplier; baseline uses $m_{\max }=0.2$).}}{15}{table.caption.22}\protected@file@percent }
+\newlabel{tab:comp_factor_sensitivity}{{15}{15}{Sensitivity to the complementarity cap in the scenario mapping (varies the bound $m_{\max }$ applied to the occupation-level uplift multiplier; baseline uses $m_{\max }=0.2$)}{table.caption.22}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {16}{\ignorespaces Sensitivity of High Disruption scenario ($s=0.0375$ (calibrated)) to weight parameters in $\ensuremath  {\mathrm  {NetRisk}}= a \cdot \ensuremath  {\mathrm  {Sub}}- b \cdot \ensuremath  {\mathrm  {Def}}$ (with piecewise mapping). Shows whether employment change sign flips compared to base case ($a=1.0$, $b=1.0$).}}{15}{table.caption.23}\protected@file@percent }
+\newlabel{tab:weight_sensitivity}{{16}{15}{Sensitivity of High Disruption scenario ($s=0.0375$ (calibrated)) to weight parameters in $\NetRisk = a \cdot \SubScore - b \cdot \DefScore $ (with piecewise mapping). Shows whether employment change sign flips compared to base case ($a=1.0$, $b=1.0$)}{table.caption.23}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {17}{\ignorespaces Sanity check: most exposed vs. most sheltered occupations by Net Risk (computed from \texttt  {data/mechanism\_risk\_scored.csv}).}}{16}{table.caption.24}\protected@file@percent }
+\newlabel{tab:top_exposed_sheltered}{{17}{16}{Sanity check: most exposed vs. most sheltered occupations by Net Risk (computed from \texttt {data/mechanism\_risk\_scored.csv})}{table.caption.24}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {18}{\ignorespaces Uncertainty intervals for 2034 employment under Moderate and High disruption (Monte Carlo).}}{16}{table.caption.25}\protected@file@percent }
+\newlabel{tab:uncertainty_summary}{{18}{16}{Uncertainty intervals for 2034 employment under Moderate and High disruption (Monte Carlo)}{table.caption.25}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.4.5}Local openings scaling robustness}{16}{subsubsection.4.4.5}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {19}{\ignorespaces Robustness check for scaling national annual openings (EP) to local markets (OEWS). We compare (i) openings scaled by local occupation share only, (ii) openings scaled by local total employment share $\times $ LQ (standard decomposition), and (iii) a legacy method multiplying occupation share by clipped LQ (shown for comparison; can double-count concentration). Note that (i) and (ii) are algebraically equivalent when LQ is computed from the same OEWS employment counts; differences arise only from clipping or inconsistent sources. The seats in Table~\ref {tab:program_sizing} use method (ii) with clipped LQ.}}{17}{table.caption.26}\protected@file@percent }
+\newlabel{tab:openings_scaling_robustness}{{19}{17}{Robustness check for scaling national annual openings (EP) to local markets (OEWS). We compare (i) openings scaled by local occupation share only, (ii) openings scaled by local total employment share $\times $ LQ (standard decomposition), and (iii) a legacy method multiplying occupation share by clipped LQ (shown for comparison; can double-count concentration). Note that (i) and (ii) are algebraically equivalent when LQ is computed from the same OEWS employment counts; differences arise only from clipping or inconsistent sources. The seats in Table~\ref {tab:program_sizing} use method (ii) with clipped LQ}{table.caption.26}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Institution-specific recommendations}{17}{section.5}\protected@file@percent }
+\newlabel{sec:recommendations}{{5}{17}{Institution-specific recommendations}{section.5}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {20}{\ignorespaces Local labor market context for each institution (from \texttt  {data/careers/*.csv}).}}{17}{table.caption.27}\protected@file@percent }
+\newlabel{tab:local_context}{{20}{17}{Local labor market context for each institution (from \texttt {data/careers/*.csv})}{table.caption.27}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {21}{\ignorespaces Recommended annual program intake ranges (seats) accounting for efficiency uncertainty. Local openings scale national openings using (local total employment share) $\times $ (clipped LQ); see Table~\ref {tab:openings_scaling_robustness}.}}{18}{table.caption.28}\protected@file@percent }
+\newlabel{tab:program_sizing}{{21}{18}{Recommended annual program intake ranges (seats) accounting for efficiency uncertainty. Local openings scale national openings using (local total employment share) $\times $ (clipped LQ); see Table~\ref {tab:openings_scaling_robustness}}{table.caption.28}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}SDSU (Software Developers)}{18}{subsection.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}LATTC (Electricians)}{18}{subsection.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Academy of Art University (Writers and Authors)}{19}{subsection.5.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.3.1}Transition Plan}{19}{subsubsection.5.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6}Beyond employability: other success metrics}{20}{section.6}\protected@file@percent }
+\newlabel{sec:other_factors}{{6}{20}{Beyond employability: other success metrics}{section.6}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {22}{\ignorespaces Recommended policy shifts under alternative objective function weights.}}{21}{table.caption.29}\protected@file@percent }
+\newlabel{tab:policy_regimes}{{22}{21}{Recommended policy shifts under alternative objective function weights}{table.caption.29}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {23}{\ignorespaces Recommended policy regime by institution under alternative objective weights.}}{21}{table.caption.30}\protected@file@percent }
+\newlabel{tab:policy_decision}{{23}{21}{Recommended policy regime by institution under alternative objective weights}{table.caption.30}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {24}{\ignorespaces Robustness of policy recommendations to modest perturbations of institution capacity parameters (audit and sustainability varied by $\pm 0.1$; 9 combinations per cell).}}{22}{table.caption.31}\protected@file@percent }
+\newlabel{tab:policy_sensitivity}{{24}{22}{Robustness of policy recommendations to modest perturbations of institution capacity parameters (audit and sustainability varied by $\pm 0.1$; 9 combinations per cell)}{table.caption.31}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Policy trade-offs under balanced weights (generated from \texttt  {data/policy\_decision\_scores.csv}).}}{22}{figure.caption.32}\protected@file@percent }
+\newlabel{fig:policy_tradeoff}{{4}{22}{Policy trade-offs under balanced weights (generated from \texttt {data/policy\_decision\_scores.csv})}{figure.caption.32}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {7}Generalization}{22}{section.7}\protected@file@percent }
+\newlabel{sec:generalization}{{7}{22}{Generalization}{section.7}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {8}Prompt coverage checklist}{22}{section.8}\protected@file@percent }
+\newlabel{sec:checklist}{{8}{22}{Prompt coverage checklist}{section.8}{}}
 \bibstyle{plainnat}
 \bibdata{references}
 \bibcite{nber_generative_ai_at_work}{{1}{2023}{{Brynjolfsson et~al.}}{{Brynjolfsson, Li, and Raymond}}}
-\bibcite{mit_tasks_based_framing}{{2}{2026}{{MIT Shaping the Future of Work}}{{}}}
-\bibcite{onet_database}{{3}{2026{}}{{O*NET Resource Center}}{{}}}
-\bibcite{onet_license}{{4}{2026{}}{{O*NET Resource Center}}{{}}}
-\bibcite{onet_taxonomy}{{5}{2026{}}{{O*NET Resource Center}}{{}}}
-\bibcite{openai_llm_exposure}{{6}{2023}{{OpenAI}}{{}}}
-\bibcite{tomlinson2025working}{{7}{2025}{{Tomlinson et~al.}}{{Tomlinson, Jaffe, Wang, Counts, and Suri}}}
-\bibcite{bls_ep_table110}{{8}{2024{}}{{U.S. Bureau of Labor Statistics}}{{}}}
-\bibcite{bls_oews_tec}{{9}{2024{}}{{U.S. Bureau of Labor Statistics}}{{}}}
+\bibcite{felten2021aioe}{{2}{2021}{{Felten et~al.}}{{Felten, Raj, and Seamans}}}
+\bibcite{mit_tasks_based_framing}{{3}{2026}{{MIT Shaping the Future of Work}}{{}}}
+\bibcite{onet_database}{{4}{2026{}}{{O*NET Resource Center}}{{}}}
+\bibcite{onet_license}{{5}{2026{}}{{O*NET Resource Center}}{{}}}
+\bibcite{onet_taxonomy}{{6}{2026{}}{{O*NET Resource Center}}{{}}}
+\bibcite{openai_llm_exposure}{{7}{2023}{{OpenAI}}{{}}}
+\bibcite{tomlinson2025working}{{8}{2025}{{Tomlinson et~al.}}{{Tomlinson, Jaffe, Wang, Counts, and Suri}}}
+\bibcite{bls_ep_table110}{{9}{2024{}}{{U.S. Bureau of Labor Statistics}}{{}}}
+\bibcite{bls_oews_tec}{{10}{2024{}}{{U.S. Bureau of Labor Statistics}}{{}}}
 \gdef \LT@i {\LT@entry 
     {4}{115.78186pt}\LT@entry 
     {4}{87.22054pt}\LT@entry 
     {1}{68.9055pt}\LT@entry 
     {1}{182.71652pt}}
-\@writefile{toc}{\contentsline {section}{\numberline {A}Mechanism Layer Details}{19}{appendix.A}\protected@file@percent }
-\newlabel{app:mechanism}{{A}{19}{Mechanism Layer Details}{appendix.A}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {19}{\ignorespaces O*NET Elements mapped to Mechanism Dimensions (using Importance scale).}}{19}{table.19}\protected@file@percent }
-\newlabel{tab:onet_elements_appendix}{{19}{19}{Mechanism Layer Details}{table.19}{}}
-\gdef \@abspage@last{19}
+\@writefile{toc}{\contentsline {section}{\numberline {A}Mechanism Layer Details}{25}{appendix.A}\protected@file@percent }
+\newlabel{app:mechanism}{{A}{25}{Mechanism Layer Details}{appendix.A}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {25}{\ignorespaces O*NET Elements mapped to Mechanism Dimensions (using Importance scale).}}{25}{table.25}\protected@file@percent }
+\newlabel{tab:onet_elements_appendix}{{25}{25}{Mechanism Layer Details}{table.25}{}}
+\gdef \@abspage@last{25}

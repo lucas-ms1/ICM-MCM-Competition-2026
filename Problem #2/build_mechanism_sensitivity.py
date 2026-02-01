@@ -8,6 +8,7 @@ Outputs:
 from pathlib import Path
 import pandas as pd
 import numpy as np
+import math
 
 DATA_DIR = Path(__file__).resolve().parent / "data"
 ONET_DIR = DATA_DIR / "onet"
@@ -72,7 +73,11 @@ def load_onet_file(filename: str) -> pd.DataFrame:
 def compute_net_risk(mech_df: pd.DataFrame, normalization: str = "percentile") -> pd.DataFrame:
     """
     Compute NetRisk given a raw mechanism dataframe (SOC x Dimensions).
-    normalization: 'percentile', 'zscore', 'rank_within_group'
+    normalization:
+      - 'percentile': percentile ranks in [0,1]
+      - 'zscore': true z-scores mapped to [0,1] via Normal CDF (erf)
+      - 'minmax': min-max scaling in [0,1]
+      - 'rank_within_group': percentile ranks within 2-digit SOC major group
     """
     df = mech_df.copy()
     dims = list(DIMENSION_DESCRIPTORS.keys())
@@ -90,13 +95,20 @@ def compute_net_risk(mech_df: pd.DataFrame, normalization: str = "percentile") -
             if d in df.columns:
                 mu = df[d].mean()
                 sig = df[d].std()
-                if sig == 0: sig = 1
-                # Clip z-scores to roughly [0,1] range equiv via CDF or just scaling
-                # For compatibility with 0-1 range expected by policy model, we'll min-max scale the z-scores
-                # or just min-max scale the raw values? 
-                # The prompt asks for z-score sensitivity. Let's standardized then sigmoid or min-max.
-                # Let's use min-max for simplicity and bounded 0-1.
-                df[f"norm_{d}"] = (df[d] - df[d].min()) / (df[d].max() - df[d].min())
+                if sig == 0 or (isinstance(sig, float) and math.isnan(sig)):
+                    sig = 1.0
+                z = (df[d] - mu) / sig
+                # Map to [0,1] using Normal CDF: Phi(z) = 0.5*(1+erf(z/sqrt(2)))
+                df[f"norm_{d}"] = 0.5 * (1.0 + z.map(lambda t: math.erf(float(t) / math.sqrt(2.0))))
+            else:
+                df[f"norm_{d}"] = 0.5
+    elif normalization == "minmax":
+        for d in dims:
+            if d in df.columns:
+                mn = float(df[d].min())
+                mx = float(df[d].max())
+                den = (mx - mn) if (mx > mn) else 1.0
+                df[f"norm_{d}"] = (df[d] - mn) / den
             else:
                 df[f"norm_{d}"] = 0.5
 
@@ -209,7 +221,7 @@ def build_mechanism_sensitivity():
 
     # 3. Normalization variants
     print("Running Normalization variants...")
-    for norm_method in ["zscore", "rank_within_group"]:
+    for norm_method in ["zscore", "minmax", "rank_within_group"]:
         # Use baseline descriptors
         scored = compute_net_risk(raw_base, norm_method)
         
@@ -252,7 +264,9 @@ def build_mechanism_sensitivity():
     lines = []
     lines.append(r"\begin{table}[H]")
     lines.append(r"\centering")
-    lines.append(r"\caption{Sensitivity of NetRisk mechanism to descriptor perturbations (leave-one-out) and normalization choices.}")
+    lines.append(
+        r"\caption{Sensitivity of the \emph{uncalibrated} (mechanism) NetRisk index to descriptor perturbations (leave-one-out) and normalization choices at the SOC-occupation level. Normalization variants include percentiles, z-score mapped via Normal CDF, min--max scaling, and within-major-group percentile ranks.}"
+    )
     lines.append(r"\label{tab:mechanism_sensitivity}")
     lines.append(r"\resizebox{\textwidth}{!}{%")
     lines.append(r"\begin{tabular}{lrrrr}")

@@ -1,0 +1,19 @@
+\begin{table}[H]
+\centering
+\caption{Comparison of the interpretability (uncalibrated) NetRisk index vs. the calibrated (predictive) NetRisk index across occupations (from \texttt{data/mechanism\_risk\_scored.csv}).}
+\label{tab:netrisk_index_compare}
+\begin{tabular}{lr}
+\toprule
+Quantity & Value\\
+\midrule
+Occupations with both indices & 774\\
+Occupations using calibrated NetRisk in pipeline & 774\\
+Pearson correlation ($r$) & 0.833\\
+Spearman rank correlation ($\rho$) & 0.833\\
+Sign agreement rate & 86.7\%\\
+Sign disagreements (nonzero vs nonzero) & 103\\
+Median $|\Delta|$ & 0.280\\
+90th percentile $|\Delta|$ & 0.534\\
+\bottomrule
+\end{tabular}
+\end{table}

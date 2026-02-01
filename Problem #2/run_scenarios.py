@@ -15,6 +15,11 @@ DATA_DIR = Path(__file__).resolve().parent / "data"
 CAREERS_DIR = DATA_DIR / "careers"
 OUT_DIR = DATA_DIR
 
+# Complementarity uplift bound (m_max) for NetRisk < 0.
+# Interpreted as an upper bound on how much of the shock can translate into demand-side uplift,
+# after accounting for scale bottlenecks and demand elasticity. See reports/main.tex.
+M_MAX_DEFAULT = 0.20
+
 # Scenarios: shock_factor
 # If Net_Risk is 1.0 (max), growth reduces by X% per year.
 SCENARIOS = {
@@ -33,17 +38,75 @@ RAMP_SCENARIOS = {
 }
 
 
-def get_g_adj(g_base: float, risk: float, shock_factor: float) -> float:
+def _soc_major_group(occ_code: str) -> int | None:
+    """
+    Extract the 2-digit SOC major group as an int (e.g., "47-2111" -> 47).
+    Returns None if parsing fails.
+    """
+    try:
+        s = str(occ_code).strip()
+        if len(s) < 2:
+            return None
+        return int(s[:2])
+    except Exception:
+        return None
+
+
+def _licensing_proxy_from_soc_major_group(occ_code: str) -> float:
+    """
+    Coarse 'credential / licensing bottleneck' proxy in [0,1].
+    Conservative default: treat Construction & Extraction (47-xxxx) as licensed/regulated.
+    """
+    mg = _soc_major_group(occ_code)
+    return 1.0 if mg == 47 else 0.0
+
+
+def _epsilon_from_soc_major_group(occ_code: str) -> float:
+    """
+    Coarse effective demand elasticity proxy in [0,1].
+    Interprets 'how much demand rises when AI reduces effective prices / raises productivity'.
+    """
+    mg = _soc_major_group(occ_code)
+    if mg == 15:  # Computer and Mathematical (software-like)
+        return 1.0
+    if mg in (47, 49):  # trades / installation-maintenance-repair
+        return 0.6
+    if mg == 27:  # Arts, Design, Entertainment, Sports, and Media
+        return 0.4
+    return 0.7
+
+
+def _compute_m_comp_from_mech_row(r: pd.Series, m_max: float = M_MAX_DEFAULT) -> tuple[float, float, float]:
+    """
+    Compute (B_i, epsilon_i, m_i) using existing mechanism fields.
+
+      B_i in [0,1]  : bottleneck index (hard to scale quantity)
+      epsilon_i in [0,1] : effective demand elasticity proxy
+      m_i = min(m_max, (1 - B_i) * epsilon_i) in [0, m_max]
+
+    B_i uses Physical percentile and a coarse licensing proxy (SOC major group).
+    """
+    physical = float(r.get("physical_manual", 0.5))
+    physical = float(np.clip(physical, 0.0, 1.0))
+    licensing = float(_licensing_proxy_from_soc_major_group(str(r.get("occ_code", ""))))
+    B_i = 0.5 * (physical + licensing)
+    eps_i = float(_epsilon_from_soc_major_group(str(r.get("occ_code", ""))))
+    m_raw = (1.0 - B_i) * eps_i
+    m_i = float(min(float(m_max), float(max(0.0, m_raw))))
+    return float(B_i), float(eps_i), float(m_i)
+
+
+def get_g_adj(g_base: float, risk: float, shock_factor: float, m_comp: float = M_MAX_DEFAULT) -> float:
     """
     Compute adjusted growth using piecewise mapping.
     
     g_adj = g_base - s_sub * max(risk, 0) + s_comp * max(-risk, 0)
     
     Where s_sub = shock_factor
-          s_comp = shock_factor * 0.2 (conservative complementarity)
+          s_comp = shock_factor * m_comp (bounded complementarity)
     """
     s_sub = shock_factor
-    s_comp = shock_factor * 0.2
+    s_comp = shock_factor * float(m_comp)
     
     if risk >= 0:
         return g_base - (s_sub * risk)
@@ -72,7 +135,7 @@ def s_t(t: int, target_shock: float, start_year: int = 2024, end_year: int = 203
     return target_shock * (t - start_year) / (end_year - start_year)
 
 
-def compute_ramp_scenario(emp_base: float, g_base: float, risk: float, 
+def compute_ramp_scenario(emp_base: float, g_base: float, risk: float, m_comp: float,
                           target_shock: float, start_year: int = 2024, end_year: int = 2034) -> tuple[float, float]:
     """
     Calculate employment in end_year using year-by-year compounding with dynamic adoption.
@@ -95,7 +158,7 @@ def compute_ramp_scenario(emp_base: float, g_base: float, risk: float,
     
     for t in range(start_year, end_year):
         s_current = s_t(t, target_shock, start_year, end_year)
-        g_adj = get_g_adj(g_base, risk, s_current)
+        g_adj = get_g_adj(g_base, risk, s_current, m_comp=m_comp)
         emp = emp * (1 + g_adj)
         total_growth += g_adj
     
@@ -146,6 +209,16 @@ def main():
             mech["net_risk_source"] = np.where(
                 mech["net_risk_calibrated"].notna(), "calibrated", "uncalibrated"
             )
+
+    # Occupation-level complementarity cap m_i (bounded by m_max), built from existing mechanism fields.
+    # This gives a principled anchor for the "0.2 cap": 0.2 becomes an upper bound m_max, while m_i can be smaller
+    # for physically/credential-bottlenecked occupations.
+    B_eps_m = mech.apply(lambda r: _compute_m_comp_from_mech_row(r, m_max=M_MAX_DEFAULT), axis=1, result_type="expand")
+    B_eps_m.columns = ["bottleneck_B", "demand_elasticity_eps", "m_comp"]
+    mech = pd.concat([mech, B_eps_m], axis=1)
+    mech["m_comp_raw"] = (1.0 - mech["bottleneck_B"]) * mech["demand_elasticity_eps"]
+    mech["m_comp_raw"] = mech["m_comp_raw"].clip(lower=0.0)
+    mech["m_comp"] = mech["m_comp"].clip(lower=0.0, upper=M_MAX_DEFAULT)
     
     # Save the scored mechanism layer
     mech.to_csv(DATA_DIR / "mechanism_risk_scored.csv", index=False)
@@ -244,11 +317,18 @@ def main():
             merged["net_risk"] = merged["net_risk"].fillna(0)
             merged["substitution_score"] = merged["substitution_score"].fillna(0)
             merged["defense_score"] = merged["defense_score"].fillna(0)
+        if "m_comp" not in merged.columns:
+            merged["m_comp"] = M_MAX_DEFAULT
+            merged["m_comp_raw"] = M_MAX_DEFAULT
+        merged["m_comp"] = pd.to_numeric(merged["m_comp"], errors="coerce").fillna(M_MAX_DEFAULT).clip(0.0, M_MAX_DEFAULT)
+        merged["m_comp_raw"] = pd.to_numeric(merged.get("m_comp_raw"), errors="coerce").fillna(merged["m_comp"]).clip(lower=0.0)
             
         # Weighted averages
         avg_risk = (merged["net_risk"] * weights).sum()
         avg_sub = (merged["substitution_score"] * weights).sum()
         avg_def = (merged["defense_score"] * weights).sum()
+        avg_m_comp = (merged["m_comp"] * weights).sum()
+        avg_m_comp_raw = (merged["m_comp_raw"] * weights).sum()
         
         # Aggregated baseline growth
         agg_g_base = (total_emp_34_base / total_emp_24)**(1/10) - 1
@@ -275,6 +355,8 @@ def main():
             "net_risk_max": max_risk,
             "substitution": avg_sub,
             "defense": avg_def,
+            "m_comp": avg_m_comp,
+            "m_comp_raw": avg_m_comp_raw,
             "emp_2024": total_emp_24,
             "g_baseline": agg_g_base
         }
@@ -294,10 +376,10 @@ def main():
             # Helper for vectorized get_g_adj
             # g_adj = g_base - s_sub * max(risk, 0) + s_comp * max(-risk, 0)
             s_sub = shock
-            s_comp = shock * 0.2
+            m_comp = merged["m_comp"].to_numpy(dtype=float)
             
             term1 = np.maximum(risks, 0) * s_sub
-            term2 = np.maximum(-risks, 0) * s_comp
+            term2 = np.maximum(-risks, 0) * (shock * m_comp)
             g_adjs = g_bases - term1 + term2
             
             emps_34 = merged["emp_2024_abs"] * ((1 + g_adjs) ** 10)
@@ -323,7 +405,8 @@ def main():
                 e24 = r["emp_2024_abs"]
                 gb = r["g_baseline"] if not pd.isna(r["g_baseline"]) else 0.0
                 rk = r["net_risk"]
-                e34, _ = compute_ramp_scenario(e24, gb, rk, target_shock)
+                mc = float(r.get("m_comp", M_MAX_DEFAULT))
+                e34, _ = compute_ramp_scenario(e24, gb, rk, mc, target_shock)
                 row_emps_34.append(e34)
             
             total_emp_34_ramp = sum(row_emps_34)

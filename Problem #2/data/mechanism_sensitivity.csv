@@ -80,9 +80,12 @@ Drop Technology Design...,Writer,0.16838931955211023,239.0,True
 Drop Interacting With Com...,Software Dev,0.3799526270456503,49.0,True
 Drop Interacting With Com...,Electrician,-0.45714900947459086,761.0,True
 Drop Interacting With Com...,Writer,0.17000430663221355,235.0,True
-Norm: zscore,Software Dev,0.41930553207065846,2.0,True
-Norm: zscore,Electrician,-0.28963053474801426,732.0,True
-Norm: zscore,Writer,0.12960155850340266,212.0,True
+Norm: zscore,Software Dev,0.41030960539549505,49.0,True
+Norm: zscore,Electrician,-0.45290062089807614,756.0,True
+Norm: zscore,Writer,0.22804504737755554,196.0,True
+Norm: minmax,Software Dev,0.41930553207065846,2.0,True
+Norm: minmax,Electrician,-0.28963053474801426,732.0,True
+Norm: minmax,Writer,0.12960155850340266,212.0,True
 Norm: rank_within_group,Software Dev,0.2857142857142857,103.5,True
 Norm: rank_within_group,Electrician,-0.08045977011494254,483.0,True
 Norm: rank_within_group,Writer,0.2941176470588236,96.0,True

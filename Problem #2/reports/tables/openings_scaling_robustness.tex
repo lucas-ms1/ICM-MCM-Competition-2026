@@ -1,0 +1,16 @@
+\begin{table}[H]
+\centering
+\caption{Robustness check for scaling national annual openings (EP) to local markets (OEWS). We compare (i) openings scaled by local occupation share only, (ii) openings scaled by local total employment share $\times$ LQ (standard decomposition), and (iii) a legacy method multiplying occupation share by clipped LQ (shown for comparison; can double-count concentration). Note that (i) and (ii) are algebraically equivalent when LQ is computed from the same OEWS employment counts; differences arise only from clipping or inconsistent sources. The seats in Table~\ref{tab:program_sizing} use method (ii) with clipped LQ.}
+\label{tab:openings_scaling_robustness}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lrrrrrrrr}
+\toprule
+Institution & Nat. openings & Local occ share & Local total share & LQ & Openings (share only) & Openings (total share $\times$ LQ) & Openings (legacy) & Openings (used)\\
+\midrule
+SDSU & 115,200 & 0.0164 & 0.0099 & 1.647 & 1,887 & 1,887 & 2,831 & 1,718\\
+LATTC & 81,000 & 0.0284 & 0.0402 & 0.706 & 2,298 & 2,298 & 1,622 & 2,298\\
+Academy of Art & 13,400 & 0.0246 & 0.0156 & 1.577 & 330 & 330 & 495 & 314\\
+\bottomrule
+\end{tabular}%
+}
+\end{table}

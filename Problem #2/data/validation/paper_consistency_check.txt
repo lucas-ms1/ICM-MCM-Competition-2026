@@ -1,0 +1,86 @@
+Paper consistency check
+================================================================================
+Overall: PASS (41/41 checks passed)
+
+[OK] table_inputs_exist
+  Found 29 inputs; all exist.
+[OK] figures_exist
+  Found 4 figures; all exist.
+[OK] summary_sheet_software_developers
+  got=(2075300, 1490209, 1843732), expected=(2075300, 1490209, 1843732)
+[OK] summary_sheet_electricians
+  got=(962800, 964621, 963455), expected=(962800, 964621, 963455)
+[OK] summary_sheet_writers_and_authors
+  got=(313700, 249054, 288818), expected=(313700, 249054, 288818)
+[OK] scenario_table_netrisk_software_engineer
+  got=0.88, expected=0.879587081544674
+[OK] scenario_table_emp2024_software_engineer
+  got=1815000, expected=1815000
+[OK] scenario_table_emp_2034_No_GenAI_Baseline_software_engineer
+  got=2075300, expected=2075300
+[OK] scenario_table_emp_2034_Moderate_Substitution_software_engineer
+  got=1760980, expected=1760980
+[OK] scenario_table_emp_2034_Ramp_Moderate_software_engineer
+  got=1956572, expected=1956572
+[OK] scenario_table_emp_2034_High_Disruption_software_engineer
+  got=1490209, expected=1490209
+[OK] scenario_table_emp_2034_Ramp_High_software_engineer
+  got=1843732, expected=1843732
+[OK] scenario_table_netrisk_electrician
+  got=-0.888, expected=-0.8883107222665543
+[OK] scenario_table_emp2024_electrician
+  got=885300, expected=885300
+[OK] scenario_table_emp_2034_No_GenAI_Baseline_electrician
+  got=962800, expected=962800
+[OK] scenario_table_emp_2034_Moderate_Substitution_electrician
+  got=963710, expected=963710
+[OK] scenario_table_emp_2034_Ramp_Moderate_electrician
+  got=963128, expected=963128
+[OK] scenario_table_emp_2034_High_Disruption_electrician
+  got=964621, expected=964621
+[OK] scenario_table_emp_2034_Ramp_High_electrician
+  got=963455, expected=963455
+[OK] scenario_table_netrisk_writer
+  got=0.61, expected=0.60974730678522
+[OK] scenario_table_emp2024_writer
+  got=307600, expected=307600
+[OK] scenario_table_emp_2034_No_GenAI_Baseline_writer
+  got=313700, expected=313700
+[OK] scenario_table_emp_2034_Moderate_Substitution_writer
+  got=279700, expected=279700
+[OK] scenario_table_emp_2034_Ramp_Moderate_writer
+  got=301038, expected=301038
+[OK] scenario_table_emp_2034_High_Disruption_writer
+  got=249054, expected=249054
+[OK] scenario_table_emp_2034_Ramp_High_writer
+  got=288818, expected=288818
+[OK] program_sizing_openings_SDSU
+  got=1718, expected=1718
+[OK] program_sizing_seats_SDSU_5pct
+  got=(119,220), expected=(119,220)
+[OK] program_sizing_seats_SDSU_10pct
+  got=(238,440), expected=(238,440)
+[OK] program_sizing_seats_SDSU_15pct
+  got=(357,660), expected=(357,660)
+[OK] program_sizing_openings_LATTC
+  got=2298, expected=2298
+[OK] program_sizing_seats_LATTC_5pct
+  got=(159,294), expected=(159,294)
+[OK] program_sizing_seats_LATTC_10pct
+  got=(319,589), expected=(319,589)
+[OK] program_sizing_seats_LATTC_15pct
+  got=(478,883), expected=(478,883)
+[OK] program_sizing_openings_Academy of Art
+  got=314, expected=314
+[OK] program_sizing_seats_Academy of Art_5pct
+  got=(21,40), expected=(21,40)
+[OK] program_sizing_seats_Academy of Art_10pct
+  got=(43,80), expected=(43,80)
+[OK] program_sizing_seats_Academy of Art_15pct
+  got=(65,120), expected=(65,120)
+[OK] external_benchmark_NetRisk (uncalibrated mechanism)
+  got=(n=682,r=0.82,rho=0.82), expected=(n=682,r=0.82,rho=0.82)
+[OK] external_benchmark_NetRisk (calibrated predictive)
+  got=(n=682,r=0.942,rho=0.938), expected=(n=682,r=0.942,rho=0.938)
+[OK] external_benchmark_NetRisk (pipeline-used)
+  got=(n=682,r=0.942,rho=0.938), expected=(n=682,r=0.942,rho=0.938)
