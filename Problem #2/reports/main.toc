@@ -1,32 +1,32 @@
-\contentsline {section}{\numberline {1}Problem framing and choices}{3}{section.1}%
-\contentsline {section}{\numberline {2}Data and preprocessing}{3}{section.2}%
-\contentsline {subsection}{\numberline {2.1}BLS OEWS (local labor market context)}{3}{subsection.2.1}%
-\contentsline {subsection}{\numberline {2.2}BLS Employment Projections (national baseline trend)}{3}{subsection.2.2}%
-\contentsline {subsection}{\numberline {2.3}O*NET mechanism layer (why substitution vs.\ complementarity)}{3}{subsection.2.3}%
-\contentsline {paragraph}{Attribution.}{3}{section*.3}%
-\contentsline {subsection}{\numberline {2.4}Crosswalks and coverage (what gets dropped)}{3}{subsection.2.4}%
-\contentsline {section}{\numberline {3}Model}{4}{section.3}%
-\contentsline {subsection}{\numberline {3.1}Mechanism dimensions}{4}{subsection.3.1}%
-\contentsline {subsection}{\numberline {3.2}Net Risk index}{4}{subsection.3.2}%
-\contentsline {subsection}{\numberline {3.3}External calibration to AI applicability}{5}{subsection.3.3}%
-\contentsline {subsection}{\numberline {3.4}Scenario employment projection}{7}{subsection.3.4}%
-\contentsline {subsection}{\numberline {3.5}Definitions \& Provenance (auditability)}{10}{subsection.3.5}%
-\contentsline {section}{\numberline {4}Results}{10}{section.4}%
-\contentsline {subsection}{\numberline {4.1}National outcomes for the three careers}{10}{subsection.4.1}%
-\contentsline {subsection}{\numberline {4.2}Dynamic Adoption}{11}{subsection.4.2}%
-\contentsline {subsection}{\numberline {4.3}Job openings and program sizing}{11}{subsection.4.3}%
-\contentsline {subsection}{\numberline {4.4}Sensitivity and sanity checks}{12}{subsection.4.4}%
-\contentsline {subsubsection}{\numberline {4.4.1}Mechanism Layer Stability}{12}{subsubsection.4.4.1}%
-\contentsline {subsubsection}{\numberline {4.4.2}Calibration Validation}{12}{subsubsection.4.4.2}%
-\contentsline {subsubsection}{\numberline {4.4.3}External benchmark reality check}{13}{subsubsection.4.4.3}%
-\contentsline {subsubsection}{\numberline {4.4.4}Scenario and Parameter Sensitivity}{14}{subsubsection.4.4.4}%
-\contentsline {subsubsection}{\numberline {4.4.5}Local openings scaling robustness}{16}{subsubsection.4.4.5}%
-\contentsline {section}{\numberline {5}Institution-specific recommendations}{17}{section.5}%
-\contentsline {subsection}{\numberline {5.1}SDSU (Software Developers)}{18}{subsection.5.1}%
-\contentsline {subsection}{\numberline {5.2}LATTC (Electricians)}{18}{subsection.5.2}%
-\contentsline {subsection}{\numberline {5.3}Academy of Art University (Writers and Authors)}{19}{subsection.5.3}%
-\contentsline {subsubsection}{\numberline {5.3.1}Transition Plan}{19}{subsubsection.5.3.1}%
-\contentsline {section}{\numberline {6}Beyond employability: other success metrics}{20}{section.6}%
-\contentsline {section}{\numberline {7}Generalization}{22}{section.7}%
-\contentsline {section}{\numberline {8}Prompt coverage checklist}{22}{section.8}%
-\contentsline {section}{\numberline {A}Mechanism Layer Details}{25}{appendix.A}%
+\contentsline {section}{\numberline {1}Problem framing and choices}{1}{section.1}%
+\contentsline {section}{\numberline {2}Data and preprocessing}{1}{section.2}%
+\contentsline {subsection}{\numberline {2.1}BLS OEWS (local labor market context)}{1}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}BLS Employment Projections (national baseline trend)}{1}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}O*NET mechanism layer (why substitution vs.\ complementarity)}{1}{subsection.2.3}%
+\contentsline {paragraph}{Attribution.}{1}{section*.2}%
+\contentsline {subsection}{\numberline {2.4}Crosswalks and coverage (what gets dropped)}{1}{subsection.2.4}%
+\contentsline {section}{\numberline {3}Model}{2}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Mechanism dimensions}{2}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Net Risk index}{2}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}External calibration to AI applicability}{3}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}Scenario employment projection}{5}{subsection.3.4}%
+\contentsline {subsection}{\numberline {3.5}Definitions \& Provenance (auditability)}{8}{subsection.3.5}%
+\contentsline {section}{\numberline {4}Results}{9}{section.4}%
+\contentsline {subsection}{\numberline {4.1}National outcomes for the three careers}{9}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Dynamic Adoption}{9}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Job openings and program sizing}{10}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}Sensitivity and sanity checks}{10}{subsection.4.4}%
+\contentsline {subsubsection}{\numberline {4.4.1}Mechanism Layer Stability}{10}{subsubsection.4.4.1}%
+\contentsline {subsubsection}{\numberline {4.4.2}Calibration Validation}{10}{subsubsection.4.4.2}%
+\contentsline {subsubsection}{\numberline {4.4.3}External benchmark reality check}{11}{subsubsection.4.4.3}%
+\contentsline {subsubsection}{\numberline {4.4.4}Scenario and Parameter Sensitivity}{12}{subsubsection.4.4.4}%
+\contentsline {subsubsection}{\numberline {4.4.5}Local openings scaling robustness}{15}{subsubsection.4.4.5}%
+\contentsline {section}{\numberline {5}Institution-specific recommendations}{15}{section.5}%
+\contentsline {subsection}{\numberline {5.1}SDSU (Software Developers)}{16}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}LATTC (Electricians)}{17}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}Academy of Art University (Writers and Authors)}{17}{subsection.5.3}%
+\contentsline {subsubsection}{\numberline {5.3.1}Transition Plan}{18}{subsubsection.5.3.1}%
+\contentsline {section}{\numberline {6}Beyond employability: other success metrics}{18}{section.6}%
+\contentsline {section}{\numberline {7}Generalization}{20}{section.7}%
+\contentsline {section}{\numberline {8}Prompt coverage checklist}{21}{section.8}%
+\contentsline {section}{\numberline {A}Mechanism Layer Details}{23}{appendix.A}%

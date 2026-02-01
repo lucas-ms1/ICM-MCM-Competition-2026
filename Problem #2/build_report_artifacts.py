@@ -29,6 +29,7 @@ import math
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib.patches import FancyBboxPatch, Patch
 
 
 ROOT = Path(__file__).resolve().parent
@@ -214,19 +215,12 @@ def build_scenario_macros() -> None:
         ramp_high = _i(row["emp_2034_Ramp_High"])
         d_high = high - base
         d_ramp = ramp_high - base
-
-        def _delta_macro(name: str, d: int) -> str:
-            # Force explicit "+" for positive deltas (judge-facing sign clarity).
-            if d >= 0:
-                return _macro(name, f"+\\num{{{d}}}")
-            return _macro(name, f"\\num{{{d}}}")
-
         return [
             _macro(f"EBase{prefix}", f"\\num{{{base}}}"),
             _macro(f"EHigh{prefix}", f"\\num{{{high}}}"),
             _macro(f"ERampHigh{prefix}", f"\\num{{{ramp_high}}}"),
-            _delta_macro(f"DeltaEHigh{prefix}", d_high),
-            _delta_macro(f"DeltaERampHigh{prefix}", d_ramp),
+            _macro(f"DeltaEHigh{prefix}", f"\\num{{{d_high}}}"),
+            _macro(f"DeltaERampHigh{prefix}", f"\\num{{{d_ramp}}}"),
         ]
 
     lines: list[str] = []
@@ -1510,27 +1504,75 @@ def build_scenario_bar_figure() -> None:
 
     df = df.sort_values("label")
 
-    x = range(len(df))
-    base = df["emp_2034_No_GenAI_Baseline"].astype(float)
-    mod = df["emp_2034_Moderate_Substitution"].astype(float)
-    high = df["emp_2034_High_Disruption"].astype(float)
+    x = np.arange(len(df))
+    base = df["emp_2034_No_GenAI_Baseline"].astype(float).values
+    mod = df["emp_2034_Moderate_Substitution"].astype(float).values
+    high = df["emp_2034_High_Disruption"].astype(float).values
 
-    plt.figure(figsize=(7.0, 3.0))
+    fig, ax = plt.subplots(figsize=(7.0, 3.0))
     w = 0.25
-    plt.bar([i - w for i in x], base, width=w, label="Baseline")
-    plt.bar([i for i in x], mod, width=w, label="Moderate")
-    plt.bar([i + w for i in x], high, width=w, label="High")
-    plt.xticks(list(x), df["label"].tolist())
-    plt.ylabel("2034 employment (jobs)")
-    plt.title("2034 employment by scenario")
-    plt.ticklabel_format(axis="y", style="plain")
-    plt.legend(frameon=False, ncol=3, fontsize=8)
-    plt.tight_layout()
+    # FancyBboxPatch: xy = (x, y), width, height, boxstyle (see matplotlib.patches.FancyBboxPatch)
+    colors = ["#339af0", "#51cf66", "#ff922b"]
+    for i in range(len(x)):
+        ax.add_patch(
+            FancyBboxPatch(
+                (x[i] - w, 0),
+                w,
+                base[i],
+                boxstyle="round,pad=0,rounding_size=0.04",
+                mutation_scale=1,
+                facecolor=colors[0],
+                edgecolor="none",
+            )
+        )
+        ax.add_patch(
+            FancyBboxPatch(
+                (x[i], 0),
+                w,
+                mod[i],
+                boxstyle="round,pad=0,rounding_size=0.04",
+                mutation_scale=1,
+                facecolor=colors[1],
+                edgecolor="none",
+            )
+        )
+        ax.add_patch(
+            FancyBboxPatch(
+                (x[i] + w, 0),
+                w,
+                high[i],
+                boxstyle="round,pad=0,rounding_size=0.04",
+                mutation_scale=1,
+                facecolor=colors[2],
+                edgecolor="none",
+            )
+        )
+    # add_patch() does not update axes limits; without this, y stays at default (0,1)
+    ax.relim()
+    ax.autoscale_view()
+    ax.set_xlim(x[0] - 1.5 * w, x[-1] + 1.5 * w)
+    ax.set_ylim(0, None)
+    ax.set_xticks(x)
+    ax.set_xticklabels(df["label"].tolist())
+    ax.set_ylabel("2034 employment (jobs)")
+    ax.set_title("2034 employment by scenario")
+    ax.ticklabel_format(axis="y", style="plain")
+    ax.legend(
+        handles=[
+            Patch(facecolor=colors[0], label="Baseline"),
+            Patch(facecolor=colors[1], label="Moderate"),
+            Patch(facecolor=colors[2], label="High"),
+        ],
+        frameon=False,
+        ncol=3,
+        fontsize=8,
+    )
+    fig.tight_layout()
 
     FIGURES_DIR.mkdir(parents=True, exist_ok=True)
     out = FIGURES_DIR / "scenario_bar.png"
-    plt.savefig(out, dpi=200)
-    plt.close()
+    fig.savefig(out, dpi=200)
+    plt.close(fig)
 
 
 def build_weight_sensitivity_table() -> None:
@@ -2105,22 +2147,58 @@ def build_policy_tradeoff_figure() -> None:
     policies = ["Ban", "Allow_with_Audit", "Require"]
     x = np.arange(len(institutions))
     w = 0.25
+    colors = ["#e03131", "#2f9e44", "#1971c2"]
 
-    plt.figure(figsize=(7.0, 3.2))
+    fig, ax = plt.subplots(figsize=(7.0, 3.2))
+    # Minimum draw height so zero-score bars render as small visible bars, not degenerate shapes
+    min_height = 0.02
     for i, policy in enumerate(policies):
-        vals = [df[(df["institution"] == inst) & (df["policy_regime"] == policy)]["score"].mean() for inst in institutions]
-        plt.bar(x + (i - 1) * w, vals, width=w, label=policy.replace("_", " "))
-
-    plt.xticks(x, institutions)
-    plt.ylabel("Objective score (Balanced)")
-    plt.title("Policy trade-offs by institution")
-    plt.legend(frameon=False, ncol=3, fontsize=8)
-    plt.tight_layout()
+        vals = np.array(
+            [
+                df[(df["institution"] == inst) & (df["policy_regime"] == policy)]["score"].mean()
+                for inst in institutions
+            ]
+        )
+        for j, (left_j, val) in enumerate(zip(x + (i - 1) * w, vals)):
+            draw_height = max(float(val), min_height)
+            ax.add_patch(
+                FancyBboxPatch(
+                    (left_j, 0),
+                    w,
+                    draw_height,
+                    boxstyle="round,pad=0,rounding_size=0.04",
+                    mutation_scale=1,
+                    facecolor=colors[i],
+                    edgecolor="none",
+                )
+            )
+    # add_patch() does not update axes limits; relim + autoscale_view so y fits the bars
+    ax.relim()
+    ax.autoscale_view()
+    ax.set_xlim(x[0] - 1.5 * w, x[-1] + 1.5 * w)
+    ax.set_ylim(0, 1.05)
+    ax.set_xticks(x)
+    ax.set_xticklabels(institutions)
+    ax.set_ylabel("Objective score (Balanced)")
+    ax.set_title("Policy trade-offs by institution")
+    ax.legend(
+        handles=[
+            Patch(facecolor=colors[0], label="Ban"),
+            Patch(facecolor=colors[1], label="Allow with Audit"),
+            Patch(facecolor=colors[2], label="Require"),
+        ],
+        loc="upper center",
+        bbox_to_anchor=(0.5, -0.18),
+        frameon=False,
+        ncol=3,
+        fontsize=8,
+    )
+    fig.tight_layout(rect=[0, 0.08, 1, 1])
 
     FIGURES_DIR.mkdir(parents=True, exist_ok=True)
     out = FIGURES_DIR / "policy_tradeoff.png"
-    plt.savefig(out, dpi=200)
-    plt.close()
+    fig.savefig(out, dpi=200)
+    plt.close(fig)
 
 
 def main() -> None:

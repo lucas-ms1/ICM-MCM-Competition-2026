@@ -1,6 +1,27 @@
-\documentclass[11pt]{article}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% MCM/ICM LaTeX Template %%
+%% 2026 MCM/ICM           %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[12pt]{article}
 
-\usepackage[margin=1in]{geometry}
+\usepackage{geometry}
+\geometry{left=1in,right=0.75in,top=1in,bottom=1in}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\Problem}{F}
+\newcommand{\Team}{1111111}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{newtxtext}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{newtxmath}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\setlength{\headheight}{15pt}
+\lhead{Team \Team}
+\rhead{}
+\cfoot{}
 \usepackage{amsmath,amssymb}
 \usepackage{booktabs}
 \usepackage{graphicx}
@@ -35,20 +56,27 @@
 % NOTE: these files contain full LaTeX environments, so they must be \input
 % inside the document body (not in the preamble).
 
-\title{ICM 2026 Problem F: To Gen-AI, or Not To Gen-AI?\\
-\large A data-informed model of GenAI exposure and institution-specific educational recommendations}
-% TODO (submission-critical): replace with your assigned team number.
-\author{Team \#\_\_\_\_}
-\date{}
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}{Definition}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
-\sloppy
-\maketitle
+\graphicspath{{.}{figures/}}
+\DeclareGraphicsExtensions{.pdf,.jpg,.tif,.png}
 
-% ============================================================
-% 1) One-page Summary Sheet (written last; placed first)
-% ============================================================
-\section*{Summary Sheet}
+% ========== Summary Sheet (first page) ==========
+\thispagestyle{empty}
+\vspace*{-16ex}
+\centerline{\begin{tabular}{*3{c}}
+	\parbox[t]{0.3\linewidth}{\begin{center}\textbf{Problem Chosen}\\ \Large \textcolor{red}{\Problem}\end{center}}
+	& \parbox[t]{0.3\linewidth}{\begin{center}\textbf{2026\\ MCM/ICM\\ Summary Sheet}\end{center}}
+	& \parbox[t]{0.3\linewidth}{\begin{center}\textbf{Team Control Number}\\ \Large \textcolor{red}{\Team}\end{center}}	\\
+	\hline
+\end{tabular}}
+
+%%%%%%%%%%% Begin Summary %%%%%%%%%%%
 \label{page:summary_start}
 \begin{itemize}[leftmargin=*, itemsep=0.25em, topsep=0.25em]
   \item \textbf{Careers + institutions.} Software Developers (SDSU), Electricians (LATTC), Writers \& Authors (Academy of Art). National results use employment-weighted SOC bundles (Table~\ref{tab:scenario_summary}).
@@ -61,14 +89,18 @@
 \vspace{-2pt}
 {\scriptsize \ScenarioArtifactsStamp}
 \label{page:summary_end}
-\newpage
+%%%%%%%%%%% End Summary %%%%%%%%%%%
 
-% ============================================================
-% Table of Contents (required)
-% ============================================================
-\label{page:toc_start}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
+\pagestyle{fancy}
+\sloppy
 \tableofcontents
 \newpage
+\setcounter{page}{1}
+\rhead{Page \thepage\ }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\label{page:toc_start}
 
 % ============================================================
 % Main report
@@ -367,7 +399,7 @@ Table~\ref{tab:policy_regimes} summarizes the policy requirements. Table~\ref{ta
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.8\linewidth]{figures/policy_tradeoff.png}
+\includegraphics[width=0.72\linewidth]{figures/policy_tradeoff.png}
 \caption{Policy trade-offs under balanced weights (generated from \texttt{data/policy\_decision\_scores.csv}).}
 \label{fig:policy_tradeoff}
 \end{figure}
