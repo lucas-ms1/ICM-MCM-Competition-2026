@@ -1,0 +1,88 @@
+variant,career,net_risk,rank,sign_stable
+Baseline,Software Dev,0.3799526270456503,49.0,True
+Baseline,Electrician,-0.45714900947459086,761.0,True
+Baseline,Writer,0.17000430663221355,235.0,True
+Drop Documenting/Recordin...,Software Dev,0.3728466838931955,55.0,True
+Drop Documenting/Recordin...,Electrician,-0.44810508182601205,758.0,True
+Drop Documenting/Recordin...,Writer,0.2513996554694229,170.0,True
+Drop Written Expression...,Software Dev,0.35443583118001715,58.0,True
+Drop Written Expression...,Electrician,-0.45714900947459086,760.0,True
+Drop Written Expression...,Writer,0.06987510766580529,319.0,True
+Drop Writing...,Software Dev,0.36444875107665803,52.0,True
+Drop Writing...,Electrician,-0.46522394487510765,762.0,True
+Drop Writing...,Writer,0.04274332472006881,354.0,True
+Drop Performing Administr...,Software Dev,0.42226528854435835,37.0,True
+Drop Performing Administr...,Electrician,-0.45068906115417745,759.0,True
+Drop Performing Administr...,Writer,0.2404177433247201,176.0,True
+Drop Establishing and Mai...,Software Dev,0.3907192075796727,48.0,True
+Drop Establishing and Mai...,Electrician,-0.42937123169681307,746.0,True
+Drop Establishing and Mai...,Writer,0.17560292850990517,235.0,True
+Drop Assisting and Caring...,Software Dev,0.3754306632213609,42.0,True
+Drop Assisting and Caring...,Electrician,-0.4679155900086132,764.0,True
+Drop Assisting and Caring...,Writer,0.14114987080103347,258.0,True
+Drop Social Perceptivenes...,Software Dev,0.3829672695951766,50.0,True
+Drop Social Perceptivenes...,Electrician,-0.4696382428940568,761.0,True
+Drop Social Perceptivenes...,Writer,0.18636950904392757,228.0,True
+Drop Communicating with P...,Software Dev,0.38662790697674415,56.0,True
+Drop Communicating with P...,Electrician,-0.44896640826873385,755.0,True
+Drop Communicating with P...,Writer,0.19282945736434104,226.0,True
+Drop Performing for or Wo...,Software Dev,0.34334625322997414,61.0,True
+Drop Performing for or Wo...,Electrician,-0.4672695951765719,766.0,True
+Drop Performing for or Wo...,Writer,0.16742032730404816,238.0,True
+Drop Handling and Moving ...,Software Dev,0.3734926787252369,50.0,True
+Drop Handling and Moving ...,Electrician,-0.45757967269595173,762.0,True
+Drop Handling and Moving ...,Writer,0.16462101636520232,237.0,True
+Drop Performing General P...,Software Dev,0.376937984496124,49.0,True
+Drop Performing General P...,Electrician,-0.4528423772609819,761.0,True
+Drop Performing General P...,Writer,0.16397502153316101,239.0,True
+Drop Static Strength...,Software Dev,0.3795219638242894,47.0,True
+Drop Static Strength...,Electrician,-0.4618863049095607,763.0,True
+Drop Static Strength...,Writer,0.17043496985357443,233.0,True
+Drop Stamina...,Software Dev,0.3795219638242894,48.0,True
+Drop Stamina...,Electrician,-0.4601636520241171,763.0,True
+Drop Stamina...,Writer,0.17043496985357443,235.0,True
+Drop Manual Dexterity...,Software Dev,0.3851205857019811,45.5,True
+Drop Manual Dexterity...,Electrician,-0.46231696813092166,762.0,True
+Drop Manual Dexterity...,Writer,0.1717269595176571,234.0,True
+Drop Trunk Strength...,Software Dev,0.3825366063738157,44.0,True
+Drop Trunk Strength...,Electrician,-0.4584409991386736,762.0,True
+Drop Trunk Strength...,Writer,0.17388027562446162,232.0,True
+Drop Arm-Hand Steadiness...,Software Dev,0.38684323858742464,44.0,True
+Drop Arm-Hand Steadiness...,Electrician,-0.45930232558139533,762.0,True
+Drop Arm-Hand Steadiness...,Writer,0.1740956072351421,231.0,True
+Drop Finger Dexterity...,Software Dev,0.3790913006029285,51.0,True
+Drop Finger Dexterity...,Electrician,-0.456287683031869,761.0,True
+Drop Finger Dexterity...,Writer,0.17344961240310075,232.0,True
+Drop Repairing and Mainta...,Software Dev,0.37715331610680447,53.0,True
+Drop Repairing and Mainta...,Electrician,-0.4584409991386736,760.0,True
+Drop Repairing and Mainta...,Writer,0.16914298018949175,239.0,True
+Drop Repairing and Mainta...,Software Dev,0.3821059431524548,50.0,True
+Drop Repairing and Mainta...,Electrician,-0.4528423772609819,758.0,True
+Drop Repairing and Mainta...,Writer,0.16978897502153306,240.0,True
+Drop Thinking Creatively...,Software Dev,0.4021317829457364,33.0,True
+Drop Thinking Creatively...,Electrician,-0.42786391042205,757.0,True
+Drop Thinking Creatively...,Writer,0.16871231696813094,231.0,True
+Drop Originality...,Software Dev,0.3676787252368648,59.0,True
+Drop Originality...,Electrician,-0.4621016365202411,760.0,True
+Drop Originality...,Writer,0.1717269595176571,237.0,True
+Drop Fluency of Ideas...,Software Dev,0.3713393626184324,59.0,True
+Drop Fluency of Ideas...,Electrician,-0.4618863049095607,758.0,True
+Drop Fluency of Ideas...,Writer,0.17323428079242026,241.0,True
+Drop Working with Compute...,Software Dev,0.3799526270456503,32.0,True
+Drop Working with Compute...,Electrician,-0.34474590869939703,725.0,True
+Drop Working with Compute...,Writer,0.22071490094745905,152.0,True
+Drop Programming...,Software Dev,0.3786606373815676,50.0,True
+Drop Programming...,Electrician,-0.4384151593453919,756.0,True
+Drop Programming...,Writer,0.14287252368647718,261.0,True
+Drop Technology Design...,Software Dev,0.3786606373815676,61.0,True
+Drop Technology Design...,Electrician,-0.49849267872523684,765.0,True
+Drop Technology Design...,Writer,0.16838931955211023,239.0,True
+Drop Interacting With Com...,Software Dev,0.3799526270456503,49.0,True
+Drop Interacting With Com...,Electrician,-0.45714900947459086,761.0,True
+Drop Interacting With Com...,Writer,0.17000430663221355,235.0,True
+Norm: zscore,Software Dev,0.41930553207065846,2.0,True
+Norm: zscore,Electrician,-0.28963053474801426,732.0,True
+Norm: zscore,Writer,0.12960155850340266,212.0,True
+Norm: rank_within_group,Software Dev,0.2857142857142857,103.5,True
+Norm: rank_within_group,Electrician,-0.08045977011494254,483.0,True
+Norm: rank_within_group,Writer,0.2941176470588236,96.0,True

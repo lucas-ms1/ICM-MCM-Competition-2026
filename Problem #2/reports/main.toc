@@ -12,15 +12,18 @@
 \contentsline {subsection}{\numberline {3.4}Scenario employment projection}{6}{subsection.3.4}%
 \contentsline {section}{\numberline {4}Results}{7}{section.4}%
 \contentsline {subsection}{\numberline {4.1}National outcomes for the three careers}{7}{subsection.4.1}%
-\contentsline {subsection}{\numberline {4.2}Dynamic Adoption}{7}{subsection.4.2}%
-\contentsline {subsection}{\numberline {4.3}Job openings and program sizing}{7}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.2}Dynamic Adoption}{8}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Job openings and program sizing}{8}{subsection.4.3}%
 \contentsline {subsection}{\numberline {4.4}Sensitivity and sanity checks}{8}{subsection.4.4}%
-\contentsline {section}{\numberline {5}Institution-specific recommendations}{9}{section.5}%
-\contentsline {subsection}{\numberline {5.1}SDSU (Software Developers)}{10}{subsection.5.1}%
-\contentsline {subsection}{\numberline {5.2}LATTC (Electricians)}{10}{subsection.5.2}%
-\contentsline {subsection}{\numberline {5.3}Academy of Art University (Writers and Authors)}{10}{subsection.5.3}%
-\contentsline {subsubsection}{\numberline {5.3.1}Transition Plan}{11}{subsubsection.5.3.1}%
-\contentsline {section}{\numberline {6}Beyond employability: other success metrics}{11}{section.6}%
-\contentsline {section}{\numberline {7}Generalization}{13}{section.7}%
-\contentsline {section}{\numberline {8}Prompt coverage checklist}{13}{section.8}%
-\contentsline {section}{\numberline {A}Mechanism Layer Details}{15}{appendix.A}%
+\contentsline {subsubsection}{\numberline {4.4.1}Mechanism Layer Stability}{9}{subsubsection.4.4.1}%
+\contentsline {subsubsection}{\numberline {4.4.2}Calibration Validation}{9}{subsubsection.4.4.2}%
+\contentsline {subsubsection}{\numberline {4.4.3}Scenario and Parameter Sensitivity}{10}{subsubsection.4.4.3}%
+\contentsline {section}{\numberline {5}Institution-specific recommendations}{11}{section.5}%
+\contentsline {subsection}{\numberline {5.1}SDSU (Software Developers)}{12}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}LATTC (Electricians)}{13}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}Academy of Art University (Writers and Authors)}{13}{subsection.5.3}%
+\contentsline {subsubsection}{\numberline {5.3.1}Transition Plan}{14}{subsubsection.5.3.1}%
+\contentsline {section}{\numberline {6}Beyond employability: other success metrics}{14}{section.6}%
+\contentsline {section}{\numberline {7}Generalization}{16}{section.7}%
+\contentsline {section}{\numberline {8}Prompt coverage checklist}{16}{section.8}%
+\contentsline {section}{\numberline {A}Mechanism Layer Details}{19}{appendix.A}%

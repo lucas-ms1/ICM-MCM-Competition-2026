@@ -1,0 +1,16 @@
+\begin{table}[H]
+\centering
+\caption{Scenario strength parameters used by the pipeline (from \texttt{data/scenario\_parameters.csv}).}
+\label{tab:scenario_params}
+\begin{tabular}{lrrrr}
+\toprule
+Scenario & $s$ & Target $\Delta g$ at $p90$ & $p90(\NetRisk_+)$ & Source\\
+\midrule
+No GenAI Baseline & 0.0000 &  &  & default\\
+Moderate Substitution & 0.0187 & 0.015 & 0.800 & calibrated\\
+High Disruption & 0.0375 & 0.030 & 0.800 & calibrated\\
+Ramp Moderate & 0.0150 &  &  & default\\
+Ramp High & 0.0300 &  &  & default\\
+\bottomrule
+\end{tabular}
+\end{table}

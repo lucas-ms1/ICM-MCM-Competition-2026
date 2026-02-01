@@ -4,6 +4,8 @@ Model: g_adjusted = g_baseline - s_sub * max(Net_Risk,0) + s_comp * max(-Net_Ris
 Net_Risk = (Substitution - Defense)
 Substitution = (Writing + Tool_Tech)/2
 Defense = (Physical + Social + Creativity)/3
+
+Updates: Now supports SOC bundles (weighted averaging).
 """
 from pathlib import Path
 import pandas as pd
@@ -20,6 +22,9 @@ SCENARIOS = {
     "Moderate_Substitution": 0.015,  # default; may be overwritten by calibration
     "High_Disruption": 0.03,         # default; may be overwritten by calibration
 }
+
+# Track provenance of scenario parameters for auditability in the paper.
+SCENARIO_SOURCES = {k: "default" for k in SCENARIOS.keys()}
 
 # Dynamic adoption ramp scenarios: target shock factor at 2034
 RAMP_SCENARIOS = {
@@ -148,16 +153,49 @@ def main():
 
     # If calibrated scenario strengths are available, override defaults
     s_path = DATA_DIR / "calibration_recommended_s.csv"
+    s_used_extra_cols: dict[str, dict] = {}
     if s_path.exists():
         try:
             s_df = pd.read_csv(s_path)
             s_map = dict(zip(s_df["scenario"], s_df["s_value"]))
             if "Moderate_Substitution" in s_map:
                 SCENARIOS["Moderate_Substitution"] = float(s_map["Moderate_Substitution"])
+                SCENARIO_SOURCES["Moderate_Substitution"] = "calibrated"
             if "High_Disruption" in s_map:
                 SCENARIOS["High_Disruption"] = float(s_map["High_Disruption"])
+                SCENARIO_SOURCES["High_Disruption"] = "calibrated"
+
+            # Store calibration metadata (if present) so the report can cite it.
+            for _, r in s_df.iterrows():
+                scen = str(r.get("scenario", "")).strip()
+                if scen:
+                    s_used_extra_cols[scen] = {
+                        "target_delta_g_at_p90": r.get("target_delta_g_at_p90"),
+                        "p90_positive_netrisk": r.get("p90_positive_netrisk"),
+                    }
         except Exception:
             pass
+
+    # Write scenario parameter audit table (used in the LaTeX report).
+    param_rows = []
+    for scen, s_val in SCENARIOS.items():
+        row = {
+            "scenario": scen,
+            "s_value": float(s_val),
+            "source": SCENARIO_SOURCES.get(scen, "default"),
+        }
+        if scen in s_used_extra_cols:
+            row.update(s_used_extra_cols[scen])
+        param_rows.append(row)
+    for scen, target in RAMP_SCENARIOS.items():
+        param_rows.append(
+            {
+                "scenario": scen,
+                "s_value": float(target),
+                "source": "default",
+            }
+        )
+    pd.DataFrame(param_rows).to_csv(OUT_DIR / "scenario_parameters.csv", index=False)
 
     # 2. Process each career
     careers = ["software_engineer", "electrician", "writer"]
@@ -169,67 +207,133 @@ def main():
         if df.empty:
             continue
         
-        # We need the national row for the primary projection
-        # area_type = 1
+        # We need ALL national rows for the bundle
         national = df[df["area_type"] == 1].copy()
         if national.empty:
-            print(f"No national row for {cname}")
+            print(f"No national rows for {cname}")
             continue
             
         # Merge mechanism scores
-        # drop old mechanism cols if they exist in df to avoid dups
         cols_to_drop = [c for c in mech.columns if c in national.columns and c != "occ_code"]
         if cols_to_drop:
             national = national.drop(columns=cols_to_drop)
             
         merged = national.merge(mech, on="occ_code", how="left")
-        row = merged.iloc[0]
-        occ_title = row["occ_title"]
-        # Use EP emp_2024 * 1000 as the national 2024 baseline
-        emp_base = row["emp_2024"] * 1000
-            
-        g_base = row["g_baseline"]
         
-        if pd.isna(g_base):
-            # Fallback if EP missing
-            g_base = 0.0
-            
-        risk = row["net_risk"]
+        # --- Aggregation for Bundle ---
+        # Weighted average of NetRisk, Sub, Def based on Emp 2024
+        # Sum of Emp 2024, Emp 2034
+        # Weighted average g_baseline? Or calculated from aggregated Emp? -> Calculated from Aggregated
         
-        print(f"\nCareer: {cname} ({occ_title})")
-        print(f"  Net Risk: {risk:.3f} (Sub={row['substitution_score']:.3f}, Def={row['defense_score']:.3f})")
-        print(f"  Baseline g: {g_base:.4f}")
+        # Ensure numeric
+        merged["emp_2024_abs"] = merged["emp_2024"] * 1000 # Convert thousands to units
+        merged["emp_2034_abs"] = merged["emp_2034"] * 1000
+        
+        total_emp_24 = merged["emp_2024_abs"].sum()
+        total_emp_34_base = merged["emp_2034_abs"].sum()
+        
+        if total_emp_24 == 0:
+            print(f"Zero employment for {cname}, skipping")
+            continue
+            
+        weights = merged["emp_2024_abs"] / total_emp_24
+        
+        # Fill missing risks with 0 if needed, but better to warn
+        if merged["net_risk"].isna().any():
+            print(f"Warning: Missing risk scores for some SOCs in {cname}")
+            merged["net_risk"] = merged["net_risk"].fillna(0)
+            merged["substitution_score"] = merged["substitution_score"].fillna(0)
+            merged["defense_score"] = merged["defense_score"].fillna(0)
+            
+        # Weighted averages
+        avg_risk = (merged["net_risk"] * weights).sum()
+        avg_sub = (merged["substitution_score"] * weights).sum()
+        avg_def = (merged["defense_score"] * weights).sum()
+        
+        # Aggregated baseline growth
+        agg_g_base = (total_emp_34_base / total_emp_24)**(1/10) - 1
+        
+        # Titles in bundle
+        titles = merged["occ_title"].unique()
+        main_title = titles[0] if len(titles) > 0 else cname
+        if len(titles) > 1:
+            main_title = f"{cname} Bundle ({len(titles)} SOCs)"
+            
+        # Ranges
+        min_risk = merged["net_risk"].min()
+        max_risk = merged["net_risk"].max()
+        
+        print(f"\nCareer: {cname} ({main_title})")
+        print(f"  Bundle Net Risk: {avg_risk:.3f} (Range: {min_risk:.3f} to {max_risk:.3f})")
+        print(f"  Aggregated Baseline g: {agg_g_base:.4f}")
         
         summary = {
             "career": cname,
-            "occ_title": occ_title,
-            "net_risk": risk,
-            "substitution": row["substitution_score"],
-            "defense": row["defense_score"],
-            "emp_2024": emp_base,
-            "g_baseline": g_base
+            "occ_title": main_title,
+            "net_risk": avg_risk,
+            "net_risk_min": min_risk,
+            "net_risk_max": max_risk,
+            "substitution": avg_sub,
+            "defense": avg_def,
+            "emp_2024": total_emp_24,
+            "g_baseline": agg_g_base
         }
         
-        # Constant shock scenarios (backward compatible)
-        for scen, shock in SCENARIOS.items():
-            g_adj = get_g_adj(g_base, risk, shock)
-            emp_2034 = emp_base * ((1 + g_adj) ** 10)
-            
-            summary[f"g_{scen}"] = g_adj
-            summary[f"emp_2034_{scen}"] = emp_2034
-            summary[f"chg_{scen}"] = emp_2034 - emp_base
-            
-            print(f"  {scen}: g={g_adj:.4f}, emp_2034={emp_2034:,.0f}")
+        # Apply scenarios to the AGGREGATE risk
+        # Alternative: Apply to each SOC then sum. 
+        # Applying to each SOC then summing is more accurate if risk varies significantly.
+        # Let's do row-wise projection then sum.
         
-        # Dynamic adoption ramp scenarios
+        # Constant shock scenarios
+        for scen, shock in SCENARIOS.items():
+            # Vectorized calculation
+            risks = merged["net_risk"]
+            g_bases = merged["g_baseline"].fillna(0) 
+            # Note: merged["g_baseline"] is per-SOC. If EP missing, use 0.
+            
+            # Helper for vectorized get_g_adj
+            # g_adj = g_base - s_sub * max(risk, 0) + s_comp * max(-risk, 0)
+            s_sub = shock
+            s_comp = shock * 0.2
+            
+            term1 = np.maximum(risks, 0) * s_sub
+            term2 = np.maximum(-risks, 0) * s_comp
+            g_adjs = g_bases - term1 + term2
+            
+            emps_34 = merged["emp_2024_abs"] * ((1 + g_adjs) ** 10)
+            total_emp_34_scen = emps_34.sum()
+            
+            # Implied aggregate growth rate for summary
+            agg_g_scen = (total_emp_34_scen / total_emp_24)**(1/10) - 1
+            
+            summary[f"g_{scen}"] = agg_g_scen
+            summary[f"emp_2034_{scen}"] = total_emp_34_scen
+            summary[f"chg_{scen}"] = total_emp_34_scen - total_emp_24
+            
+            print(f"  {scen}: emp_2034={total_emp_34_scen:,.0f}")
+        
+        # Ramp scenarios
         for scen, target_shock in RAMP_SCENARIOS.items():
-            emp_2034, avg_g = compute_ramp_scenario(emp_base, g_base, risk, target_shock)
+            # Row-wise ramp
+            # We need to loop years for each row... slow if done naively.
+            # But we only have <10 rows.
             
-            summary[f"g_{scen}"] = avg_g
-            summary[f"emp_2034_{scen}"] = emp_2034
-            summary[f"chg_{scen}"] = emp_2034 - emp_base
+            row_emps_34 = []
+            for _, r in merged.iterrows():
+                e24 = r["emp_2024_abs"]
+                gb = r["g_baseline"] if not pd.isna(r["g_baseline"]) else 0.0
+                rk = r["net_risk"]
+                e34, _ = compute_ramp_scenario(e24, gb, rk, target_shock)
+                row_emps_34.append(e34)
             
-            print(f"  {scen}: avg_g={avg_g:.4f}, emp_2034={emp_2034:,.0f}")
+            total_emp_34_ramp = sum(row_emps_34)
+            agg_g_ramp = (total_emp_34_ramp / total_emp_24)**(1/10) - 1
+            
+            summary[f"g_{scen}"] = agg_g_ramp
+            summary[f"emp_2034_{scen}"] = total_emp_34_ramp
+            summary[f"chg_{scen}"] = total_emp_34_ramp - total_emp_24
+            
+            print(f"  {scen}: emp_2034={total_emp_34_ramp:,.0f}")
             
         summary_rows.append(summary)
         
@@ -243,20 +347,20 @@ def main():
     check_path.parent.mkdir(parents=True, exist_ok=True)
     
     with open(check_path, "w", encoding="utf-8") as f:
-        f.write("Scenario Calibration Check\n")
-        f.write("==========================\n")
-        f.write(f"Equation: g_adj = g_base - s * max(NetRisk, 0) + 0.2*s * max(-NetRisk, 0)\n\n")
+        f.write("Scenario Calibration Check (Bundled)\n")
+        f.write("====================================\n")
+        f.write(f"Aggregation: Projected SOC-level employment then summed.\n\n")
         
         for _, row in summ_df.iterrows():
             career = row["career"]
             risk = row["net_risk"]
-            f.write(f"Career: {career}, NetRisk: {risk:.3f}\n")
+            f.write(f"Career: {career}, Weighted NetRisk: {risk:.3f}\n")
             for scen, shock in SCENARIOS.items():
                 if scen == "No_GenAI_Baseline": continue
-                g_base = row["g_baseline"]
-                g_adj = row[f"g_{scen}"]
-                delta_g = g_adj - g_base
-                f.write(f"  {scen} (s={shock}): g_base={g_base:.4f} -> g_adj={g_adj:.4f} (delta={delta_g:.4f})\n")
+                emp_base = row["emp_2024"]
+                emp_scen = row[f"emp_2034_{scen}"]
+                delta = emp_scen - emp_base
+                f.write(f"  {scen}: E2024={emp_base:,.0f} -> E2034={emp_scen:,.0f} (delta={delta:,.0f})\n")
 
 
 if __name__ == "__main__":

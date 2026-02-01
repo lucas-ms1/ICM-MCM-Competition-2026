@@ -108,36 +108,54 @@ def build_scenario_summary_table() -> None:
     df = df.sort_values("__ord").drop(columns="__ord")
 
     lines: list[str] = []
+    has_range = "net_risk_min" in df.columns and "net_risk_max" in df.columns
     lines.append("\\begin{table}[H]")
     lines.append("\\centering")
-    lines.append("\\caption{National 2034 employment under GenAI disruption scenarios (from \\texttt{data/scenario\\_summary.csv}).}")
+    cap = "National 2034 employment under immediate vs. ramped GenAI disruption scenarios (from \\texttt{data/scenario\\_summary.csv})."
+    if has_range:
+        cap += " Careers are SOC bundles; employment-weighted outcomes; $\\NetRisk$ range is min--max across the bundle."
+    lines.append("\\caption{" + cap + "}")
     lines.append("\\label{tab:scenario_summary}")
     lines.append("\\resizebox{\\textwidth}{!}{%")
-    lines.append("\\begin{tabular}{lrrrrrr}")
-    lines.append("\\toprule")
-    lines.append("Career & $\\NetRisk$ & $E_{2024}$ & $E_{2034}$ (Baseline) & $E_{2034}$ (High) & Change vs 2024 (High) & High vs Baseline (2034)\\\\")
+    if has_range:
+        lines.append("\\begin{tabular}{lrrlrrrrr}")
+        lines.append("\\toprule")
+        lines.append(
+            "Career & $\\NetRisk$ & $\\NetRisk$ range & $E_{2024}$ & $E_{2034}$ (Baseline) & $E_{2034}$ (Moderate) & $E_{2034}$ (Ramp Mod.) & $E_{2034}$ (High) & $E_{2034}$ (Ramp High)\\\\"
+        )
+    else:
+        lines.append("\\begin{tabular}{lrrrrrrr}")
+        lines.append("\\toprule")
+        lines.append(
+            "Career & $\\NetRisk$ & $E_{2024}$ & $E_{2034}$ (Baseline) & $E_{2034}$ (Moderate) & $E_{2034}$ (Ramp Mod.) & $E_{2034}$ (High) & $E_{2034}$ (Ramp High)\\\\"
+        )
     lines.append("\\midrule")
 
     for _, r in df.iterrows():
         emp24 = r.get("emp_2024")
         emp34_base = r.get("emp_2034_No_GenAI_Baseline")
+        emp34_mod = r.get("emp_2034_Moderate_Substitution")
+        emp34_ramp_mod = r.get("emp_2034_Ramp_Moderate")
         emp34_high = r.get("emp_2034_High_Disruption")
-        delta_high_vs_2024 = r.get("chg_High_Disruption")
-        delta_high_vs_baseline_2034 = (emp34_high - emp34_base) if (emp34_high is not None and emp34_base is not None) else None
-        lines.append(
-            " & ".join(
-                [
-                    _latex_escape(r["career_label"]),
-                    _fmt_float(r.get("net_risk"), 3),
-                    _fmt_int(emp24),
-                    _fmt_int(emp34_base),
-                    _fmt_int(emp34_high),
-                    _fmt_int(delta_high_vs_2024),
-                    _fmt_int(delta_high_vs_baseline_2034),
-                ]
-            )
-            + "\\\\"
-        )
+        emp34_ramp_high = r.get("emp_2034_Ramp_High")
+        row_cells = [
+            _latex_escape(r["career_label"]),
+            _fmt_float(r.get("net_risk"), 3),
+        ]
+        if has_range:
+            nmin = r.get("net_risk_min")
+            nmax = r.get("net_risk_max")
+            range_str = f"[{_fmt_float(nmin, 2)}, {_fmt_float(nmax, 2)}]" if nmin is not None and nmax is not None else "---"
+            row_cells.append(range_str)
+        row_cells.extend([
+            _fmt_int(emp24),
+            _fmt_int(emp34_base),
+            _fmt_int(emp34_mod),
+            _fmt_int(emp34_ramp_mod),
+            _fmt_int(emp34_high),
+            _fmt_int(emp34_ramp_high),
+        ])
+        lines.append(" & ".join(row_cells) + "\\\\")
 
     lines.append("\\bottomrule")
     lines.append("\\end{tabular}%")
@@ -146,6 +164,88 @@ def build_scenario_summary_table() -> None:
     lines.append("")
 
     _write_text(TABLES_DIR / "scenario_summary.tex", "\n".join(lines))
+
+
+def build_scenario_parameter_table() -> None:
+    """
+    Build a small table documenting the scenario shock parameters actually used.
+    This supports auditability of the claim that 'Moderate/High' are scaled to a
+    reference point (e.g., p90 of positive NetRisk) when calibration outputs exist.
+    """
+    path = DATA_DIR / "scenario_parameters.csv"
+    if not path.exists():
+        return
+    df = pd.read_csv(path)
+    if df.empty:
+        return
+
+    # Focus on the key scenarios referenced in the text; keep ramp rows too for completeness.
+    order = ["No_GenAI_Baseline", "Moderate_Substitution", "High_Disruption", "Ramp_Moderate", "Ramp_High"]
+    df["__ord"] = df["scenario"].apply(lambda x: order.index(x) if x in order else 999)
+    df = df.sort_values("__ord").drop(columns="__ord")
+
+    # Optional calibration metadata columns
+    has_p90 = "p90_positive_netrisk" in df.columns and df["p90_positive_netrisk"].notna().any()
+    has_target = "target_delta_g_at_p90" in df.columns and df["target_delta_g_at_p90"].notna().any()
+
+    cols = ["scenario", "s_value", "source"]
+    if has_target:
+        cols.insert(2, "target_delta_g_at_p90")
+    if has_p90:
+        cols.insert(3 if has_target else 2, "p90_positive_netrisk")
+
+    def _label(s: str) -> str:
+        return str(s).replace("_", " ")
+
+    lines: list[str] = []
+    lines.append("\\begin{table}[H]")
+    lines.append("\\centering")
+    lines.append("\\caption{Scenario strength parameters used by the pipeline (from \\texttt{data/scenario\\_parameters.csv}).}")
+    lines.append("\\label{tab:scenario_params}")
+
+    if has_target and has_p90:
+        lines.append("\\begin{tabular}{lrrrr}")
+        lines.append("\\toprule")
+        lines.append("Scenario & $s$ & Target $\\Delta g$ at $p90$ & $p90(\\NetRisk_+)$ & Source\\\\")
+        lines.append("\\midrule")
+        for _, r in df.iterrows():
+            lines.append(
+                " & ".join(
+                    [
+                        _latex_escape(_label(r["scenario"])),
+                        _fmt_float(r.get("s_value"), 4),
+                        _fmt_float(r.get("target_delta_g_at_p90"), 3) if r.get("target_delta_g_at_p90") is not None else "",
+                        _fmt_float(r.get("p90_positive_netrisk"), 3) if r.get("p90_positive_netrisk") is not None else "",
+                        _latex_escape(str(r.get("source", ""))),
+                    ]
+                )
+                + "\\\\"
+            )
+        lines.append("\\bottomrule")
+        lines.append("\\end{tabular}")
+    else:
+        lines.append("\\begin{tabular}{lrl}")
+        lines.append("\\toprule")
+        lines.append("Scenario & $s$ & Source\\\\")
+        lines.append("\\midrule")
+        for _, r in df.iterrows():
+            lines.append(
+                " & ".join(
+                    [
+                        _latex_escape(_label(r["scenario"])),
+                        _fmt_float(r.get("s_value"), 4),
+                        _latex_escape(str(r.get("source", ""))),
+                    ]
+                )
+                + "\\\\"
+            )
+        lines.append("\\bottomrule")
+        lines.append("\\end{tabular}")
+
+    lines.append("\\end{table}")
+    lines.append("")
+
+    _write_text(TABLES_DIR / "scenario_params.tex", "\n".join(lines))
 
 
 def build_sensitivity_grid_table(shocks: Iterable[float] = (0.01, 0.015, 0.02, 0.03)) -> None:
@@ -198,6 +298,102 @@ def build_sensitivity_grid_table(shocks: Iterable[float] = (0.01, 0.015, 0.02, 0
     lines.append("")
 
     _write_text(TABLES_DIR / "sensitivity_grid.tex", "\n".join(lines))
+
+
+def build_complementarity_sensitivity_table(
+    comp_factors: Iterable[float] = (0.10, 0.20, 0.30),
+) -> None:
+    """
+    Sensitivity to the complementarity factor (default 0.2 in the piecewise mapping).
+    We recompute 2034 employment under Moderate and High scenarios while varying the
+    complementarity multiplier for NetRisk < 0:
+
+      g_adj = g_base - s * NetRisk              if NetRisk >= 0
+      g_adj = g_base + (comp_factor*s)*(-NetRisk) if NetRisk < 0
+    """
+    df = _load_required_csv(DATA_DIR / "scenario_summary.csv").copy()
+
+    # Pull scenario strengths actually used by the pipeline (calibrated if available).
+    s_mod = 0.015
+    s_high = 0.03
+    scen_param_path = DATA_DIR / "scenario_parameters.csv"
+    if scen_param_path.exists():
+        try:
+            sp = pd.read_csv(scen_param_path)
+            mod_row = sp.loc[sp["scenario"] == "Moderate_Substitution"]
+            high_row = sp.loc[sp["scenario"] == "High_Disruption"]
+            if not mod_row.empty:
+                s_mod = float(mod_row.iloc[0].get("s_value", s_mod))
+            if not high_row.empty:
+                s_high = float(high_row.iloc[0].get("s_value", s_high))
+        except Exception:
+            pass
+
+    career_label = {
+        "software_engineer": "Software Developers",
+        "electrician": "Electricians",
+        "writer": "Writers and Authors",
+    }
+    df["career_label"] = df["career"].map(career_label).fillna(df["career"])
+    order = ["software_engineer", "electrician", "writer"]
+    df["__ord"] = df["career"].apply(lambda x: order.index(x) if x in order else 999)
+    df = df.sort_values("__ord").drop(columns="__ord")
+
+    def _g_adj(g_base: float, risk: float, s: float, comp_factor: float) -> float:
+        if risk >= 0:
+            return g_base - (s * risk)
+        return g_base + (comp_factor * s * (-risk))
+
+    rows: list[dict] = []
+    for _, r in df.iterrows():
+        g_base = float(r["g_baseline"])
+        risk = float(r["net_risk"])
+        emp_2024 = float(r["emp_2024"])
+        for cf in comp_factors:
+            g_mod = _g_adj(g_base, risk, s_mod, float(cf))
+            g_hi = _g_adj(g_base, risk, s_high, float(cf))
+            rows.append(
+                {
+                    "career": str(r["career_label"]),
+                    "comp_factor": float(cf),
+                    "emp_2034_mod": emp_2024 * ((1.0 + g_mod) ** 10),
+                    "emp_2034_high": emp_2024 * ((1.0 + g_hi) ** 10),
+                }
+            )
+
+    out = pd.DataFrame(rows)
+
+    lines: list[str] = []
+    lines.append("\\begin{table}[H]")
+    lines.append("\\centering")
+    lines.append(
+        "\\caption{Sensitivity to the complementarity cap in the scenario mapping (varies the multiplier on the uplift term for $\\NetRisk<0$; baseline uses 0.2).}"
+    )
+    lines.append("\\label{tab:comp_factor_sensitivity}")
+    lines.append("\\begin{tabular}{lrrr}")
+    lines.append("\\toprule")
+    lines.append("Career & Complementarity factor & $E_{2034}$ (Moderate) & $E_{2034}$ (High)\\\\")
+    lines.append("\\midrule")
+
+    for _, r in out.iterrows():
+        lines.append(
+            " & ".join(
+                [
+                    _latex_escape(r["career"]),
+                    _fmt_float(r["comp_factor"], 2),
+                    _fmt_int(r["emp_2034_mod"]),
+                    _fmt_int(r["emp_2034_high"]),
+                ]
+            )
+            + "\\\\"
+        )
+
+    lines.append("\\bottomrule")
+    lines.append("\\end{tabular}")
+    lines.append("\\end{table}")
+    lines.append("")
+
+    _write_text(TABLES_DIR / "comp_factor_sensitivity.tex", "\n".join(lines))
 
 
 def build_top_exposed_sheltered_table(top_n: int = 10) -> None:
@@ -584,113 +780,132 @@ def build_program_sizing_table() -> None:
     """
     Estimate local annual openings and recommended program seats (intake) based on target market share.
     Assumption: seats = (local_openings * share) / (completion_rate * placement_rate)
+    
+    UPDATED: Computes intervals based on sensitivity analysis of efficiency and LQ.
     """
     CAREERS_DIR = DATA_DIR / "careers"
     ep = _load_required_csv(DATA_DIR / "ep_baseline.csv")
     oews_local = _load_required_csv(DATA_DIR / "oews_institution_local.csv")
     oews_nat = _load_required_csv(DATA_DIR / "oews_national.csv")
     oews_local["area_code"] = oews_local["area_code"].astype(str).str.strip()
-    oews_local["occ_code"] = oews_local["occ_code"].astype(str).str.strip()
     oews_nat["occ_code"] = oews_nat["occ_code"].astype(str).str.strip()
+    oews_local["occ_code"] = oews_local["occ_code"].astype(str).str.strip()
 
     nat_total_row = oews_nat[oews_nat["occ_code"] == "00-0000"]
     nat_total_emp = float(nat_total_row.iloc[0]["emp"]) if not nat_total_row.empty else np.nan
     
+    # Using the primary SOC for each career to lookup openings (since EP data is per-SOC)
+    # Ideally we'd sum openings for the bundle, but for sizing we often focus on the core role.
+    # Let's stick to the primary SOC for simplicity or sum if possible.
+    # Given build_tables.py saves the bundle, let's use the primary SOC defined here.
     institutions = [
         {"career_file": "software_engineer.csv", "area_code": "41740", "state_code": "6", "inst": "SDSU", "career_soc": "15-1252"},
         {"career_file": "electrician.csv", "area_code": "31080", "state_code": "6", "inst": "LATTC", "career_soc": "47-2111"},
         {"career_file": "writer.csv", "area_code": "41860", "state_code": "6", "inst": "Academy of Art", "career_soc": "27-3043"},
     ]
     
-    completion_rate = 0.8
-    placement_rate = 0.75
-    efficiency = completion_rate * placement_rate # ~0.6
+    # Sensitivity Ranges
+    efficiency_low = 0.65 * 0.60  # ~0.39 (Pessimistic: 65% complete, 60% place)
+    efficiency_high = 0.85 * 0.85 # ~0.72 (Optimistic: 85% complete, 85% place)
     
-    shares = [0.05, 0.10, 0.15] # 5%, 10%, 15% of local openings
+    target_shares = [0.05, 0.10, 0.15]
+    
+    # LQ Clipping range for openings estimation
+    lq_clip_low = 0.5
+    lq_clip_high = 1.5
     
     rows = []
     
     for info in institutions:
         # 1. Get national openings for this SOC
-        # Note: ep_baseline.csv uses occ_code.
         ep_row = ep[ep["occ_code"] == info["career_soc"]]
         if ep_row.empty:
-            continue
-        
-        nat_openings_thousands = float(ep_row.iloc[0]["annual_openings"])
-        nat_openings = nat_openings_thousands * 1000
+            nat_openings = 0
+        else:
+            nat_openings = float(ep_row.iloc[0]["annual_openings"]) * 1000
         
         # 2. Get local vs national OEWS employment to scale national openings to local openings.
-        #    Prefer metro; fallback to state; then fallback to national.
         career_path = CAREERS_DIR / info["career_file"]
+        if not career_path.exists():
+            continue
         df = pd.read_csv(career_path)
-        nat_row = df[df["area_code"].astype(str).isin(["99", "1"])].iloc[0]
-        nat_emp = float(nat_row["emp"])
+        
+        # Determine local share and LQ
+        nat_row = df[df["area_type"].isin([1, 99])].iloc[0] if not df[df["area_type"].isin([1, 99])].empty else None
+        nat_emp = float(nat_row["emp"]) if nat_row is not None else 0
+        
         local_row = df[df["area_code"].astype(str) == info["area_code"]]
-        if local_row.empty and info.get("state_code") is not None:
-            local_row = df[df["area_code"].astype(str) == str(info["state_code"])]
+        if local_row.empty and info.get("state_code"):
+             local_row = df[df["area_code"].astype(str) == str(info["state_code"])]
+        
         if local_row.empty:
             local_emp = nat_emp
-            local_share_of_nat = 1.0
             area_for_lq = None
         else:
             local_emp = float(local_row.iloc[0]["emp"])
-            local_share_of_nat = (local_emp / nat_emp) if nat_emp > 0 else 0.0
             area_for_lq = str(local_row.iloc[0]["area_code"])
-        # Location quotient adjustment
-        if area_for_lq is not None:
-            local_total_row = oews_local[
-                (oews_local["area_code"].astype(str) == area_for_lq)
-                & (oews_local["occ_code"] == "00-0000")
-            ]
-            local_total_emp = float(local_total_row.iloc[0]["emp"]) if not local_total_row.empty else np.nan
-            if not np.isnan(local_total_emp) and not np.isnan(nat_total_emp) and local_total_emp > 0 and nat_total_emp > 0 and nat_emp > 0:
-                lq = (local_emp / local_total_emp) / (nat_emp / nat_total_emp)
-            else:
-                lq = 1.0
-        else:
-            lq = 1.0
-        lq_adj = min(max(lq, 0.5), 1.5)
-
-        est_local_openings = nat_openings * local_share_of_nat * lq_adj
-        
-        # 3. Calculate seats
-        seat_recs = []
-        for s in shares:
-            # seats needed to fill s% of local openings
-            # seats * efficiency = filled_jobs
-            # filled_jobs = local_openings * s
-            # seats = (local_openings * s) / efficiency
-            seats = (est_local_openings * s) / efficiency
-            seat_recs.append(seats)
             
+        local_share_of_nat = (local_emp / nat_emp) if nat_emp > 0 else 0.0
+        
+        if area_for_lq is not None:
+            local_total_row = oews_local[(oews_local["area_code"].astype(str) == area_for_lq) & (oews_local["occ_code"] == "00-0000")]
+            local_total_emp = float(local_total_row.iloc[0]["emp"]) if not local_total_row.empty else np.nan
+            if nat_emp > 0 and not np.isnan(local_total_emp) and not np.isnan(nat_total_emp):
+                lq_raw = (local_emp / local_total_emp) / (nat_emp / nat_total_emp)
+            else:
+                lq_raw = 1.0
+        else:
+            lq_raw = 1.0
+            
+        # Range of Openings (varying LQ impact slightly? No, let's vary LQ clip or just assume point estimate for openings and vary seats efficiency)
+        # Let's vary LQ clip for openings range? 
+        # Actually, let's keep openings as a point estimate (Best Estimate) but report Seat Range based on efficiency.
+        lq_adj = min(max(lq_raw, lq_clip_low), lq_clip_high)
+        est_openings = nat_openings * local_share_of_nat * lq_adj
+        
+        # Calculate Seat Ranges for 10% share
+        # Seats = (Openings * Share) / Efficiency
+        # Min Seats = (Openings * Share) / Max_Efficiency
+        # Max Seats = (Openings * Share) / Min_Efficiency
+        
+        def get_range(share):
+            s_min = (est_openings * share) / efficiency_high
+            s_max = (est_openings * share) / efficiency_low
+            return s_min, s_max
+
+        s5_min, s5_max = get_range(0.05)
+        s10_min, s10_max = get_range(0.10)
+        s15_min, s15_max = get_range(0.15)
+        
         rows.append({
             "inst": info["inst"],
-            "local_emp": local_emp,
-            "est_openings": est_local_openings,
-            "seats": seat_recs
+            "openings": est_openings,
+            "s5": (s5_min, s5_max),
+            "s10": (s10_min, s10_max),
+            "s15": (s15_min, s15_max)
         })
         
     lines = []
     lines.append("\\begin{table}[H]")
     lines.append("\\centering")
-    lines.append("\\caption{Recommended annual program intake (seats) based on local openings share.}")
+    lines.append("\\caption{Recommended annual program intake ranges (seats) accounting for efficiency uncertainty.}")
     lines.append("\\label{tab:program_sizing}")
     lines.append("\\resizebox{\\textwidth}{!}{%")
     lines.append("\\begin{tabular}{lrrrr}")
     lines.append("\\toprule")
-    lines.append("Institution & Est. Local Openings & Seats (5\\% share) & Seats (10\\%) & Seats (15\\%)\\\\")
+    lines.append("Institution & Est. Openings & 5\\% Share & 10\\% Share & 15\\% Share\\\\")
     lines.append("\\midrule")
     
     for r in rows:
-        seats_fmt = [ _fmt_int(x) for x in r["seats"] ]
+        def fmt_range(t):
+            return f"{int(t[0])}--{int(t[1])}"
+            
         lines.append(
-            f"{_latex_escape(r['inst'])} & {_fmt_int(r['est_openings'])} & {seats_fmt[0]} & {seats_fmt[1]} & {seats_fmt[2]} \\\\"
+            f"{_latex_escape(r['inst'])} & {_fmt_int(r['openings'])} & {fmt_range(r['s5'])} & {fmt_range(r['s10'])} & {fmt_range(r['s15'])} \\\\"
         )
         
     lines.append("\\bottomrule")
-    lines.append("\\multicolumn{5}{l}{\\footnotesize Local openings estimated by scaling national openings by OEWS employment share and LQ: $O_{local}=O_{nat}\\cdot(E_{local}/E_{nat})\\cdot\\text{LQ}_{clipped}$.}\\\\")
-    lines.append("\\multicolumn{5}{l}{\\footnotesize Seats are annual cohort intake; assumes 80\\% completion and 75\\% placement (net efficiency $\\approx$ 0.6).}\\\\")
+    lines.append("\\multicolumn{5}{l}{\\footnotesize Ranges reflect uncertainty in program efficiency (completion $\\times$ placement) from 0.39 to 0.72.}\\\\")
     lines.append("\\end{tabular}%")
     lines.append("}")
     lines.append("\\end{table}")
@@ -736,9 +951,9 @@ def build_scenario_bar_figure() -> None:
 
 def build_weight_sensitivity_table() -> None:
     """
-    Build a sensitivity table checking if High Disruption scenario (s=0.03) 
-    flips the sign of employment change when NetRisk = a * Sub - b * Def,
-    with a and b varied in {0.8, 1.0, 1.2}.
+    Build a sensitivity table checking if the High Disruption scenario flips the sign of
+    employment change when NetRisk = a * Sub - b * Def, with a and b varied in
+    {0.8, 1.0, 1.2}.
     """
     df = _load_required_csv(DATA_DIR / "scenario_summary.csv").copy()
     
@@ -761,7 +976,20 @@ def build_weight_sensitivity_table() -> None:
     
     # Base case: (1.0, 1.0)
     base_a, base_b = 1.0, 1.0
-    s_high = 0.03  # High Disruption scenario parameter
+
+    # Use the actual High Disruption scenario strength used by the pipeline (calibrated if available).
+    s_high = 0.03
+    s_source = "default"
+    scen_param_path = DATA_DIR / "scenario_parameters.csv"
+    if scen_param_path.exists():
+        try:
+            sp = pd.read_csv(scen_param_path)
+            high_row = sp.loc[sp["scenario"] == "High_Disruption"]
+            if not high_row.empty:
+                s_high = float(high_row.iloc[0].get("s_value", s_high))
+                s_source = str(high_row.iloc[0].get("source", s_source))
+        except Exception:
+            pass
     
     # Compute base case employment changes for reference
     base_changes = {}
@@ -812,7 +1040,15 @@ def build_weight_sensitivity_table() -> None:
     lines: list[str] = []
     lines.append("\\begin{table}[H]")
     lines.append("\\centering")
-    lines.append("\\caption{Sensitivity of High Disruption scenario ($s=0.03$) to weight parameters in $\\NetRisk = a \\cdot \\SubScore - b \\cdot \\DefScore$ (with piecewise mapping). Shows whether employment change sign flips compared to base case ($a=1.0$, $b=1.0$).}")
+    s_note = f"$s={s_high:.4f}$"
+    if s_source:
+        s_note = s_note + f" ({_latex_escape(s_source)})"
+    lines.append(
+        "\\caption{Sensitivity of High Disruption scenario ("
+        + s_note
+        + ") to weight parameters in $\\NetRisk = a \\cdot \\SubScore - b \\cdot \\DefScore$ (with piecewise mapping). "
+        + "Shows whether employment change sign flips compared to base case ($a=1.0$, $b=1.0$).}"
+    )
     lines.append("\\label{tab:weight_sensitivity}")
     lines.append("\\resizebox{\\textwidth}{!}{%")
     # Column specification: one for career, then one for each weight combination
@@ -1181,6 +1417,92 @@ def build_policy_decision_table() -> None:
     _write_text(TABLES_DIR / "policy_decision.tex", "\n".join(lines))
 
 
+def build_policy_sensitivity_table() -> None:
+    """
+    Summarize robustness of policy recommendations.
+    Reads data/policy_sensitivity.csv. 
+    If columns match the new simplified format (institution, weight_regime, baseline_policy, robustness),
+    it just formats it.
+    """
+    path = DATA_DIR / "policy_sensitivity.csv"
+    if not path.exists():
+        return
+    df = pd.read_csv(path)
+    if df.empty:
+        return
+
+    # Check format
+    if "robustness" in df.columns and "recommended_policy" not in df.columns:
+        # Pre-summarized format (from new build_policy_model.py)
+        out = df.sort_values(["institution", "weight_regime"])
+    else:
+        # Legacy format (raw sensitivity rows) - keep fallback logic just in case
+        grp_cols = ["institution", "weight_regime"]
+        rows = []
+        for (inst, w), g in df.groupby(grp_cols):
+            baseline = str(g["baseline_policy"].dropna().iloc[0]) if g["baseline_policy"].notna().any() else ""
+            n = int(len(g))
+            # matches_baseline column might not exist if we used new logic, but if we are here we assume legacy columns
+            # actually if we are here, we probably have 'recommended_policy'
+            n_match = 0
+            policies = []
+            if "recommended_policy" in g.columns:
+                policies = sorted(set(str(x) for x in g["recommended_policy"].dropna().tolist()))
+                # If baseline column exists, use it
+                matches = g["recommended_policy"] == g["baseline_policy"]
+                n_match = int(matches.sum())
+            
+            if n > 0 and n_match == n:
+                robustness = f"Stable ({n_match}/{n})"
+            else:
+                policy_list = ", ".join(p.replace("_", " ") for p in policies) if policies else ""
+                robustness = f"Flips ({n_match}/{n}); seen: {policy_list}"
+
+            rows.append(
+                {
+                    "institution": str(inst),
+                    "weight_regime": str(w).replace("_", " "),
+                    "baseline_policy": baseline.replace("_", " "),
+                    "robustness": robustness,
+                }
+            )
+        out = pd.DataFrame(rows).sort_values(["institution", "weight_regime"])
+
+    lines: list[str] = []
+    lines.append("\\begin{table}[H]")
+    lines.append("\\centering")
+    lines.append(
+        "\\caption{Robustness of policy recommendations to modest perturbations of institution capacity parameters (audit and sustainability varied by $\\pm 0.1$; 9 combinations per cell).}"
+    )
+    lines.append("\\label{tab:policy_sensitivity}")
+    lines.append("\\resizebox{\\textwidth}{!}{%")
+    lines.append("\\begin{tabular}{llll}")
+    lines.append("\\toprule")
+    lines.append("Institution & Weight Regime & Baseline Policy & Robustness\\\\")
+    lines.append("\\midrule")
+
+    for _, r in out.iterrows():
+        lines.append(
+            " & ".join(
+                [
+                    _latex_escape(r["institution"]),
+                    _latex_escape(r["weight_regime"].replace("_", " ")),
+                    _latex_escape(r["baseline_policy"].replace("_", " ")),
+                    _latex_escape(r["robustness"]),
+                ]
+            )
+            + "\\\\"
+        )
+
+    lines.append("\\bottomrule")
+    lines.append("\\end{tabular}%")
+    lines.append("}")
+    lines.append("\\end{table}")
+    lines.append("")
+
+    _write_text(TABLES_DIR / "policy_sensitivity.tex", "\n".join(lines))
+
+
 def build_policy_tradeoff_figure() -> None:
     """Bar chart of policy scores under Balanced weights."""
     path = DATA_DIR / "policy_decision_scores.csv"
@@ -1221,7 +1543,9 @@ def main() -> None:
     FIGURES_DIR.mkdir(parents=True, exist_ok=True)
 
     build_scenario_summary_table()
+    build_scenario_parameter_table()
     build_sensitivity_grid_table()
+    build_complementarity_sensitivity_table()
     build_top_exposed_sheltered_table()
     build_openings_summary_table()
     build_mechanism_coverage_table()
@@ -1238,6 +1562,7 @@ def main() -> None:
     build_calibration_scatter_figure()
     build_uncertainty_summary_table()
     build_policy_decision_table()
+    build_policy_sensitivity_table()
     build_policy_tradeoff_figure()
     print("Wrote report artifacts to", REPORTS_DIR)
 

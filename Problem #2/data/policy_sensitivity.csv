@@ -1,0 +1,10 @@
+institution,weight_regime,baseline_policy,robustness
+SDSU,Balanced,Allow_with_Audit,Stable (9/9)
+SDSU,Integrity_First,Ban,Stable (9/9)
+SDSU,Sustainability_First,Allow_with_Audit,Stable (9/9)
+LATTC,Balanced,Require,Stable (9/9)
+LATTC,Integrity_First,Require,Stable (9/9)
+LATTC,Sustainability_First,Ban,Stable (9/9)
+Academy of Art,Balanced,Ban,Stable (9/9)
+Academy of Art,Integrity_First,Ban,Stable (9/9)
+Academy of Art,Sustainability_First,Ban,Stable (9/9)

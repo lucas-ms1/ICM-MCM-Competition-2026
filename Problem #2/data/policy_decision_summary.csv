@@ -1,10 +1,10 @@
-institution,weight_regime,policy_regime,score
-Academy of Art,Balanced,Ban,0.425
-Academy of Art,Integrity_First,Ban,0.3058134100514134
-Academy of Art,Sustainability_First,Ban,0.3654067050257067
-LATTC,Balanced,Ban,0.670785031629362
-LATTC,Integrity_First,Ban,0.620785031629362
-LATTC,Sustainability_First,Ban,0.645785031629362
-SDSU,Balanced,Ban,0.9249999999999998
-SDSU,Integrity_First,Ban,0.7749999999999999
-SDSU,Sustainability_First,Ban,0.8499999999999999
+institution,career,weight_regime,policy_regime,score
+SDSU,software_engineer,Balanced,Allow_with_Audit,0.0
+SDSU,software_engineer,Integrity_First,Ban,0.0
+SDSU,software_engineer,Sustainability_First,Allow_with_Audit,0.0
+LATTC,electrician,Balanced,Require,0.0
+LATTC,electrician,Integrity_First,Require,0.0
+LATTC,electrician,Sustainability_First,Ban,0.0
+Academy of Art,writer,Balanced,Ban,0.0
+Academy of Art,writer,Integrity_First,Ban,0.0
+Academy of Art,writer,Sustainability_First,Ban,0.0

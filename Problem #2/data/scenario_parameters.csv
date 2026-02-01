@@ -1,0 +1,6 @@
+scenario,s_value,source,target_delta_g_at_p90,p90_positive_netrisk
+No_GenAI_Baseline,0.0,default,,
+Moderate_Substitution,0.0187424505647409,calibrated,0.015,0.8003222389829121
+High_Disruption,0.0374849011294818,calibrated,0.03,0.8003222389829121
+Ramp_Moderate,0.015,default,,
+Ramp_High,0.03,default,,

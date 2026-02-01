@@ -45,7 +45,9 @@ def main():
     scripts = [
         "build_tables.py",
         "build_mechanism_layer_expanded.py",
+        "build_mechanism_sensitivity.py",
         "build_calibration.py",
+        "build_calibration_validation.py",
         "run_scenarios.py",
         "build_uncertainty.py",
         "build_policy_model.py",

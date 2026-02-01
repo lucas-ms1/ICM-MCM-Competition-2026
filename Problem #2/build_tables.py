@@ -23,11 +23,12 @@ AREA_TYPE_STATE = 2
 AREA_TYPE_METRO = 4
 AREA_TYPE_NONMETRO = 6
 
-# Three careers: STEM (software engineer), trade (electrician), arts (writer). One SOC each (2018 SOC).
+# Three careers: STEM (software engineer), trade (electrician), arts (writer).
+# EXPANDED to bundles for robustness (Workstream C).
 CAREER_SOC = {
-    "software_engineer": ["15-1252"],   # Software Developers
-    "electrician": ["47-2111"],         # Electricians
-    "writer": ["27-3043"],              # Writers and Authors
+    "software_engineer": ["15-1252", "15-1251", "15-1256"],   # Software Devs, Programmers, QA
+    "electrician": ["47-2111", "47-3013"],                   # Electricians, Helpers
+    "writer": ["27-3043", "27-3041", "27-3042"],             # Writers, Editors, Tech Writers
 }
 
 # Special values in OEWS wage/employment fields (treated as missing)

@@ -1,15 +1,15 @@
 \begin{table}[H]
 \centering
-\caption{Sensitivity of High Disruption scenario ($s=0.03$) to weight parameters in $\NetRisk = a \cdot \SubScore - b \cdot \DefScore$ (with piecewise mapping). Shows whether employment change sign flips compared to base case ($a=1.0$, $b=1.0$).}
+\caption{Sensitivity of High Disruption scenario ($s=0.0375$ (calibrated)) to weight parameters in $\NetRisk = a \cdot \SubScore - b \cdot \DefScore$ (with piecewise mapping). Shows whether employment change sign flips compared to base case ($a=1.0$, $b=1.0$).}
 \label{tab:weight_sensitivity}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{lcccccccc}
 \toprule
 Career & $(0.8,0.8)$ & $(0.8,1.0)$ & $(0.8,1.2)$ & $(1.0,0.8)$ & $(1.0,1.2)$ & $(1.2,0.8)$ & $(1.2,1.0)$ & $(1.2,1.2)$\\
 \midrule
-Software Developers & Stable & Stable & Stable & Stable & Stable & Flips & Flips & Stable\\
+Software Developers & Flips & Flips & Flips & Stable & Flips & Stable & Stable & Stable\\
 Electricians & Stable & Stable & Stable & Stable & Stable & Stable & Stable & Stable\\
-Writers and Authors & Stable & Flips & Flips & Stable & Flips & Stable & Stable & Stable\\
+Writers and Authors & Stable & Stable & Flips & Stable & Stable & Stable & Stable & Stable\\
 \bottomrule
 \end{tabular}%
 }

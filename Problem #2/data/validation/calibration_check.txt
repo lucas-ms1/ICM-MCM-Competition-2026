@@ -1,13 +1,13 @@
-Scenario Calibration Check
-==========================
-Equation: g_adj = g_base - s * max(NetRisk, 0) + 0.2*s * max(-NetRisk, 0)
+Scenario Calibration Check (Bundled)
+====================================
+Aggregation: Projected SOC-level employment then summed.
 
-Career: software_engineer, NetRisk: 0.888
-  Moderate_Substitution (s=0.0187424505647409): g_base=0.0148 -> g_adj=-0.0019 (delta=-0.0166)
-  High_Disruption (s=0.0374849011294818): g_base=0.0148 -> g_adj=-0.0185 (delta=-0.0333)
-Career: electrician, NetRisk: -0.889
-  Moderate_Substitution (s=0.0187424505647409): g_base=0.0091 -> g_adj=0.0124 (delta=0.0033)
-  High_Disruption (s=0.0374849011294818): g_base=0.0091 -> g_adj=0.0157 (delta=0.0067)
-Career: writer, NetRisk: 0.615
-  Moderate_Substitution (s=0.0187424505647409): g_base=0.0036 -> g_adj=-0.0080 (delta=-0.0115)
-  High_Disruption (s=0.0374849011294818): g_base=0.0036 -> g_adj=-0.0195 (delta=-0.0230)
+Career: software_engineer, Weighted NetRisk: 0.880
+  Moderate_Substitution: E2024=1,815,000 -> E2034=1,760,980 (delta=-54,020)
+  High_Disruption: E2024=1,815,000 -> E2034=1,490,209 (delta=-324,791)
+Career: electrician, Weighted NetRisk: -0.888
+  Moderate_Substitution: E2024=885,300 -> E2034=995,068 (delta=109,768)
+  High_Disruption: E2024=885,300 -> E2034=1,028,306 (delta=143,006)
+Career: writer, Weighted NetRisk: 0.610
+  Moderate_Substitution: E2024=307,600 -> E2034=279,700 (delta=-27,900)
+  High_Disruption: E2024=307,600 -> E2034=249,054 (delta=-58,546)
