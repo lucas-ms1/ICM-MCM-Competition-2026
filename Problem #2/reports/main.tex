@@ -17,7 +17,7 @@
 \renewcommand{\thebibliography}[1]{\origthebibliography{#1}\sloppy}
 
 \hypersetup{colorlinks=true, linkcolor=blue, urlcolor=blue, citecolor=blue}
-\sisetup{detect-weight=true, detect-family=true}
+\sisetup{detect-weight=true, detect-family=true, group-separator={,}, group-minimum-digits=4}
 
 % ---------- Convenience macros ----------
 \newcommand{\NetRisk}{\ensuremath{\mathrm{NetRisk}}}
@@ -27,12 +27,17 @@
 \newcommand{\gbase}{g_{\mathrm{base}}}
 \newcommand{\gadj}{g_{\mathrm{adj}}}
 
+% ---------- Auto-generated numeric macros (from CSV artifacts) ----------
+% These are safe to include in the preamble (only \newcommand definitions).
+\IfFileExists{tables/scenario_macros.tex}{\input{tables/scenario_macros.tex}}{}
+
 % ---------- Auto-generated tables/figures (from build_report_artifacts.py) ----------
 % NOTE: these files contain full LaTeX environments, so they must be \input
 % inside the document body (not in the preamble).
 
 \title{ICM 2026 Problem F: To Gen-AI, or Not To Gen-AI?\\
 \large A data-informed model of GenAI exposure and institution-specific educational recommendations}
+% TODO (submission-critical): replace with your assigned team number.
 \author{Team \#\_\_\_\_}
 \date{}
 
@@ -44,65 +49,24 @@
 % 1) One-page Summary Sheet (written last; placed first)
 % ============================================================
 \section*{Summary Sheet}
-\begin{itemize}[leftmargin=*]
-  \item \textbf{Careers and institutions.} We study a STEM career (Software Developers; San Diego State University), a trade career (Electricians; Los Angeles Trade--Technical College), and an arts career (Writers and Authors; Academy of Art University). \textbf{National scenario results are reported for employment-weighted SOC bundles} (2--3 SOCs per career; Table~\ref{tab:scenario_summary} and Figure~\ref{fig:scenario_bar}), while institution context uses OEWS for the local labor market.
-  \item \textbf{Data.} We combine BLS Occupational Employment and Wage Statistics (OEWS) for local labor market context with BLS Employment Projections (EP) for national 2024--2034 baselines, and O*NET 30.1 descriptors to build a mechanism layer explaining substitution vs.\ complementarity \citep{bls_oews_tec, bls_ep_table110, onet_database, onet_taxonomy, onet_license}.
-  \item \textbf{Model.} We define five O*NET-based dimensions, compute percentiles across occupations, and form a \emph{Net Risk} index:
-  \[
-    \NetRisk = \underbrace{\frac{\mathrm{Writing} + \mathrm{ToolTech}}{2}}_{\SubScore} - \underbrace{\frac{\mathrm{Physical} + \mathrm{Social} + \mathrm{Creativity}}{3}}_{\DefScore}.
-  \]
-  Scenario employment uses baseline EP annual growth \(\gbase\) adjusted by a scenario parameter \(s\) using a piecewise mapping: 
-  \[
-    \gadj = \gbase - s \cdot \max(\NetRisk, 0) + (\,m_i\, s\,)\cdot \max(-\NetRisk, 0), \qquad m_i \le m_{\max}=0.2.
-  \]
-  This creates a substitution penalty for exposed occupations while bounding complementarity uplift for sheltered occupations by an occupation-level multiplier \(m_i\) (with conservative upper bound \(m_{\max}=0.2\)). See Table~\ref{tab:scenario_summary}.
+\label{page:summary_start}
+\begin{itemize}[leftmargin=*, itemsep=0.25em, topsep=0.25em]
+  \item \textbf{Careers + institutions.} Software Developers (SDSU), Electricians (LATTC), Writers \& Authors (Academy of Art). National results use employment-weighted SOC bundles (Table~\ref{tab:scenario_summary}).
+  \item \textbf{Data \& audit.} BLS OEWS + EP + O*NET; independent reality-check vs AIOE: \(r=\AIOEPearson\), \(\rho=\AIOESpearman\) (Table~\ref{tab:external_benchmark}).
+  \item \textbf{Model (1 line).} \(\NetRisk=\frac{\mathrm{Writing}+\mathrm{ToolTech}}{2}-\frac{\mathrm{Physical}+\mathrm{Social}+\mathrm{Creativity}}{3}\); define \(s_{\mathrm{comp}}:=m_i\,s\) with \(m_i\le m_{\max}=0.2\), then \(\gadj=\gbase-s\max(\NetRisk,0)+s_{\mathrm{comp}}\max(-\NetRisk,0)\). \textbf{Projections use calibrated NetRisk when available.}
   \item \textbf{Headline findings (national 2034; SOC bundles).}\IfFileExists{tables/summary_headline_fragment.tex}{\input{tables/summary_headline_fragment.tex}}{ (see Table~\ref{tab:scenario_summary}).}\par
-  \textbf{Interpretation:} positive \(\NetRisk\) implies GenAI is more substitutive, so curricula should emphasize verification, evaluation, and higher-level judgment; negative \(\NetRisk\) implies sheltering, so curricula should emphasize safe, tool-assisted workflows that augment practice.
-  \item \textbf{Cheap credibility wins (independent checks).} To address the judge's ``is this plausible?'' instinct, we benchmark our index against Felten--Raj--Seamans AIOE: calibrated NetRisk correlates strongly (\(r=0.942\), \(\rho=0.938\); Table~\ref{tab:external_benchmark}) and we transparently list large-disagreement examples (Table~\ref{tab:external_benchmark_disagree}). We also audit our two NetRisk constructions (calibrated vs.\ equal-weight mechanism): overall correlation, sign agreement, and where they disagree most (Tables~\ref{tab:netrisk_index_compare}--\ref{tab:netrisk_index_disagree}).
-  \item \textbf{Program-size decisions.} SDSU CS: maintain/slight growth; LATTC Electric: grow aggressively; Academy of Art Writing: consolidate/specialize toward higher-originality niches and editing/production workflows (Section~\ref{sec:recommendations}).
-  \item \textbf{Key limitations.} Scenarios treat \(s\) as a transparent stress-test knob (not a causal estimate); career--occupation mapping uses small SOC bundles with employment-weighted aggregation; local program sizing uses scaled openings as a proxy (Section~\ref{sec:robustness}).
+  \item \textbf{Recommendations.} SDSU CS: maintain/slight growth; LATTC Electric: grow capacity; Academy of Art Writing: consolidate/specialize toward higher-originality niches and editing/production workflows (Section~\ref{sec:recommendations}).
+  \item \textbf{Limitations.} Scenarios treat \(s\) as a transparent stress-test knob (not a causal estimate); careers are small SOC bundles; local sizing uses scaled openings as a proxy (Section~\ref{sec:robustness}).
 \end{itemize}
-\newpage
-
-% ============================================================
-% 1b) Definitions & Provenance (one-page box)
-% ============================================================
-\section*{Definitions \& Provenance (for auditability)}
-\begin{center}
-\fbox{\begin{minipage}{0.97\textwidth}
-\small
-\textbf{Two NetRisk indices (reported side-by-side).}
-\begin{itemize}[leftmargin=*]
-  \item \textbf{NetRisk (uncalibrated; mechanism/interpretability index).} Defined from O*NET percentile scores:
-  \[
-    \NetRisk_{\text{uncal}}=\underbrace{\frac{\mathrm{Writing}+\mathrm{ToolTech}}{2}}_{\SubScore}-\underbrace{\frac{\mathrm{Physical}+\mathrm{Social}+\mathrm{Creativity}}{3}}_{\DefScore}.
-  \]
-  This equal-weight form is used to \emph{explain} substitution vs.\ defense mechanisms (what drives risk).
-  \item \textbf{NetRisk (calibrated; predictive index).} A signed weighted sum calibrated to an external occupation-level AI applicability score (Tomlinson et al., 2025), then centered and rescaled to approximately \([-1,1]\). Because the O*NET dimensions are correlated and weights are constrained nonnegative, calibration can push one of a correlated pair (e.g., Writing vs.\ Tool/Tech) toward zero without implying the underlying mechanism is absent.
-  \item \textbf{Which index drives scenarios?} Scenario projections use \textbf{calibrated NetRisk when available}; otherwise they fall back to the uncalibrated index. See Tables~\ref{tab:netrisk_index_compare}--\ref{tab:netrisk_index_disagree} for correlation and disagreement examples.
-\end{itemize}
-
-\textbf{What drives scenarios (national 2024--2034).}
-\begin{itemize}[leftmargin=*]
-  \item \textbf{Baseline trajectory.} $E_{2024}$ and baseline growth $\gbase$ come from BLS Employment Projections (EP). Baseline 2034 is $E_{2034}=E_{2024}(1+\gbase)^{10}$.
-  \item \textbf{Disruption mapping.} We adjust growth with a transparent scenario knob $s$:
-  \[
-    \gadj = \gbase - s\cdot\max(\NetRisk,0) + (\,m_i\, s\,)\cdot\max(-\NetRisk,0), \qquad m_i \le m_{\max}=0.2,
-  \]
-  and project $E_{2034}=E_{2024}(1+\gadj)^{10}$. \textbf{Ramp} scenarios linearly increase $s(t)$ from 0 (2024) to $s$ (2034).
-  \item \textbf{How Moderate/High are set.} When calibration outputs exist, we set $s$ so that the 90th percentile of the positive NetRisk tail experiences a $1.5\%$ (Moderate) or $3.0\%$ (High) annual growth headwind; the exact values used are reported in Table~\ref{tab:scenario_params}.
-\end{itemize}
-
-\textbf{What a “career bundle” contains (SOC occupations; EP employment weights).}
-\footnotesize
-\IfFileExists{tables/bundle_contents_fragment.tex}{\input{tables/bundle_contents_fragment.tex}}{}
-\end{minipage}}
-\end{center}
+\vspace{-2pt}
+{\scriptsize \ScenarioArtifactsStamp}
+\label{page:summary_end}
 \newpage
 
 % ============================================================
 % Table of Contents (required)
 % ============================================================
+\label{page:toc_start}
 \tableofcontents
 \newpage
 
@@ -210,6 +174,7 @@ We interpret complementarity uplift as demand-side growth that is \emph{bounded}
   m_i=\min\{m_{\max},(1-B_i)\tilde{\varepsilon}_i\},
 \]
 where \(B_i\in[0,1]\) is a bottleneck index (computed from our existing Physical percentile plus a coarse licensing proxy by SOC major group), and \(\tilde{\varepsilon}_i\in[0,1]\) is a normalized demand-responsiveness proxy (not a literal elasticity; binned by career type / SOC major group).\par
+\textbf{Interpretation.} We treat \(\tilde{\varepsilon}_i\) as a conservative \textbf{rank-based demand-responsiveness proxy} (not an elasticity); sensitivity checks (Tables~\ref{tab:comp_cap_components} and \ref{tab:comp_factor_sensitivity}) show conclusions are unchanged under reasonable variation.\par
 \IfFileExists{tables/comp_cap_components.tex}{\input{tables/comp_cap_components.tex}}{}
 \textbf{Numeric anchor for \(m_{\max}=0.2\).} We choose \(m_{\max}\) so that even under High disruption, the implied \emph{maximum} annual uplift for a strongly sheltered occupation remains well below 1\%/yr. For example, for Electricians (bundle \(\NetRisk\approx-0.888\)) under High (\(s_{\text{High}}=0.0375\); Table~\ref{tab:scenario_params}), the uplift term is bounded by
 \[
@@ -225,6 +190,39 @@ Scenario strengths are defined by this reference-point calibration: we target a 
 so that the 90th-percentile exposed occupation experiences the intended annual headwind under the piecewise mapping. Table~\ref{tab:scenario_params} reports the scenario parameters actually used (including whether they came from calibration outputs or defaults). We project 2034 employment as \(\Emp{2034} = \Emp{2024}(1+\gadj)^{10}\). We treat \(s\) as a scenario knob rather than an estimated causal effect; Section~\ref{sec:robustness} reports a sensitivity grid.
 
 \IfFileExists{tables/scenario_params.tex}{\input{tables/scenario_params.tex}}{}
+
+\subsection{Definitions \& Provenance (auditability)}
+\label{sec:definitions_provenance}
+\begin{center}
+\fbox{\begin{minipage}{0.97\textwidth}
+\small
+\textbf{Two NetRisk indices (reported side-by-side).}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{NetRisk (uncalibrated; mechanism/interpretability index).} Defined from O*NET percentile scores:
+  \[
+    \NetRisk_{\text{uncal}}=\underbrace{\frac{\mathrm{Writing}+\mathrm{ToolTech}}{2}}_{\SubScore}-\underbrace{\frac{\mathrm{Physical}+\mathrm{Social}+\mathrm{Creativity}}{3}}_{\DefScore}.
+  \]
+  This equal-weight form is used to \emph{explain} substitution vs.\ defense mechanisms (what drives risk).
+  \item \textbf{NetRisk (calibrated; predictive index).} A signed weighted sum calibrated to an external occupation-level AI applicability score (Tomlinson et al., 2025), then centered and rescaled to approximately \([-1,1]\). Because the O*NET dimensions are correlated and weights are constrained nonnegative, calibration can push one of a correlated pair (e.g., Writing vs.\ Tool/Tech) toward zero without implying the underlying mechanism is absent.
+  \item \textbf{Which index drives scenarios?} Scenario projections use \textbf{calibrated NetRisk when available}; otherwise they fall back to the uncalibrated index. See Tables~\ref{tab:netrisk_index_compare}--\ref{tab:netrisk_index_disagree} for correlation and disagreement examples.
+\end{itemize}
+
+\textbf{What drives scenarios (national 2024--2034).}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Baseline trajectory.} $E_{2024}$ and baseline growth $\gbase$ come from BLS Employment Projections (EP). Baseline 2034 is $E_{2034}=E_{2024}(1+\gbase)^{10}$.
+  \item \textbf{Disruption mapping.} We adjust growth with a transparent scenario knob $s$:
+  \[
+    \gadj = \gbase - s\cdot\max(\NetRisk,0) + (\,m_i\, s\,)\cdot\max(-\NetRisk,0), \qquad m_i \le m_{\max}=0.2,
+  \]
+  and project $E_{2034}=E_{2024}(1+\gadj)^{10}$. \textbf{Ramp} scenarios linearly increase $s(t)$ from 0 (2024) to $s$ (2034).
+  \item \textbf{How Moderate/High are set.} When calibration outputs exist, we set $s$ so that the 90th percentile of the positive NetRisk tail experiences a $1.5\%$ (Moderate) or $3.0\%$ (High) annual growth headwind; the exact values used are reported in Table~\ref{tab:scenario_params}.
+\end{itemize}
+
+\textbf{What a “career bundle” contains (SOC occupations; EP employment weights).}
+\footnotesize
+\IfFileExists{tables/bundle_contents_fragment.tex}{\input{tables/bundle_contents_fragment.tex}}{}
+\end{minipage}}
+\end{center}
 
 \section{Results}
 \label{sec:results}

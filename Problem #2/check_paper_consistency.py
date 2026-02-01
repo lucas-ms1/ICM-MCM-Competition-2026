@@ -109,90 +109,252 @@ def check_inputs_and_figures(main_tex: Path) -> list[CheckResult]:
 
 def check_summary_sheet_headlines(main_tex: Path, scenario_csv: Path) -> list[CheckResult]:
     """
-    Validates that the Summary Sheet headline findings for baseline/high/ramp high
-    match data/scenario_summary.csv exactly (as integers).
+    Validates that the Summary Sheet headline findings are structurally derived
+    from scenario artifacts by:
+      1) checking that tables/scenario_macros.tex exists and matches data/scenario_summary.csv
+      2) checking that tables/summary_headline_fragment.tex references those macros (no literals)
     """
-    text = _read_text(main_tex)
-    df = pd.read_csv(scenario_csv)
-    df = df.set_index("career")
-
-    # Pull the Summary Sheet line (we look for the exact anchor)
-    m = re.search(r"Headline findings \(national 2034; SOC bundles\)\.(.+?)\\par", text, flags=re.DOTALL)
-    if not m:
-        return [CheckResult("summary_sheet_headline_parse", False, "Could not locate the Summary Sheet headline findings block.")]
-
-    block = m.group(1).strip()
-    # If the block is an \input of the headline fragment, expand it so we validate the fragment content
+    df = pd.read_csv(scenario_csv).set_index("career")
+    macros_path = main_tex.parent / "tables" / "scenario_macros.tex"
     frag_path = main_tex.parent / "tables" / "summary_headline_fragment.tex"
-    if frag_path.exists() and ("summary_headline_fragment.tex" in block and "\\input" in block):
-        block = _read_text(frag_path)
 
-    # The headline findings block has two distinct parts:
-    #  - immediate High vs baseline (each career appears once)
-    #  - Ramp adoption reduces... (each career appears again)
-    # We split on the Ramp sentence so we don't cross-match the wrong occupation.
-    parts = block.split("Ramp adoption reduces", 1)
-    if len(parts) != 2:
-        return [CheckResult("summary_sheet_headline_split", False, "Could not split headline block on 'Ramp adoption reduces'.")]
-    immediate_part = parts[0]
-    ramp_part = parts[1]
+    if not macros_path.exists():
+        return [CheckResult("scenario_macros_exist", False, f"Missing: {macros_path}")]
+    if not frag_path.exists():
+        return [CheckResult("summary_headline_fragment_exist", False, f"Missing: {frag_path}")]
 
-    def _grab(label: str) -> tuple[int, int, int]:
-        # baseline, high, ramp_high
-        pat_immediate = (
-            re.escape(label)
-            + r"\s*\\\((?P<base>[0-9\{\},]+)\s*\\rightarrow\s*(?P<high>[0-9\{\},]+)\\\)"
+    macros = _read_text(macros_path)
+    frag = _read_text(frag_path)
+
+    def _extract_num_macro(macro_name: str) -> int:
+        # expects: \newcommand{\EHighSoftware}{\num{1490209}}
+        mm = re.search(
+            r"\\newcommand\{\\"
+            + re.escape(macro_name)
+            + r"\}\{\\num\{(?P<num>-?\d+)\}\}",
+            macros,
         )
-        mi = re.search(pat_immediate, immediate_part, flags=re.DOTALL)
-        if not mi:
-            raise ValueError(f"Could not parse immediate High numbers for {label}")
+        if not mm:
+            raise ValueError(f"Missing or malformed macro: {macro_name}")
+        return int(mm.group("num"))
 
-        pat_ramp = (
-            re.escape(label)
-            + r"\s*\\\((?P<base2>[0-9\{\},]+)\s*\\rightarrow\s*(?P<rh>[0-9\{\},]+)\\\)"
-        )
-        mr = re.search(pat_ramp, ramp_part, flags=re.DOTALL)
-        if not mr:
-            raise ValueError(f"Could not parse Ramp High numbers for {label}")
-
-        base = _parse_int_commas(mi.group("base"))
-        high = _parse_int_commas(mi.group("high"))
-        base2 = _parse_int_commas(mr.group("base2"))
-        rh = _parse_int_commas(mr.group("rh"))
-        if base != base2:
-            raise ValueError(f"Baseline mismatch within Summary Sheet for {label}: {base} vs {base2}")
-        return base, high, rh
-
-    def _expect(career_key: str) -> tuple[int, int, int]:
-        r = df.loc[career_key]
-        base = int(round(float(r["emp_2034_No_GenAI_Baseline"])))
-        high = int(round(float(r["emp_2034_High_Disruption"])))
-        rh = int(round(float(r["emp_2034_Ramp_High"])))
-        return base, high, rh
-
-    checks = []
     mapping = [
-        ("Software Developers", "software_engineer", "Software Developers"),
-        ("Electricians", "electrician", "Electricians"),
-        ("Writers and Authors", "writer", "Writers and Authors"),
+        ("software_engineer", "Software"),
+        ("electrician", "Electrician"),
+        ("writer", "Writer"),
     ]
 
-    for label, key, short in mapping:
+    checks: list[CheckResult] = []
+    for key, suf in mapping:
+        r = df.loc[key]
+        exp_base = int(round(float(r["emp_2034_No_GenAI_Baseline"])))
+        exp_high = int(round(float(r["emp_2034_High_Disruption"])))
+        exp_ramp = int(round(float(r["emp_2034_Ramp_High"])))
+
         try:
-            got = _grab(label)
-            exp = _expect(key)
-            ok = got == exp
+            got_base = _extract_num_macro(f"EBase{suf}")
+            got_high = _extract_num_macro(f"EHigh{suf}")
+            got_ramp = _extract_num_macro(f"ERampHigh{suf}")
+            ok = (got_base == exp_base) and (got_high == exp_high) and (got_ramp == exp_ramp)
             checks.append(
                 CheckResult(
-                    name=f"summary_sheet_{short.replace(' ', '_').lower()}",
+                    name=f"scenario_macros_{key}",
                     ok=ok,
-                    details=f"got={got}, expected={exp}",
+                    details=f"got=(base={got_base},high={got_high},ramp={got_ramp}), expected=(base={exp_base},high={exp_high},ramp={exp_ramp})",
                 )
             )
         except Exception as e:
-            checks.append(CheckResult(name=f"summary_sheet_{short.replace(' ', '_').lower()}", ok=False, details=str(e)))
+            checks.append(CheckResult(name=f"scenario_macros_{key}", ok=False, details=str(e)))
+
+    # Ensure headline fragment is macro-driven (no hand-entered digits)
+    required_macros = [
+        r"\EBaseSoftware",
+        r"\EHighSoftware",
+        r"\ERampHighSoftware",
+        r"\EBaseElectrician",
+        r"\EHighElectrician",
+        r"\ERampHighElectrician",
+        r"\EBaseWriter",
+        r"\EHighWriter",
+        r"\ERampHighWriter",
+    ]
+    missing = [m for m in required_macros if m not in frag]
+    checks.append(
+        CheckResult(
+            "summary_headline_fragment_uses_macros",
+            ok=(len(missing) == 0),
+            details=("Missing macros in fragment: " + ", ".join(missing)) if missing else "OK",
+        )
+    )
+
+    # Guardrail: fragment shouldn't contain long runs of digits (copy/paste risk)
+    has_literal_digits = re.search(r"\d{4,}", frag) is not None
+    checks.append(
+        CheckResult(
+            "summary_headline_fragment_no_literals",
+            ok=(not has_literal_digits),
+            details="Found literal 4+ digit sequences in headline fragment." if has_literal_digits else "OK",
+        )
+    )
 
     return checks
+
+
+def check_summary_sheet_one_page(main_tex: Path) -> list[CheckResult]:
+    """
+    Hard-fail if the Summary Sheet spills beyond page 1.
+    We check the LaTeX aux labels for page numbers after PDF compilation.
+    """
+    aux = main_tex.parent / "main.aux"
+    if not aux.exists():
+        return [
+            CheckResult(
+                "summary_sheet_one_page_aux_exists",
+                False,
+                f"Missing {aux}. Build the PDF to enable the one-page Summary Sheet check.",
+            )
+        ]
+    txt = _read_text(aux)
+
+    def _page(label: str) -> int | None:
+        # Typical LaTeX aux format:
+        # \newlabel{page:summary_end}{{}{2}{Summary Sheet}{section*.1}{}}
+        mm = re.search(r"\\newlabel\{" + re.escape(label) + r"\}\{\{\}\{(\d+)\}", txt)
+        if not mm:
+            return None
+        return int(mm.group(1))
+
+    p_end = _page("page:summary_end")
+    p_toc = _page("page:toc_start")
+    checks: list[CheckResult] = []
+    checks.append(
+        CheckResult(
+            "summary_sheet_end_on_page_1",
+            ok=(p_end == 1),
+            details=f"page:summary_end={p_end} (expected 1)",
+        )
+    )
+    # Optional sanity: TOC should start on page 2
+    if p_toc is not None:
+        checks.append(
+            CheckResult(
+                "toc_starts_on_page_2",
+                ok=(p_toc == 2),
+                details=f"page:toc_start={p_toc} (expected 2)",
+            )
+        )
+    return checks
+
+
+def check_summary_sheet_refs(main_tex: Path) -> list[CheckResult]:
+    """
+    Verify that every \\ref{...} used in the Summary Sheet points to an existing \\label{...}
+    somewhere in main.tex or any input'd table fragments.
+    """
+    text = _read_text(main_tex)
+    # Extract Summary Sheet block (up to the explicit page break after it).
+    m = re.search(r"\\section\*\{Summary Sheet\}(.+?)\\newpage", text, flags=re.DOTALL)
+    if not m:
+        return [CheckResult("summary_sheet_block_parse", False, "Could not locate Summary Sheet block.")]
+    block = m.group(1)
+    refs = sorted(set(re.findall(r"\\ref\{([^}]+)\}", block)))
+    if not refs:
+        return [CheckResult("summary_sheet_refs_present", True, "No refs in Summary Sheet.")]
+
+    # Collect all labels across main.tex + tables/*.tex
+    label_texts: list[str] = [text]
+    for p in TABLES_DIR.glob("*.tex"):
+        try:
+            label_texts.append(_read_text(p))
+        except Exception:
+            pass
+    all_text = "\n".join(label_texts)
+    labels = set(re.findall(r"\\label\{([^}]+)\}", all_text))
+
+    missing = [r for r in refs if r not in labels]
+    return [
+        CheckResult(
+            "summary_sheet_refs_resolve",
+            ok=(len(missing) == 0),
+            details=("Missing labels: " + ", ".join(missing)) if missing else f"OK ({len(refs)} refs resolved)",
+        )
+    ]
+
+
+def check_model_definition_claims(main_tex: Path) -> list[CheckResult]:
+    """
+    Light-weight structural check that the Summary Sheet's model-definition claims
+    are consistent with the Model section definitions (same components + cap logic).
+
+    This is not a full LaTeX math equivalence prover; it's a guardrail against drift.
+    """
+    text = _read_text(main_tex)
+
+    # Summary Sheet block (up to the explicit page break after it).
+    msum = re.search(r"\\section\*\{Summary Sheet\}(.+?)\\newpage", text, flags=re.DOTALL)
+    if not msum:
+        return [CheckResult("model_claims_summary_parse", False, "Could not locate Summary Sheet block.")]
+    summary = msum.group(1)
+
+    # Model section block
+    mmodel = re.search(r"\\section\{Model\}(.+?)\\section\{Results\}", text, flags=re.DOTALL)
+    if not mmodel:
+        return [CheckResult("model_claims_model_parse", False, "Could not locate Model section block.")]
+    model = mmodel.group(1)
+
+    # Check NetRisk components appear in Summary Sheet definition line
+    need_summary = [
+        r"\NetRisk",
+        "Writing",
+        "ToolTech",
+        "Physical",
+        "Social",
+        "Creativity",
+    ]
+    miss_sum = [s for s in need_summary if s not in summary]
+
+    # Check that Model section defines SubScore/DefScore with matching components and divisors.
+    # (We look for the specific dimension identifiers used in the narrative.)
+    need_model = [
+        r"\SubScore_i",
+        "Writing",
+        "ToolTech",
+        r"\DefScore_i",
+        "Physical",
+        "Social",
+        "Creativity",
+    ]
+    miss_model = [s for s in need_model if s not in model]
+    # Divisors: allow either explicit "/2" "/3" or LaTeX \frac{...}{2} / \frac{...}{3}
+    # Avoid fragile full-LaTeX parsing; just require the divisor tokens appear.
+    has_div2 = ("/2" in model) or (("}{2}" in model) and ("\\frac" in model))
+    has_div3 = ("/3" in model) or (("}{3}" in model) and ("\\frac" in model))
+    if not has_div2:
+        miss_model.append("div2")
+    if not has_div3:
+        miss_model.append("div3")
+
+    # Check cap logic exists in both places.
+    # Summary Sheet can choose to mention either m_max symbol or just the numeric cap.
+    cap_need_sum = ["m_i", "0.2"]
+    miss_cap_sum = [s for s in cap_need_sum if s not in summary]
+    has_mmax_sum = ("m_{\\max}" in summary) or ("m_{\\max}=0.2" in summary) or ("m_{\\max} = 0.2" in summary)
+    # Model section should include the symbolic cap definition.
+    cap_need_model = ["m_i", "m_{\\max}", "0.2"]
+    miss_cap_model = [s for s in cap_need_model if s not in model]
+
+    ok = (len(miss_sum) == 0) and (len(miss_model) == 0) and (len(miss_cap_sum) == 0) and (len(miss_cap_model) == 0)
+    details = []
+    if miss_sum:
+        details.append("Summary missing: " + ", ".join(miss_sum))
+    if miss_model:
+        details.append("Model missing: " + ", ".join(miss_model))
+    if miss_cap_sum:
+        details.append("Summary cap missing: " + ", ".join(miss_cap_sum))
+    if miss_cap_model:
+        details.append("Model cap missing: " + ", ".join(miss_cap_model))
+
+    return [CheckResult("model_definition_claims_consistent", ok=ok, details="; ".join(details) if details else "OK")]
 
 
 def check_scenario_table_matches_csv(scenario_csv: Path, scenario_tex: Path) -> list[CheckResult]:
@@ -439,6 +601,9 @@ def main() -> None:
         checks.extend(check_summary_sheet_headlines(main_tex, scenario_csv))
     else:
         checks.append(CheckResult("scenario_csv_exists", False, f"Missing: {scenario_csv}"))
+    checks.extend(check_summary_sheet_refs(main_tex))
+    checks.extend(check_model_definition_claims(main_tex))
+    checks.extend(check_summary_sheet_one_page(main_tex))
     if scenario_csv.exists() and scenario_tex.exists():
         checks.extend(check_scenario_table_matches_csv(scenario_csv, scenario_tex))
     else:
