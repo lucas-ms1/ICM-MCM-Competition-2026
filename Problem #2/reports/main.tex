@@ -81,7 +81,7 @@
 \begin{itemize}[leftmargin=*, itemsep=0.25em, topsep=0.25em]
   \item \textbf{Careers + institutions.} Software Developers (SDSU), Electricians (LATTC), Writers \& Authors (Academy of Art). National results use employment-weighted SOC bundles (Table~\ref{tab:scenario_summary}).
   \item \textbf{Data \& audit.} BLS OEWS + EP + O*NET; independent reality-check vs AIOE: \(r=\AIOEPearson\), \(\rho=\AIOESpearman\) (Table~\ref{tab:external_benchmark}).
-  \item \textbf{Model (1 line).} Define task shares \(\tau_i:=\SubScore_i=\frac{\mathrm{Writing}+\mathrm{ToolTech}}{2}\) and \(\delta_i:=\DefScore_i=\frac{\mathrm{Physical}+\mathrm{Social}+\mathrm{Creativity}}{3}\), so \(\NetRisk_i=\tau_i-\delta_i\). Our scenario mapping is
+  \item \textbf{Model.} Define task shares \(\tau_i:=\SubScore_i=\frac{\mathrm{Writing}+\mathrm{ToolTech}}{2}\) and \(\delta_i:=\DefScore_i=\frac{\mathrm{Physical}+\mathrm{Social}+\mathrm{Creativity}}{3}\), so \(\NetRisk_i=\tau_i-\delta_i\). Our scenario mapping is
   \[
     \gadj=\gbase-s\max(\tau_i-\delta_i,0)+(\,m_i\,s\,)\max(\delta_i-\tau_i,0),\qquad 0\le m_i\le m_{\max}=0.2,
   \]
@@ -94,7 +94,7 @@
 \begin{center}
 \fbox{\begin{minipage}{0.97\textwidth}
 \small
-\textbf{Model pipeline (1 box).} \textbf{Data} (BLS EP baseline growth + openings; OEWS local context + wages; O*NET task dimensions; external benchmarks) \(\rightarrow\)
+\textbf{Model pipeline:} \textbf{Data} (BLS EP baseline growth + openings; OEWS local context + wages; O*NET task dimensions; external benchmarks) \(\rightarrow\)
 \textbf{Mechanism layer} (\(\SubScore,\DefScore\Rightarrow \NetRisk_{\text{uncal}}\) for explainability) \(\rightarrow\)
 \textbf{Calibration} (fit \(\NetRisk_{\text{cal}}\) to external AI applicability; used for projections) \(\rightarrow\)
 \textbf{Scenarios} (\(\gadj\) mapping; immediate + ramp adoption) \(\rightarrow\)
@@ -123,7 +123,7 @@
 % ============================================================
 \section{Problem framing and choices}
 \label{sec:framing}
-We aim to advise leaders of three post-secondary programs on how to address GenAI, using an auditable model grounded in public labor-market data and an explainable O*NET mechanism layer. Our framing follows tasks-based technology theories: GenAI can substitute for some language/cognitive tasks while complementing others, changing task composition and productivity rather than deterministically eliminating whole occupations \citep{mit_tasks_based_framing, openai_llm_exposure, nber_generative_ai_at_work}. We choose the three careers to match the prompt's STEM/trade/arts categories and to span a wide range of task structures (software = tool/knowledge work; electricians = physical/manual, onsite; writers = writing-intensive creative production).
+We aim to advise leaders of three post-secondary programs on how to address GenAI, using a model grounded in public labor-market data and an O*NET mechanism layer. Our framing follows tasks-based technology theories: GenAI can substitute for some language/cognitive tasks while complementing others, changing task composition and productivity rather than deterministically eliminating whole occupations \citep{mit_tasks_based_framing, openai_llm_exposure, nber_generative_ai_at_work}. We choose the three careers to match the prompt's STEM/trade/arts categories and to span a wide range of task structures (software = tool/knowledge work; electricians = physical/manual, onsite; writers = writing-intensive creative production).
 \par\textbf{Why these institutions} We pair each career with a real institution situated in a relevant labor market so recommendations are operational (Table~\ref{tab:local_context}): (i) SDSU is embedded in a large regional market for software and adjacent tech roles; (ii) LATTC is embedded in the Los Angeles construction/electrical labor market where apprenticeship pipelines are central; (iii) Academy of Art is embedded in the Bay Area creative economy where writing roles increasingly intersect with media production and content operations.
 
 \section{Data and preprocessing}
@@ -154,7 +154,7 @@ Let \(d\in\{\mathrm{Writing},\mathrm{ToolTech},\mathrm{Physical},\mathrm{Social}
 \]
 
 \subsubsection{Construct validity (what we capture vs.\ what we omit)}
-Our five dimensions are designed to be \emph{explainable} and \emph{auditable} in an ICM setting: (i) Writing and Tool/Tech capture tasks where GenAI can substitute for or accelerate codified language and computer-mediated workflows; (ii) Physical, Social, and Creativity capture defenses where outputs depend on onsite manipulation, interpersonal coordination, and originality/voice.\par
+Our five dimensions capture: (i) Writing and Tool/Tech capture tasks where GenAI can substitute for or accelerate codified language and computer-mediated workflows; (ii) Physical, Social, and Creativity capture defenses where outputs depend on onsite manipulation, interpersonal coordination, and originality/voice.\par
 \textbf{What we omit.} For STEM roles in particular, GenAI exposure is not only about writing or tool use; it also interacts with \emph{system-level responsibility}: safety/liability, integration complexity, and the consequences of errors. These channels are hard to represent with a small, stable, public feature set without overfitting.\par
 \textbf{Sensitivity check.} To address this construct-validity gap without expanding the core model, we add a sensitivity-only ``accountability/system responsibility'' channel from O*NET Work Context (consequence of error and impact of decisions) into the defense score and show our focal-career conclusions remain stable (Table~\ref{tab:mechanism_accountability_sensitivity}).\par
 \textbf{Interpreting calibrated weights.} Because the five dimensions are correlated, nonnegative calibration can push a correlated dimension’s weight toward zero under the sparse optimum; we therefore report a \emph{minimum-weight} calibration as the headline (to avoid face-validity issues) and note that rankings are unchanged.
@@ -180,7 +180,7 @@ Table~\ref{tab:netrisk_summary} provides summary statistics for the \NetRisk{} d
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.9\linewidth]{figures/netrisk_hist.png}
-\caption{Distribution of NetRisk scores across all occupations in the mechanism layer (from \texttt{data/mechanism\_risk\_scored.csv}).}
+\caption{Distribution of NetRisk scores across all occupations in the mechanism layer.}
 \label{fig:netrisk_hist}
 \end{figure}
 
@@ -199,7 +199,7 @@ Table~\ref{tab:calibration_interpretability} reports the feature correlation mat
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.6\linewidth]{figures/calibration_scatter.png}
-\caption{Calibration fit: observed vs.\ predicted AI applicability (from \texttt{data/calibration\_fit.csv}).}
+\caption{Calibration fit: observed vs.\ predicted AI applicability.}
 \label{fig:calibration_scatter}
 \end{figure}
 
@@ -276,11 +276,8 @@ so that the 90th-percentile exposed occupation experiences the intended annual h
 \IfFileExists{tables/scenario_param_priors.tex}{\input{tables/scenario_param_priors.tex}}{}
 \IfFileExists{tables/scenario_kappa_implied.tex}{\input{tables/scenario_kappa_implied.tex}}{}
 
-\subsection{Definitions \& Provenance (auditability)}
+\subsection{Definitions \& Provenance}
 \label{sec:definitions_provenance}
-\begin{center}
-\fbox{\begin{minipage}{0.97\textwidth}
-\small
 \textbf{Two NetRisk indices (reported side-by-side).}
 \begin{itemize}[leftmargin=*]
   \item \textbf{NetRisk (uncalibrated; mechanism/interpretability index).} Defined from O*NET percentile scores:
@@ -306,8 +303,6 @@ so that the 90th-percentile exposed occupation experiences the intended annual h
 \textbf{What a “career bundle” contains (SOC occupations; EP employment weights).}
 \footnotesize
 \IfFileExists{tables/bundle_contents_fragment.tex}{\input{tables/bundle_contents_fragment.tex}}{}
-\end{minipage}}
-\end{center}
 
 \section{Results}
 \label{sec:results}
@@ -336,7 +331,7 @@ Each career is represented by a small bundle of SOC occupations (e.g., 2--3 code
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.85\textwidth,keepaspectratio]{figures/scenario_bar.png}
-\caption{2034 employment for the three careers under baseline, moderate, and high disruption (generated from \texttt{data/scenario\_summary.csv}).}
+\caption{2034 employment for the three careers under baseline, moderate, and high disruption.}
 \label{fig:scenario_bar}
 \end{figure}
 
@@ -394,7 +389,7 @@ Local program sizing requires scaling national EP annual openings to a metro/sta
 \section{Institution-specific recommendations}
 \label{sec:recommendations}
 Recommendations are organized to answer the prompt: (i) whether to grow or shrink program size and how, and (ii) what to teach about GenAI to best support employability, tied back to model outputs and local context.
-\par\textbf{Wages (not modeled explicitly).} Our scenarios project \emph{employment levels}, not wages. However, GenAI adoption can shift the \emph{composition} of work toward higher-responsibility ``verifier/overseer'' tasks (testing, security, compliance, QA, editorial judgment, and provenance). When such verifier-type skills become the binding constraint, \emph{wage premia can rise even if employment growth slows}. This motivates our curriculum emphasis on verification and accountability: software programs should prioritize testing/security/evaluation; electrician programs should prioritize code-compliance documentation and diagnostic reasoning; writing programs should emphasize editing, provenance, and production workflows where human judgment remains scarce.
+\par\textbf{Wages.} Our scenarios project \emph{employment levels}, not wages. However, GenAI adoption can shift the \emph{composition} of work toward higher-responsibility ``verifier/overseer'' tasks (testing, security, compliance, QA, editorial judgment, and provenance). When such verifier-type skills become the binding constraint, \emph{wage premia can rise even if employment growth slows}. This motivates our curriculum emphasis on verification and accountability: software programs should prioritize testing/security/evaluation; electrician programs should prioritize code-compliance documentation and diagnostic reasoning; writing programs should emphasize editing, provenance, and production workflows where human judgment remains scarce.
 
 \paragraph{Common policy framework (Integrity / Access / Sustainability).}
 \begin{itemize}[leftmargin=*]
@@ -425,7 +420,7 @@ Why target 5\% / 10\% / 15\% of local openings? These shares are not claims abou
 \textbf{Curriculum.} Shift emphasis from boilerplate coding to system design, testing, security, and AI-assisted development with audit trails; make students fluent in evaluating and verifying model outputs.\par
 \textbf{Policy.} Permit GenAI use in advanced courses with required disclosure and reproducibility; constrain use in early courses to ensure fundamentals.\par
 \textbf{Policy constraints.} Apply the common framework above; SDSU’s key delta is assessment design that forces verification (tests/CI, reproducibility, and audit trails) rather than polished outputs.
-\par\textbf{Concrete actions (measurable).}
+\par\textbf{Concrete actions.}
 \begin{itemize}[leftmargin=*]
   \item \textbf{AI-assisted software engineering rubric.} Require every capstone/upper-division project to include (i) tests and CI, (ii) a model-output verification checklist, and (iii) an AI usage disclosure appendix.\newline
   \emph{Metric:} \% of submissions with passing test suites; defect rate in instructor code review; disclosure compliance rate.
@@ -440,7 +435,7 @@ Why target 5\% / 10\% / 15\% of local openings? These shares are not claims abou
 \textbf{Curriculum.} Double down on hands-on competencies while adding `AI as a tool'' modules for diagnostics, scheduling, documentation, and code-compliant planning.\par
 \textbf{Policy.} Teach safe, privacy-preserving, low-compute uses (templates, checklists) appropriate for small contractors.\par
 \textbf{Policy constraints.} Apply the common framework above; LATTC’s key delta is keeping evaluation performance-based (hands-on practicals) and requiring code-compliance verification for any AI-assisted documentation.
-\par\textbf{Concrete actions (measurable).}
+\par\textbf{Concrete actions.}
 \begin{itemize}[leftmargin=*]
   \item \textbf{AI-assisted job documentation.} Require students to produce work orders, inspection-ready notes, and material lists using structured templates (GenAI optional) with verification against NEC/local code excerpts.\newline
   \emph{Metric:} documentation completeness score; code-compliance error rate on practical exams.
@@ -462,7 +457,7 @@ Why target 5\% / 10\% / 15\% of local openings? These shares are not claims abou
 We model ``Writers \& Authors'' as an \emph{adjacent labor market} bundle (SOC 27-3043 Writers and Authors, 27-3041 Editors, 27-3042 Technical Writers) because writing-program graduates frequently compete for and transition into editing, technical communication, and content-operations roles. These occupations share core writing/editing task foundations and are plausible absorber markets when pure authorship roles contract. As a robustness check, we also ran the projections using only SOC 27-3043; conclusions were qualitatively similar (not shown for space).
 \end{minipage}}
 \end{center}
-\par\textbf{Concrete actions (measurable).}
+\par\textbf{Concrete actions.}
 \begin{itemize}[leftmargin=*]
   \item \textbf{Portfolio provenance standard.} Require every portfolio piece to include a process log (outline $\to$ drafts $\to$ revisions) and a disclosure statement for any tool-assisted content.\newline
   \emph{Metric:} \% of portfolio pieces with complete provenance; rubric scores on originality/voice and revision quality.
@@ -485,7 +480,7 @@ For students currently enrolled in the Writers and Authors program, we recommend
 
 These absorber programs are justified by the model: each exhibits a \NetRisk{} profile more favorable than Writers and Authors due to higher \DefScore{} (particularly Social and Creativity dimensions) relative to \SubScore{}, indicating that GenAI serves as a complementary tool rather than a direct substitute for core competencies.
 
-\section*{References}
+
 \bibliographystyle{plainnat}
 \bibliography{references}
 
