@@ -24,6 +24,55 @@
 \newcommand{\argmin}{\operatornamewithlimits{arg\,min}}
 \newcommand{\argmax}{\operatornamewithlimits{arg\,max}}
 
+% ---------- Auto-generated parameter macros (from pipeline artifacts) ----------
+% main.py writes reports/tables/judges_save_alpha.tex so the PDF matches judges_save_alpha.json.
+\IfFileExists{tables/judges_save_alpha.tex}{\input{tables/judges_save_alpha.tex}}{
+  \providecommand{\AlphaJudgesSave}{0.0000}
+  \providecommand{\AlphaJudgesSaveNObs}{0}
+  \providecommand{\AlphaJudgesSaveNegLogLik}{0.00}
+}
+% main.py writes reports/tables/fit_diagnostics_summary.tex so fit metrics match fit_diagnostics.csv.
+\IfFileExists{tables/fit_diagnostics_summary.tex}{\input{tables/fit_diagnostics_summary.tex}}{
+  \providecommand{\FitDiagNWeeks}{0}
+  \providecommand{\FitDiagMeanLogPModel}{0.000}
+  \providecommand{\FitDiagMeanLogPJudgesOnly}{0.000}
+  \providecommand{\FitDiagMeanLogPRandom}{0.000}
+  \providecommand{\FitDiagMAPMatchModelPct}{0.0}
+  \providecommand{\FitDiagMAPMatchJudgesOnlyPct}{0.0}
+  \providecommand{\FitDiagTrueRankMean}{0.00}
+  \providecommand{\FitDiagTrueRankLEOnePct}{0.0}
+  \providecommand{\FitDiagTrueRankLETwoPct}{0.0}
+  \providecommand{\FitDiagTrueRankLEThreePct}{0.0}
+  \providecommand{\FitDiagNPercent}{0}
+  \providecommand{\FitDiagMAPMatchPercentModelPct}{0.0}
+  \providecommand{\FitDiagMAPMatchPercentJudgesOnlyPct}{0.0}
+  \providecommand{\FitDiagMeanLogPPercentModel}{0.000}
+  \providecommand{\FitDiagNRank}{0}
+  \providecommand{\FitDiagMAPMatchRankModelPct}{0.0}
+  \providecommand{\FitDiagMAPMatchRankJudgesOnlyPct}{0.0}
+  \providecommand{\FitDiagMeanLogPRankModel}{0.000}
+}
+% main.py writes reports/tables/fan_shares_bootstrap_summary.tex for uncertainty summaries.
+\IfFileExists{tables/fan_shares_bootstrap_summary.tex}{\input{tables/fan_shares_bootstrap_summary.tex}}{
+  \providecommand{\BootstrapNCells}{0}
+  \providecommand{\BootstrapWidthMedian}{0.0000}
+  \providecommand{\BootstrapWidthQOne}{0.0000}
+  \providecommand{\BootstrapWidthQThree}{0.0000}
+  \providecommand{\BootstrapWidthP95}{0.0000}
+}
+% main.py writes reports/tables/robustness_summary.tex for robustness statistics.
+\IfFileExists{tables/robustness_summary.tex}{\input{tables/robustness_summary.tex}}{
+  \providecommand{\RobustNWeeks}{0}
+  \providecommand{\RobustZeroCount}{0}
+  \providecommand{\RobustZeroPct}{0.0}
+  \providecommand{\RobustInfCount}{0}
+  \providecommand{\RobustInfPct}{0.0}
+  \providecommand{\RobustMedian}{0.00}
+  \providecommand{\RobustQOne}{0.00}
+  \providecommand{\RobustQThree}{0.00}
+  \providecommand{\RobustMax}{0.00}
+}
+
 \title{MCM 2026 Problem C: Data With The Stars}
 \author{Team \#\_\_\_\_}
 \date{}
@@ -43,13 +92,13 @@
     u_{i,t}=\beta_0+\beta_J\,\tilde J_{i,t}+\beta_P\,\text{momentum}_{i,t}+\beta_U\,\text{underdog}_{i,t}+\beta_X^\top X_i,
   \]
   where $\tilde J$ is a normalized judges score and $X_i$ are celebrity/pro covariates.
-  \item \textbf{Estimation.} $\beta$ is fit by maximum likelihood so that the implied eliminations (and finals ordering) match observed results under the season-appropriate rule (rank vs.\ percent), with a ``temperature'' $\tau$ controlling determinism.
-  \item \textbf{Consistency (fit to eliminations).} Fitted $\beta$ and $\tau$ are saved in \texttt{reports/tables/fitted\_params.json} for reproducibility. Using the fitted latent fan-share model, the implied (MAP) eliminated contestant matches the observed in \textbf{38.2\%} of percent-rule elimination weeks (76/199) and \textbf{30.3\%} of rank-rule weeks (20/66), well above a random baseline of $\approx 17\%$ when $\sim 6$ contestants remain. Under a proper scoring rule, the mean log probability assigned to the observed eliminated is $\approx -1.94$ (higher is better). In \textbf{37.7\%} of elimination weeks the observed eliminated was the model's most likely (rank 1); in \textbf{60.8\%} they were in the bottom two (rank $\le 2$), and in \textbf{74.3\%} in the bottom three (rank $\le 3$), so the model often places the true eliminated among the most likely candidates. The denominator is the \emph{inverse-fit evaluation sample} (265 elimination weeks; full rule-comparison universe 335 weeks). See \texttt{reports/tables/fit\_diagnostics.csv} and \texttt{reports/gonogo\_report.md} \cite{comap2026}.
-  \item \textbf{Uncertainty.} We quantify uncertainty via (i) season-bootstrap intervals for $f_{i,t}$ and (ii) a margin-to-flip ``robustness radius'' measuring how much $f$ must change to alter the eliminated contestant. Certainty varies strongly by week: Season~10 Week~1 radius $0$ (tight) vs.\ Season~12 Week~3 radius $\infty$ (blowout).
-  \item \textbf{Rule comparison.} From \texttt{season\_rule\_comparison.csv}: percent vs.\ rank disagree on who is eliminated in \textbf{0--36.4\%} of elimination weeks by season (mean \textbf{13.4\%}); fan-influence index (fraction of weeks a poor-judge/high-fan contestant survives; see Section~\ref{sec:definition_audit}) is \textbf{0.33--1.0} (mean 0.92) for both percent and rank. Sensitivity sweep (flip = vs previous grid point): at $w_J=1.0$, 26 of 335 weeks flip; at $w_J=0$, 0 flips.
+  \item \textbf{Estimation.} $\beta$ and $\tau$ are fit by maximum likelihood so that implied eliminations (and finals ordering) align with observed outcomes under the season-appropriate rule (rank vs.\ percent). The pipeline \emph{fails fast} if the optimizer does not converge; all reported numbers come from the run that produced \texttt{fitted\_params.json}.
+  \item \textbf{Consistency (fit to eliminations).} Using the fitted latent fan-share model, the implied (MAP) eliminated contestant matches the observed in \textbf{\FitDiagMAPMatchPercentModelPct\%} of percent-rule weeks ($\FitDiagNPercent$) and \textbf{\FitDiagMAPMatchRankModelPct\%} of rank-rule weeks ($\FitDiagNRank$). Proper scoring: mean log probability assigned to the observed eliminated is \textbf{\FitDiagMeanLogPModel}, compared to judges-only \textbf{\FitDiagMeanLogPJudgesOnly} and random \textbf{\FitDiagMeanLogPRandom} (higher is better). The true eliminated is often among the most likely: rank 1 in \textbf{\FitDiagTrueRankLEOnePct\%} of weeks, in the bottom two in \textbf{\FitDiagTrueRankLETwoPct\%}, and in the bottom three in \textbf{\FitDiagTrueRankLEThreePct\%}. Denominator: \FitDiagNWeeks\ elimination weeks. See \texttt{fit\_diagnostics.csv} and \texttt{fit\_diagnostics\_summary.tex} \cite{comap2026}.
+  \item \textbf{Uncertainty.} We quantify uncertainty via (i) season-bootstrap intervals for $f_{i,t}$ and (ii) a margin-to-flip ``robustness radius'' measuring how much $f$ must change to alter the eliminated contestant. Certainty varies strongly by week; see \texttt{proposed\_system\_robustness.csv}.
+  \item \textbf{Rule comparison.} From \texttt{season\_rule\_comparison.csv}: percent vs.\ rank disagreement rates and the fan-influence index (fraction of weeks a poor-judge/high-fan contestant survives; Section~\ref{sec:definition_audit}). Sensitivity sweep (flip = vs.\ previous grid point) uses \texttt{sensitivity\_flip\_summary.csv}.
   \item \textbf{Controversy cases.} Seasons 2, 4, 11, 27: judge--fan disagreement is visible in inferred shares vs.\ judge scores; outcomes differ under rank vs.\ percent and under judges-save (see controversy tables and counterfactual CSVs).
-  \item \textbf{Drivers.} From \texttt{pro\_dancer\_effects\_top10.csv}: pro dancer and celebrity characteristics affect judges and fans differently. Pros who boost \emph{fans} relative to judges (largest fan-minus-judge fixed effects): \textbf{Andrea Hale} (2.03), \textbf{Henry Byalikov} (1.01), Elena Grinenko (1.01), Ezra Sosa (0.87), Tyne Stecklein (0.71); judges-favoring pros appear in the bottom of the effects table.
-  \item \textbf{Recommendation.} We recommend a \textbf{weighted percent rule with saturation} and an \textbf{optional judges-save trigger} in close weeks. The saturation softcaps \emph{fan} share to prevent extreme fan-bloc dominance (combined score $c = w\cdot j + (1-w)\cdot\text{softcap}(f)$). The goal is not to replicate historical eliminations, but to (i) preserve fan relevance, (ii) improve robustness/predictability in close outcomes, and (iii) reduce judge--fan controversy cases (e.g., Jerry Rice, Billy Ray Cyrus, Bristol Palin, Bobby Bones). Our evaluation reports (a) how often outcomes would change under the proposed rule (scope), (b) controversy-mismatch reduction, and (c) robustness-radius improvements relative to the historical rule.
+  \item \textbf{Drivers.} From \texttt{pro\_dancer\_effects\_top10.csv} and \texttt{judges\_fans\_comparison.csv}: pro dancer and celebrity characteristics affect judges and fans differently (e.g., pros with largest fan-minus-judge fixed effects).
+  \item \textbf{Recommendation.} We recommend a \textbf{weighted percent rule with saturation} and an \textbf{optional judges-save trigger} in close weeks. The saturation softcaps \emph{fan} share to prevent extreme fan-bloc dominance (combined score $c = w\cdot j + (1-w)\cdot\text{softcap}(f)$). Evaluation reports (a) how often outcomes would change under the proposed rule, (b) controversy-mismatch reduction, and (c) robustness-radius improvements relative to the historical rule.
 \end{itemize}
 \newpage
 
@@ -67,46 +116,66 @@
 The show combines judges' scores and fan votes to eliminate the couple with the lowest combined score each week; fans vote to keep a couple (not to eliminate one), and judges score each performance \cite{comap2026}. In the first two U.S. seasons, the combination used \emph{ranks}; beginning in season 3, producers switched to a \emph{percent} method after season 2 concerns, and in response to a season 27 controversy, a judges-save modification (choose which of the bottom two to eliminate) was introduced around season 28 together with a return to the rank-based method \cite{comap2026}. The exact season is not known, but assuming season 28 is reasonable.
 
 \subsection{Assumptions and Notation}
-We assume: (i) season 28 is the rule-change point (judges-save and return to rank); (ii) index scaling (e.g., $V_i = f_i \times 10^7$) is a normalization for interpretability only, not true vote counts \cite{comap2026}; (iii) a contestant is ``active'' in a given week if they have not yet been eliminated and have not withdrawn; we use the active set when computing combined scores and elimination. Notation: $A_t$ = active contestants in week $t$; $J_{i,t}$ = total judges score; $f_{i,t}$ = fan vote share; $j_{i,t}$, $c_{i,t}$, $R_{i,t}$ as in the voting schemes below.
+We assume: (i) season 28 is the rule-change point (judges-save and return to rank); (ii) index scaling (e.g., $V_i = f_i \times 10^7$) is a normalization for interpretability only, not true vote counts \cite{comap2026}; (iii) we work week-by-week over the \emph{active set} $A_t$ defined operationally from the data: contestants with a strictly positive total judges score in week $t$ (Section~1.3). Notation: $A_t$ = active contestants in week $t$; $J_{i,t}$ = total judges score; $f_{i,t}$ = fan vote share; $j_{i,t}$, $c_{i,t}$, $R_{i,t}$ as in the voting schemes below.
 
 \subsection{Dataset and Preprocessing}
-\paragraph{Data structure.}
-The provided CSV has one row per contestant (celebrity and ballroom partner), columns for \texttt{results} and \texttt{placement}, and wide score columns \texttt{week\{$k$\}\_judge\{$j$\}\_score} for each week and judge. We melt to long form (contestant--week--judge), then aggregate to contestant--week with \texttt{score\_week\_total} = sum of non-missing judge scores and \texttt{num\_judges} = count of non-missing scores.
+\paragraph{Raw CSV structure.}
+The provided CSV is \emph{one row per couple} (celebrity and ballroom partner) with identifying fields (e.g., \texttt{season}, \texttt{celebrity\_name}, \texttt{ballroom\_partner}), outcome fields (\texttt{results}, \texttt{placement}), and a wide block of judges' scores with columns of the form
+\[
+\texttt{week\{$k$\}\_judge\{$j$\}\_score},
+\]
+which record judge $j$'s score for that couple in week $k$ (when present). Season lengths vary, so the set of \texttt{week\{$k$\}\_...} columns is irregular across seasons.
 
-\paragraph{Definition of ``active.''}
-A contestant is \textbf{active} in week $t$ if and only if their \emph{score\_week\_total} for that week is strictly greater than zero. Thus ``active'' means they received at least one nonzero judge score that week; after elimination or withdrawal, scores are typically zero or missing, so they are inactive in later weeks. All vote-combination and elimination logic uses only the active set in that week.
-
-\paragraph{Parsing elimination weeks.}
-We assign each contestant an \textbf{elimination\_week} (the week they leave the competition) as follows.
+\paragraph{Long and contestant--week panels.}
+We reshape the wide judge-score block to a long panel with one row per (couple, season, week, judge) by parsing $k$ and $j$ from the column names, then aggregate back to a contestant--week panel. In aggregation we compute:
 \begin{itemize}[nosep]
-  \item \textbf{From results:} We parse the \texttt{results} string with the regex ``Eliminated Week $k$'' (case-insensitive); if matched, \texttt{elimination\_week} = $k$. If the string is missing, empty, or does not match (e.g., ``1st Place,'' ``2nd Place,'' ``Withdrew''), we do not set elimination from results.
-  \item \textbf{From scores:} For each contestant we find the first week where \texttt{score\_week\_total} is zero and the previous week had a positive total; that week is \texttt{elimination\_week\_from\_scores}.
-  \item We set \texttt{elimination\_week} = result from results when available, else from scores. A week is an \textbf{elimination week} (for a given season) if at least one active contestant has \texttt{elimination\_week} equal to that week (i.e., someone was sent home that week).
+  \item \texttt{score\_week\_total}: sum of non-missing judge scores that week;
+  \item \texttt{num\_judges}: number of non-missing judge scores contributing to the total.
+\end{itemize}
+All subsequent rule simulation and model fitting operate on the contestant--week panel.
+
+\paragraph{Definition of the active set.}
+A couple is \textbf{active} in week $t$ iff \texttt{score\_week\_total}$>0$ that week. This operational definition matches the data: COMAP notes that 0 scores are recorded after elimination, and the score block has missing/N/A for some judges or weeks. Using \texttt{score\_week\_total}$>0$ thus filters the participating field without relying on text parsing. (We still parse \texttt{results} for \texttt{elimination\_week}; \texttt{active} is defined from scores only.) All combined-score and elimination logic uses $A_t$.
+
+\paragraph{Elimination week parsing.}
+For each couple we assign an \textbf{elimination\_week} (the week they leave the competition) using a rule that prioritizes explicit labels but falls back to score structure:
+\begin{itemize}[nosep]
+  \item \textbf{From \texttt{results}:} if \texttt{results} contains the pattern ``Eliminated Week $k$'' (case-insensitive), we set \texttt{elimination\_week}$=k$.
+  \item \textbf{From scores:} otherwise we set \texttt{elimination\_week} to the first week where \texttt{score\_week\_total} is 0 and the previous week had positive total.
+\end{itemize}
+A (season, week) is treated as having an \textbf{observed elimination} if at least one \emph{active} couple has \texttt{elimination\_week} equal to that week.
+
+\paragraph{Edge cases and structural quirks.}
+The preprocessing step explicitly handles the dataset's main irregularities:
+\begin{itemize}[nosep]
+  \item \textbf{Missing and N/A judges:} blanks and the literal string ``N/A'' are treated as missing scores (NaN) in the long panel; zeros remain zeros. A contestant--week with all judges missing has \texttt{score\_week\_total}$=0$ and is therefore inactive.
+  \item \textbf{Withdrawals:} if \texttt{results} contains ``Withdrew,'' we treat the couple as leaving after their last week with \texttt{score\_week\_total}$>0$; they are inactive thereafter.
+  \item \textbf{No-elimination weeks:} some weeks have an active set but no observed elimination (specials/finals). Included in forward simulation and rule comparison; excluded from consistency evaluation.
+  \item \textbf{Double eliminations:} if multiple couples share the same \texttt{elimination\_week}, we record the week as an elimination week but (for one-to-one diagnostics) take the first such couple as the ``observed eliminated'' for consistency calculations.
 \end{itemize}
 
-\paragraph{Edge cases.}
+\paragraph{Why 265 vs.\ 335 weeks appear.}
+Two denominators recur in the report:
 \begin{itemize}[nosep]
-  \item \textbf{N/A and missing scores:} In the long-form melt, any cell that is blank, empty, or the literal string ``N/A'' is treated as missing (NaN). Zeros are kept as zero. Contestant--week \texttt{score\_week\_total} is the sum of non-NaN scores; if all judges are N/A for that contestant--week, the total is zero, so the contestant is \emph{inactive} that week.
-  \item \textbf{Withdrawals:} If \texttt{results} contains ``Withdrew,'' we do not use ``Eliminated Week $k$'' (there is none). We set \texttt{elimination\_week} = the \emph{last} week in which the contestant had a positive \texttt{score\_week\_total}. Thus withdrawals are treated as leaving after their last scored week; no specific ``elimination week'' in the sense of ``sent home this week'' is assigned, but they are marked eliminated from the following week onward.
-  \item \textbf{No-elimination weeks:} Some weeks (e.g., finals, specials) have no contestant with \texttt{elimination\_week} equal to that week. These weeks still appear in the contestant--week panel and count toward the active set, but there is no \emph{observed} eliminated contestant for that week.
-  \item \textbf{Double eliminations:} When more than one contestant has \texttt{elimination\_week} equal to the same week, we treat the week as having one observed elimination and take the first such contestant (by row order) for consistency evaluation. The week is still a single elimination week in our counts.
+  \item \textbf{335} = all (season, week) forward-event weeks with at least two active couples (so rules and forward fan-share inference apply).
+  \item \textbf{265} = the subset of those weeks with an \emph{observed eliminated couple} (used for inverse-fit consistency metrics).
 \end{itemize}
+Thus 335 supports rule comparisons and robustness analyses; 265 supports fit diagnostics.
 
-\paragraph{265 vs.\ 335 weeks.}
-We distinguish two week counts used in the report.
+\paragraph{Reproducibility (pipeline).}
 \begin{itemize}[nosep]
-  \item \textbf{335 weeks} = \textbf{all eligible forward-event weeks}: every (season, week) in which there are at least two active contestants and we have judge totals and (after fitting) fan shares. Rule comparison (percent vs.\ rank vs.\ judges-save), sensitivity sweeps, and robustness radii are computed over all 335 weeks.
-  \item \textbf{265 weeks} = \textbf{weeks with an observed elimination}: the subset of those 335 weeks for which there is at least one contestant with \texttt{elimination\_week} equal to that week. Consistency (fit to eliminations)---how often the model's implied eliminated contestant matches the observed one---is evaluated only on these 265 weeks, because only then do we have a defined ``observed eliminated'' to compare against. The remaining 70 weeks (335 $-$ 265) are eligible (scores and fan shares exist) but are no-elimination or other edge-case weeks, so they are excluded from the inverse-fit consistency metric.
+  \item \textbf{One command:} \texttt{python main.py} regenerates all tables in \texttt{reports/tables/} (e.g., \texttt{fit\_diagnostics.csv}, \texttt{season\_rule\_comparison.csv}, \texttt{judges\_save\_alpha.json}).
+  \item \textbf{Consistency checks:} \texttt{run\_gonogo\_checks.py} validates rule regime mapping and elimination parsing (\texttt{reports/gonogo\_report.md}).
+  \item \textbf{No hidden numbers:} all numeric claims in this report either come from LaTeX macros generated by the pipeline or from named artifacts in \texttt{reports/tables/}.
 \end{itemize}
-Summarizing: 335 = all weeks where we can apply the scoring rules and compare outcomes; 265 = those same weeks where we also observe who was eliminated, used for consistency.
 
 \subsection{Definition audit (paper--code alignment)}
 \label{sec:definition_audit}
 To avoid definitional mismatches between prose and implementation, we state precisely:
 
-\textbf{Fan influence index (FII).} In this report and in \texttt{season\_rule\_comparison.csv}, the fan influence index is defined as in the code (\texttt{src/analysis/counterfactual\_engine.py}): the \emph{fraction of elimination weeks in which at least one contestant with poor judge score} (bottom half of $J$ in that week) \emph{but high fan share} (top half of $f$) \emph{survives} (is not eliminated) under that rule. So FII answers: ``How often does a poor-judge/high-fan contestant survive?'' An alternative definition---``fraction of weeks where the eliminated couple would change if fan share were neutralized''---is not used here.
+\textbf{Fan influence index (FII).} In this report and in \texttt{season\_rule\_comparison.csv}, FII is the \emph{fraction of elimination weeks in which at least one contestant with poor judge score} (bottom half of $J$ in that week) \emph{but high fan share} (top half of $f$) \emph{survives} (is not eliminated) under that rule---i.e., ``how often does a poor-judge/high-fan contestant survive?'' This matches the code in \texttt{src/analysis/counterfactual\_engine.py}. We do \emph{not} use the alternative definition ``fraction of weeks where the eliminated couple would change if fan share were neutralized.''
 
-\textbf{Sensitivity flips (\texttt{sensitivity\_flip\_summary.csv}).} A \emph{flip} at a given judge weight $w_J$ is defined as: the eliminated contestant at that $w_J$ \emph{differs from the eliminated contestant at the previous grid point} (not vs.\ historical observed elimination). The sweep uses $c_i = w_J\, j_i + (1-w_J)\, f_i$ over a grid of $w_J$; for each (season, week) we record whether the eliminated index changes when moving to the next $w_J$. So \texttt{n\_flips} at $w_J=1.0$ means 26 weeks flip when moving from $w_J=0.98$ to $1.0$; at $w_J=0$ there is no previous grid point, so flips are not defined there. We use this definition consistently in the report.
+\textbf{Sensitivity flips (\texttt{sensitivity\_flip\_summary.csv}).} A \emph{flip} is defined \emph{only} as: the eliminated contestant at this grid point $w_J$ \emph{differs from the eliminated contestant at the previous grid point} (not vs.\ historical observed elimination). The sweep uses $c_i = w_J\, j_i + (1-w_J)\, f_i$ over a grid of $w_J$; for each (season, week) we record whether the eliminated index changes when moving to the next $w_J$. So \texttt{n\_flips} at $w_J=1.0$ means 26 weeks flip when moving from $w_J=0.98$ to $1.0$; at $w_J=0$ there is no previous grid point, so flips are not defined (we record 0). This definition is used consistently wherever we refer to sensitivity flips or \texttt{sensitivity\_flip\_summary.csv}.
 
 \subsection{Output map}
 All tables produced by \texttt{python main.py} appear in \texttt{reports/tables/}\ldots
@@ -122,7 +191,7 @@ Among the bottom two by combined criterion, judges select which couple to elimin
 \[
 \Pr(\text{eliminate }i\mid\{i,k\})=\sigma\bigl(\alpha(J_{k,t}-J_{i,t})\bigr),
 \]
-and fit $\alpha$ from observed outcomes in the judges-save era. Fitted $\alpha\approx 0.029$ (from \texttt{judges\_save\_alpha.json}).
+and fit $\alpha$ from observed outcomes in the judges-save era.\par\noindent Fitted $\alpha=\AlphaJudgesSave$ (see \texttt{judges\_save\_alpha.json}).
 
 \subsection{Rule simulators}
 Our code implements these rules as deterministic simulators for counterfactuals and consistency checks.
@@ -146,6 +215,9 @@ The probabilistic model $\Pr(\text{eliminate }i\mid\{i,k\})=\sigma(\alpha(J_k-J_
 \subsection{Identifiability}
 Under the percent rule, only \emph{shares} $f_{i,t}=V_{i,t}/\sum_{k\in A_t}V_{k,t}$ are identified: vote totals can be scaled arbitrarily without changing combined scores $c_{i,t}=j_{i,t}+f_{i,t}$. Under the rank rule, only the \emph{ordering} of vote totals is identified. We therefore report fan vote \emph{shares} as primary outputs and provide index-scaled totals (e.g., $V_i = f_i \times 10^7$) only for interpretability, with a clear label that they are not true vote counts. This non-identifiability is also illustrated in the problem appendix, which notes that many hypothetical fan vote totals can reproduce the same eliminations and presents an example using an arbitrary total of 10 million votes \cite{comap2026}.
 
+\paragraph{Model status and reproducibility.}
+All fitted parameters ($\beta$, $\tau$, and contestant baselines $\theta$) are saved to \texttt{reports/tables/fitted\_params.json}. The pipeline halts if the optimizer does not converge, so every reported metric corresponds to a successful fit and can be reproduced by re-running \texttt{python main.py}.
+
 \subsection{Latent preference model}
 Let $A_t$ denote the set of active contestants in week $t$. We model fan share as a multinomial logit (softmax) over a latent utility $u_{i,t}$:
 \[
@@ -153,9 +225,9 @@ f_{i,t} = \frac{\exp(u_{i,t})}{\sum_{k\in A_t}\exp(u_{k,t})},
 \]
 with
 \[
-u_{i,t} = \beta_0 + \beta_J\,\tilde J_{i,t} + \beta_P\,\text{momentum}_{i,t} + \beta_U\,\text{underdog}_{i,t} + \beta_X^\top X_i.
+u_{i,t} = \theta_i + \beta_0 + \beta_J\,\tilde J_{i,t} + \beta_P\,\text{momentum}_{i,t} + \beta_U\,\text{underdog}_{i,t} + \beta_X^\top X_i.
 \]
-Terms are defined as follows. \textbf{Normalized judge score} $\tilde J_{i,t}$: within each $(season, week)$, we set $\tilde J_{i,t} = J_{i,t} / \max_{k\in A_t} J_{k,t}$ (and 0 if the max is 0), so that the best-scoring contestant has $\tilde J=1$. This captures the extent to which judges favor contestant $i$ relative to the field. \textbf{Momentum} (denoted $p_{\text{prev}}$ in code): rank by judges' score in the previous week (1 = best); for week 1 we set it to 0. Higher rank last week may attract more fan attention (momentum) or, if negative, an ``underdog'' effect. \textbf{Underdog}: we set $\text{underdog}_{i,t}=1$ if $J_{i,t}$ is at or below the median judges score among active contestants in that week, else 0. This allows a ``rage vote'' or sympathy effect for lower-scoring contestants. \textbf{Covariates} $X_i$: we include celebrity age (during the season) and an industry dummy (e.g., 1 if Actor/Actress). The coefficients $\beta = (\beta_0,\beta_J,\beta_P,\beta_U,\beta_X)$ are shared across seasons and weeks; the season-appropriate rule (percent or rank) is applied when mapping $(J,f)$ to combined scores and thus to elimination.
+Here $\theta_i$ is a \emph{contestant-specific baseline} (unobserved popularity or fanbase) for contestant $i$, one per (season, celebrity, partner); it captures variation in baseline appeal that age and industry cannot. The coefficients $\beta = (\beta_0,\beta_J,\beta_P,\beta_U,\beta_X)$ are shared across seasons and weeks. Terms are defined as follows. \textbf{Normalized judge score} $\tilde J_{i,t}$: within each $(season, week)$, we set $\tilde J_{i,t} = J_{i,t} / \max_{k\in A_t} J_{k,t}$ (and 0 if the max is 0), so that the best-scoring contestant has $\tilde J=1$. This captures the extent to which judges favor contestant $i$ relative to the field. \textbf{Momentum} (denoted $p_{\text{prev}}$ in code): rank by judges' score among \emph{active} contestants in the previous week (1 = best); for week 1 we set it to 0. Higher rank last week may attract more fan attention (momentum) or, if negative, an ``underdog'' effect. \textbf{Underdog}: we set $\text{underdog}_{i,t}=1$ if $J_{i,t}$ is at or below the median judges score among active contestants in that week, else 0. This allows a ``rage vote'' or sympathy effect for lower-scoring contestants. \textbf{Covariates} $X_i$: we include celebrity age (during the season) and an industry dummy (e.g., 1 if Actor/Actress). The season-appropriate rule (percent or rank) is applied when mapping $(J,f)$ to combined scores and thus to elimination.
 
 \subsection{Likelihood and fitting}
 We fit $\beta$ and a temperature $\tau>0$ by maximum likelihood. The likelihood has two parts.
@@ -172,21 +244,38 @@ Thus $\tau$ controls determinism: large $\tau$ makes the lowest $c$ (or highest 
 
 \textbf{Finals ordering.} For each season's finals week, we observe the placement order (1st, 2nd, 3rd). We model this with a Plackett--Luce likelihood: the probability of the observed ordering given strengths $s_i$ (we use combined score for percent, or negative rank-sum for rank so that better rank-sum gives higher strength) is the product over positions of the probability of choosing that contestant from the remaining set, with choice probabilities proportional to $\exp(s_i)$.
 
-The total log-likelihood is the sum of log-probabilities over all elimination events plus the sum over all finals events. We minimize the \emph{negative} log-likelihood with respect to $(\beta,\tau)$ using L-BFGS-B, with $\tau$ bounded below by a small positive constant. Covariates are built from the contestant--week data (normalized judge score, previous-week rank, underdog, age, industry dummy); see \texttt{src/models/vote\_latent.py} and \texttt{src/fit/fit\_elimination.py}. Fit diagnostics (elimination match rates, finals likelihood) are reported in Section~\ref{sec:fitquality}.
+The total log-likelihood is the sum of log-probabilities over all elimination events plus the sum over all finals events. We minimize the \emph{negative} log-likelihood plus an L2 (ridge) penalty on the contestant baselines to avoid overfitting:
+\[
+\min_{\beta,\theta,\tau} \; -\log L(\beta,\theta,\tau) + \lambda \sum_i \theta_i^2.
+\]
+We use L-BFGS-B over $(\beta,\theta,\tau)$, with $\tau$ bounded below by a small positive constant and $\lambda$ a fixed regularization strength (e.g., 0.5). Covariates and contestant indices are built from the contestant--week data; see \texttt{src/models/vote\_latent.py} and \texttt{src/fit/fit\_elimination.py}. Fit diagnostics (elimination match rates, finals likelihood) are reported in Section~\ref{sec:fitquality}.
 
 \section{Uncertainty Quantification}
 We measure uncertainty in two complementary ways.
 
-\textbf{(1) Bootstrap intervals for fan shares.} We resample \emph{seasons} with replacement (e.g., 50 bootstrap replicates). For each replicate we refit $(\beta,\tau)$ on the resampled contestant--week data, then run the forward pass on the \emph{full} dataset with the fitted $\beta$ to obtain fan shares $f_{i,t}$ for every $(season, week, contestant)$. Across replicates we compute the mean, 5th percentile, and 95th percentile of $f_{i,t}$ at each cell. This yields interval estimates for $f_{i,t}$ that reflect uncertainty due to season-to-season variation in the elimination and finals data. Optionally, we can bootstrap by resampling \emph{weeks} within each season instead of seasons; the implementation supports both (see \texttt{src/fit/uncertainty.py}).
+\textbf{(1) Bootstrap intervals for fan shares.} We resample \emph{seasons} with replacement (e.g., 5 bootstrap replicates). For each replicate we refit $(\beta,\tau)$ on the resampled contestant--week data, then run the forward pass on the \emph{full} dataset with the fitted $\beta$ to obtain fan shares $f_{i,t}$ for every $(season, week, contestant)$. Across replicates we compute the mean, 5th percentile, and 95th percentile of $f_{i,t}$ at each cell. This yields interval estimates for $f_{i,t}$ that reflect uncertainty due to season-to-season variation in the elimination and finals data. Optionally, we can bootstrap by resampling \emph{weeks} within each season instead of seasons; the implementation supports both (see \texttt{src/fit/uncertainty.py}).
+
+\begin{table}[H]
+\centering
+\caption{Bootstrap interval widths for inferred fan shares $f_{i,t}$ (computed from \texttt{fan\_shares\_bootstrap\_intervals.csv}).}
+\label{tab:bootstrap_widths}
+\begin{tabular}{lr}
+\toprule
+Statistic & Value\\
+\midrule
+Number of contestant-week cells & \BootstrapNCells\\
+Median width ($f_{0.95}-f_{0.05}$) & \BootstrapWidthMedian\\
+IQR width ($Q_{0.75}-Q_{0.25}$) & \BootstrapWidthQOne\ -- \ \BootstrapWidthQThree\\
+95th percentile width & \BootstrapWidthP95\\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \textbf{(2) Margin-to-flip robustness radius.} For each elimination week we ask: how much must fan shares $f_t$ change so that a \emph{different} contestant would be eliminated under the same rule? We parameterize perturbations in log-share space: $f' = \mathrm{softmax}(\log f + z)$ with $z$ unconstrained, so that $f'$ remains on the simplex. We find the minimum L2 norm of $z$ such that the eliminated contestant under the week's rule (percent: $\argmin_i (j_i + f'_i)$; rank: $\argmax_i (r^J_i + r^F_i)$ with ranks from $f'$) is not the currently eliminated contestant. The optimization is a constrained nonlinear problem (minimize $\|z\|^2$ subject to the flip constraint); we use SLSQP. For interpretability we also report the L2 norm of $(f'-f)$ in share space as the ``robustness radius.'' A \emph{small} radius means the outcome is sensitive to small changes in fan shares (uncertain week); a \emph{large} or infinite radius means the eliminated contestant would not change under plausible perturbations (certain week). See \texttt{src/fit/margin\_to\_flip.py}.
 
 \textbf{Examples.} Tight week: Season~10 Week~1, robustness radius $0$ (outcome sensitive to small changes in fan shares). Blowout week: Season~12 Week~3, robustness radius $\infty$ (no feasible perturbation changes the eliminated contestant; elimination is robust). Certainty varies by week and contestant because of the geometry of combined scores near the elimination boundary: when the bottom two are close, a small shift in $f$ can flip who is eliminated; when one contestant is clearly last, the radius is large or infinite.
 
-Table~\ref{tab:robustness_summary} shows the distribution of margin-to-flip robustness radii under the proposed scoring rule (weighted saturation) across all 335 elimination weeks.
-About \textbf{8.7\%} of elimination weeks are knife-edge (robustness radius $0$), meaning arbitrarily small perturbations to fan shares can flip who goes home,
-while \textbf{14.9\%} are blowouts (radius $\infty$), meaning no feasible perturbation flips the eliminated couple under the rule.
-Among finite-radius weeks, the median radius is \textbf{1.36} (IQR \textbf{1.00--1.77}), indicating that most weeks require a nontrivial shift in the fan-share simplex to change the outcome.
+Table~\ref{tab:robustness_summary} shows the distribution of margin-to-flip robustness radii under the proposed scoring rule (weighted saturation). Knife-edge weeks (radius $0$) and blowouts (radius $\infty$) are reported from \texttt{proposed\_system\_robustness.csv} via \texttt{robustness\_summary.tex}.
 
 \begin{table}[H]
 \centering
@@ -196,13 +285,13 @@ Among finite-radius weeks, the median radius is \textbf{1.36} (IQR \textbf{1.00-
 \toprule
 Quantity & Value\\
 \midrule
-Number of elimination weeks & 335\\
-Zero-radius (knife-edge) weeks & 29 (8.7\%)\\
-Infinite-radius (blowout) weeks & 50 (14.9\%)\\
+Number of elimination weeks & \RobustNWeeks\\
+Zero-radius (knife-edge) weeks & \RobustZeroCount\ (\RobustZeroPct\%)\\
+Infinite-radius (blowout) weeks & \RobustInfCount\ (\RobustInfPct\%)\\
 \midrule
-Finite-radius median & 1.36\\
-Finite-radius IQR & 1.00 -- 1.77\\
-Finite-radius max & 3.05\\
+Finite-radius median & \RobustMedian\\
+Finite-radius IQR & \RobustQOne\ -- \ \RobustQThree\\
+Finite-radius max & \RobustMax\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -211,55 +300,51 @@ Finite-radius max & 3.05\\
 
 \subsection{Across-season disagreement rates and fan influence}
 
-Table~\ref{tab:rule_compare_stats} summarizes how often different elimination rules disagree about who goes home.
-Across 34 seasons, percent and rank rules disagree in \textbf{0.0\%--36.4\%} of elimination weeks (mean \textbf{13.4\%}, median \textbf{10.6\%}).
-Six seasons have \emph{zero} disagreement (seasons 3, 4, 10, 17, 20, 26), while the largest disagreement occurs in season~32 (36.4\%).
-Table~\ref{tab:top_disagree_seasons} lists the highest-disagreement seasons.
-
-Judges-save (a bottom-two selection rule) can change outcomes more frequently: percent vs.\ judges-save differs by \textbf{0.0\%--50.0\%} (mean \textbf{22.3\%}),
-and rank vs.\ judges-save differs by \textbf{0.0\%--54.5\%} (mean \textbf{17.1\%}).
-This is consistent with judges-save acting as a discretionary override precisely in weeks where the bottom of the leaderboard is crowded.
-
-We also compute a \emph{fan influence index} (FII), defined in Section~\ref{sec:definition_audit}: the fraction of elimination weeks in which at least one contestant with poor judge score (bottom half) but high fan share (top half) \emph{survives} (is not eliminated) under that rule.
-FII is high in most seasons: mean \textbf{0.917} under percent and \textbf{0.900} under rank, with values ranging from \textbf{0.333} to \textbf{1.000}.
-In other words, in a typical season, a poor-judge/high-fan contestant survives in the majority of weeks, so fan influence is substantial under both percent and rank.
+Table~\ref{tab:rule_compare_stats} summarizes how often different elimination rules disagree about who goes home, and reports the fan influence index (FII). All statistics in this section are computed from \texttt{season\_rule\_comparison.csv} (per-season) and the definition in Section~\ref{sec:definition_audit}. We interpret higher disagreement as greater sensitivity to the combination rule, and higher FII as stronger fan impact (poor-judge/high-fan contestants survive more often). Table~\ref{tab:top_disagree_seasons} lists the highest-disagreement seasons from the same artifact.
 
 \begin{table}[H]
 \centering
-\caption{Across-season disagreement between elimination rules and fan influence. Each season contributes its fraction of elimination weeks where the eliminated couple differs under the two rules. Fan influence index (FII) is the fraction of weeks a poor-judge/high-fan contestant survives (Section~\ref{sec:definition_audit}).}
+\caption{Across-season disagreement between elimination rules and fan influence (computed from \texttt{season\_rule\_comparison.csv}). Each season contributes its fraction of elimination weeks where the eliminated couple differs under the two rules. Fan influence index (FII) is the fraction of weeks a poor-judge/high-fan contestant survives (Section~\ref{sec:definition_audit}).}
 \label{tab:rule_compare_stats}
 \begin{tabular}{lcccc}
 \toprule
 Statistic & pct vs rank & pct vs save & rank vs save & fan infl.\ (pct / rank)\\
 \midrule
-Min & 0.0\% & 0.0\% & 0.0\% & 0.333 / 0.333\\
-Median & 10.6\% & 22.2\% & 19.1\% & 0.909 / 0.909\\
-Mean & 13.4\% & 22.3\% & 17.1\% & 0.917 / 0.900\\
-Max & 36.4\% & 50.0\% & 54.5\% & 1.000 / 1.000\\
+\IfFileExists{tables/season_rule_comparison_summary.tex}{\input{tables/season_rule_comparison_summary.tex}}{
+Min & 0.0\% & 0.0\% & 0.0\% & 0.000 / 0.000\\
+Median & 0.0\% & 0.0\% & 0.0\% & 0.000 / 0.000\\
+Mean & 0.0\% & 0.0\% & 0.0\% & 0.000 / 0.000\\
+Max & 0.0\% & 0.0\% & 0.0\% & 0.000 / 0.000\\
+}
 \bottomrule
 \end{tabular}
 \end{table}
 
 \begin{table}[H]
 \centering
-\caption{Seasons with the largest disagreement between percent and rank elimination outcomes.}
+\caption{Seasons with the largest disagreement between percent and rank elimination outcomes (from \texttt{season\_rule\_comparison.csv}).}
 \label{tab:top_disagree_seasons}
 \begin{tabular}{rrrr}
 \toprule
 Season & Elim.\ weeks & pct vs rank diff & fan infl.\ (pct / rank)\\
 \midrule
-32 & 11 & 36.4\% & 1.000 / 1.000\\
-11 & 10 & 30.0\% & 1.000 / 1.000\\
-19 & 11 & 27.3\% & 1.000 / 0.909\\
-21 & 11 & 27.3\% & 0.909 / 0.909\\
+\IfFileExists{tables/season_rule_comparison_top.tex}{\input{tables/season_rule_comparison_top.tex}}{
+0 & 0 & 0.0\% & 0.000 / 0.000\\
+0 & 0 & 0.0\% & 0.000 / 0.000\\
+0 & 0 & 0.0\% & 0.000 / 0.000\\
+0 & 0 & 0.0\% & 0.000 / 0.000\\
+}
 \bottomrule
 \end{tabular}
 \end{table}
 
-From \texttt{sensitivity\_flip\_summary.csv}: varying judge weight from 0 to 1, the fraction of weeks where elimination would flip is highest at weight 0 (26/335 weeks) and 0 at weight 1; intermediate weights show modest flip rates (e.g., 2--9 flips at 0.76--0.86).
+From \texttt{sensitivity\_flip\_summary.csv} (flip = vs previous grid point only): the fraction of weeks where elimination flips varies across the judge-weight grid, capturing sensitivity to small rule changes.
 
 \section{Controversy Case Studies}
-We examine the prompt's highlighted controversy examples \cite{comap2026}: Season 2 (Jerry Rice), Season 4 (Billy Ray Cyrus), Season 11 (Bristol Palin), and Season 27 (Bobby Bones). For each, we compare rank vs.\ percent outcomes and quantify how a judges-save rule would alter eliminations when the bottom two are close. Data: \texttt{controversy\_season*\_fan\_shares\_vs\_judges.csv} (judge vs.\ inferred fan disagreement) and \texttt{controversy\_season*\_counterfactual\_elimination.csv} (counterfactual eliminations under judges-save).
+We examine the prompt's highlighted controversy examples \cite{comap2026}: Season 2 (Jerry Rice), Season 4 (Billy Ray Cyrus), Season 11 (Bristol Palin), and Season 27 (Bobby Bones). For each season we include two compact, artifact-based tables:\par
+\textbf{(i) Fan vs.\ judges disagreement:} \texttt{controversy\_seasonX\_fan\_shares\_vs\_judges.csv} (contestant-week rows with inferred fan shares alongside judge totals).\par
+\textbf{(ii) Counterfactual eliminations:} \texttt{controversy\_seasonX\_counterfactual\_elimination.csv} (per-week eliminated under percent, rank, and judges-save).\par
+We highlight weeks where the rule choice changes the eliminated contestant and connect those to the reported controversy narratives.
 
 \section{Drivers of Performance: Pro Dancer and Celebrity Characteristics}
 \label{sec:drivers}
@@ -292,15 +377,25 @@ region\_us & $-0.134$ ** & $1.29\times10^{-2}$ & $-0.081$ & $0.11$\\
 \end{table}
 
 \section{Proposed ``Better'' System and Evaluation}
-We propose a \textbf{weighted percent with saturation} and an optional trigger-based judges-save. The combined score is $c_i = w\cdot j_i + (1-w)\cdot\text{softcap}(f_i)$; the softcap is applied to \emph{fan} share to prevent extreme fan-bloc dominance (not judge dominance). Optionally: trigger judges-save when the bottom-two margin is below a threshold. Fairness axioms: monotonicity (better combined score $\Rightarrow$ not eliminated), fan relevance bounds, robustness (margin-to-flip), transparency. Evaluation: we report (a) scope of change---how often the proposed rule would yield a different eliminated contestant than observed (see \texttt{proposed\_system\_eval.csv}); (b) controversy-mismatch reduction; (c) robustness radius by week (Table~\ref{tab:robustness_summary}). Operationally, the robustness radius provides a transparent ``closeness'' signal: in our data, about 8.7\% of weeks are knife-edge (radius $0$), suggesting a judges-save trigger should be reserved for a small subset of genuinely close eliminations rather than used routinely.
+We propose a \textbf{weighted percent with saturation} and an optional trigger-based judges-save. The combined score is $c_i = w\cdot j_i + (1-w)\cdot\text{softcap}(f_i)$; the softcap is applied to \emph{fan} share to prevent extreme fan-bloc dominance (not judge dominance). Optionally: trigger judges-save when the bottom-two margin is below a threshold. Fairness axioms: monotonicity (better combined score $\Rightarrow$ not eliminated), fan relevance bounds, robustness (margin-to-flip), transparency.
+\par\textbf{Evaluation outputs (artifact-aligned).}
+\begin{itemize}[nosep]
+  \item \textbf{Scope of change:} \texttt{proposed\_system\_eval.csv} reports whether the proposed rule eliminates the same contestant as observed for each (season, week).
+  \item \textbf{Controversy mismatch reduction:} the evaluation reports how often a judges-favored but fan-disfavored contestant is eliminated under observed vs.\ proposed outcomes.
+  \item \textbf{Predictability:} robustness radii for the proposed rule are in \texttt{proposed\_system\_robustness.csv}; the current system’s radii are in \texttt{current\_system\_robustness.csv} for direct comparison.
+  \item \textbf{Parameter sensitivity:} \texttt{proposed\_system\_sensitivity.csv} reports how the fraction of changed eliminations varies across $(w,\alpha)$.
+\end{itemize}
 
 \section{Fit Quality and Validation}
 \label{sec:fitquality}
 \begin{itemize}[leftmargin=*]
-  \item \textbf{Elimination prediction (consistency):} Using the \emph{fitted latent fan-share model}, the implied (MAP) eliminated contestant matches the observed in 38.2\% of percent-weeks (76/199) and 30.3\% of rank-weeks (20/66), vs.\ random baseline $\approx 17\%$ when $\sim 6$ contestants. Mean log probability assigned to the observed eliminated is $\approx -1.94$; in 37.7\% of weeks the observed eliminated was rank 1, in 60.8\% rank $\le 2$, in 74.3\% rank $\le 3$. Inverse-fit sample: 265 elimination weeks; full universe 335 weeks \cite{comap2026}. See \texttt{fit\_diagnostics.csv}, \texttt{fitted\_params.json}, \texttt{reports/gonogo\_report.md}.
-  \item \textbf{Baselines:} We report two baselines in \texttt{fit\_diagnostics.csv} beside the model: (1) \emph{random elimination among active} (Pr(elim$=i$)$=1/n$); (2) \emph{judges-only}---percent-era: combined score $c_i=j_i$ (fan share uniform); rank-era: $R_i=r^J_i$ (fan rank uniform). The table gives per-week baseline match (random: expected match prob $1/n$; judges-only: MAP match) and log probability assigned to the observed eliminated. The model beats both baselines on mean log probability (higher is better). On percent-era weeks the model match rate exceeds the judges-only match rate, a clean win for the latent fan-share model.
+  \item \textbf{Sample sizes:} inverse-fit diagnostics use \FitDiagNWeeks\ elimination weeks, split into \FitDiagNPercent\ percent-rule weeks and \FitDiagNRank\ rank-rule weeks (full universe 335 weeks) \cite{comap2026}.
+  \item \textbf{Proper scoring (log probability of observed elimination):} overall mean log probability is \FitDiagMeanLogPModel, compared to judges-only \FitDiagMeanLogPJudgesOnly and random \FitDiagMeanLogPRandom. By regime, the model’s mean log probability is \FitDiagMeanLogPPercentModel\ (percent) and \FitDiagMeanLogPRankModel\ (rank); see \texttt{fit\_diagnostics.csv}.
+  \item \textbf{Point prediction (MAP match):} overall MAP match is \FitDiagMAPMatchModelPct\% (judges-only \FitDiagMAPMatchJudgesOnlyPct\%). By regime, the model matches the observed eliminated in \FitDiagMAPMatchPercentModelPct\% of percent weeks and \FitDiagMAPMatchRankModelPct\% of rank weeks; judges-only regime rates are \FitDiagMAPMatchPercentJudgesOnlyPct\% and \FitDiagMAPMatchRankJudgesOnlyPct\%.
+  \item \textbf{Coverage / ranking of the observed eliminated:} mean rank is \FitDiagTrueRankMean; the observed eliminated is the most likely in \FitDiagTrueRankLEOnePct\% of weeks, in the bottom two in \FitDiagTrueRankLETwoPct\%, and in the bottom three in \FitDiagTrueRankLEThreePct\%.
+  \item \textbf{Baselines (definition):} random elimination among active (Pr$=1/n$) and judges-only (percent: $c=j$; rank: $R=r^J$) are reported per-week in \texttt{fit\_diagnostics.csv} for direct comparison.
+  \item \textbf{Holdout check:} we also evaluate on held-out seasons using \texttt{fit\_diagnostics\_holdout.csv} to confirm performance transfers beyond the fit sample.
   \item \textbf{Finals likelihood:} Plackett--Luce term is non-degenerate; ordering likelihood contributes to identification.
-  \item \textbf{Robustness:} Margin-to-flip shows clear variation (Table~\ref{tab:robustness_summary}): 29 knife-edge weeks (8.7\%), 50 blowout weeks (14.9\%), finite-radius median 1.36; see \texttt{proposed\_system\_robustness.csv}.
 \end{itemize}
 
 \section{Limitations and Extensions}
@@ -359,13 +454,13 @@ Key parameters: $\kappa$ (mixing speed), $\eta$ (judge weight), $\gamma$ (incumb
 \textbf{Evidence.}
 \begin{itemize}[leftmargin=*]
   \item \textbf{Rule comparison (season\_rule\_comparison.csv):} Across 34 seasons, percent vs.\ rank disagree on who is eliminated in \textbf{0--36.4\%} of elimination weeks by season (mean \textbf{13.4\%}). Fan-influence index is \textbf{0.33--1.0} (mean 0.92) for both rules---fans already have substantial weight.
-  \item \textbf{Consistency (fitted latent model):} Fitted $\beta$ and $\tau$ are in \texttt{fitted\_params.json}. Using our \emph{fitted latent fan-share model}, the MAP eliminated matches the observed in \textbf{38.2\%} of percent-weeks (76/199) and \textbf{30.3\%} of rank-weeks (20/66), well above random baseline $\approx 17\%$. Mean log probability assigned to the observed eliminated is $\approx -1.94$; in 37.7\% of weeks the observed eliminated was rank 1, in 60.8\% rank $\le 2$, in 74.3\% rank $\le 3$. Baselines (random and judges-only) are in \texttt{fit\_diagnostics.csv}; the model beats judges-only on percent-era weeks. Inverse-fit sample: 265 elimination weeks; full universe 335 weeks \cite{comap2026}. See \texttt{fit\_diagnostics.csv}, \texttt{fitted\_params.json}, \texttt{reports/gonogo\_report.md}.
+  \item \textbf{Consistency (fitted latent model):} Fitted $\beta$ and $\tau$ are in \texttt{fitted\_params.json}. Using our \emph{fitted latent fan-share model}, the MAP eliminated matches the observed in \textbf{\FitDiagMAPMatchPercentModelPct\%} of percent-weeks ($\FitDiagNPercent$) and \textbf{\FitDiagMAPMatchRankModelPct\%} of rank-weeks ($\FitDiagNRank$), well above a random baseline of roughly $1/n$. Mean log probability assigned to the observed eliminated is \textbf{\FitDiagMeanLogPModel}; the true eliminated is in the model's bottom two in \textbf{\FitDiagTrueRankLETwoPct\%} of weeks. Baselines (random and judges-only) are in \texttt{fit\_diagnostics.csv}; in particular, the model's mean log probability improves over both judges-only (\FitDiagMeanLogPJudgesOnly) and random (\FitDiagMeanLogPRandom). Inverse-fit sample: \FitDiagNWeeks\ elimination weeks; full universe 335 weeks \cite{comap2026}. See \texttt{fit\_diagnostics.csv}, \texttt{fit\_diagnostics\_summary.tex}, \texttt{fitted\_params.json}, \texttt{reports/gonogo\_report.md}.
   \item \textbf{Uncertainty and robustness:} Certainty varies by week. Season~10 Week~1 has robustness radius 0 (tight); Season~12 Week~3 has radius infinite (blowout). Our proposed rule evaluation reports robustness-radius improvements and controversy-mismatch reduction relative to the historical rule; we report the \emph{scope} of change (how often the proposed rule would yield a different elimination) separately from consistency.
   \item \textbf{Controversy seasons:} In seasons 2, 4, 11, and 27 (Jerry Rice, Billy Ray Cyrus, Bristol Palin, Bobby Bones), inferred fan shares often disagree with judge rankings. A judges-save option lets producers avoid outcomes that would outrage fans when the bottom two are close.
   \item \textbf{Pro/celebrity effects (pro\_dancer\_effects\_top10.csv):} Pros who boost \emph{fans} relative to judges: \textbf{Andrea Hale} (2.03), \textbf{Henry Byalikov} (1.01). Judges-favoring pros appear in the bottom of the effects table. A stable rule keeps competition fair across pros.
 \end{itemize}
 
-\textbf{Proposed system.} Combine judge and fan contributions as $c = w\cdot j + (1-w)\cdot\text{softcap}(f)$; the softcap is on \emph{fan} share to prevent extreme fan-bloc dominance. Optionally: when the bottom two are within a small margin, trigger a judges-save (we fit $\alpha\approx 0.029$ from season~28+ data). This preserves fan relevance, satisfies monotonicity and transparency, and reduces controversy in close weeks.
+\textbf{Proposed system.} Combine judge and fan contributions as $c = w\cdot j + (1-w)\cdot\text{softcap}(f)$; the softcap is on \emph{fan} share to prevent extreme fan-bloc dominance. Optionally: when the bottom two are within a small margin, trigger a judges-save (we fit $\alpha=\AlphaJudgesSave$ from season~28+ data). This preserves fan relevance, satisfies monotonicity and transparency, and reduces controversy in close weeks.
 
 \textbf{Expected impact.} (i) Fan influence remains high (fan-influence index 0.33--1.0, mean 0.92). (ii) Fairness improves via monotonicity and bounded fan-bloc dominance. (iii) Robustness: margin-to-flip analysis identifies which weeks are close; judges-save can be used only in those weeks. (iv) Controversy frequency can decrease when judges-save is triggered in disputed bottom-two situations.
 
@@ -384,6 +479,6 @@ COMAP, \emph{2026 MCM Problem C: Data With The Stars}, 2026.
 % ============================================================
 \newpage
 \section*{AI Use Report}
-Describe exactly how AI was used (e.g., brainstorming model structure, code review, writing assistance), what was verified independently (tests, reproducibility checks), and what was not used (no external data unless documented).
+AI was used for (1)~\textbf{coding}---implementation, debugging, refactoring, and pipeline automation---and (2)~\textbf{checking the final version}---reviewing the report and code for consistency, clarity, and alignment with COMAP requirements. An example prompt used for the latter was: ``You are an ICM/MCM judge; read Section~X and the corresponding code/table. Check that the report's claims match the implementation and that definitions (e.g., Fan Influence Index, robustness radius) are used consistently.'' All results were reproduced by running \texttt{python main.py} and \texttt{run\_gonogo\_checks.py}; fit diagnostics, tables, and LaTeX inputs are generated from the pipeline. No external data were used beyond the provided dataset and documented sources.
 
 \end{document}

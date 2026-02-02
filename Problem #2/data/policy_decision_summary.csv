@@ -1,10 +1,13 @@
 institution,career,weight_regime,policy_regime,score
-SDSU,software_engineer,Balanced,Allow_with_Audit,0.0
-SDSU,software_engineer,Integrity_First,Ban,0.0
-SDSU,software_engineer,Sustainability_First,Allow_with_Audit,0.0
-LATTC,electrician,Balanced,Require,0.0
-LATTC,electrician,Integrity_First,Require,0.0
-LATTC,electrician,Sustainability_First,Ban,0.0
-Academy of Art,writer,Balanced,Ban,0.0
-Academy of Art,writer,Integrity_First,Ban,0.0
-Academy of Art,writer,Sustainability_First,Ban,0.0
+SDSU,software_engineer,Balanced,Allow_with_Audit,3.3420814186695105
+SDSU,software_engineer,Integrity_First,Allow_with_Audit,4.169724775107319
+SDSU,software_engineer,Sustainability_First,Allow_with_Audit,4.26708141866951
+SDSU,software_engineer,Equity_First,Allow_with_Audit,4.123560772746744
+LATTC,electrician,Balanced,Require,3.44245098473663
+LATTC,electrician,Integrity_First,Require,4.34245098473663
+LATTC,electrician,Sustainability_First,Require,4.28495098473663
+LATTC,electrician,Equity_First,Require,4.215908752793293
+Academy of Art,writer,Balanced,Ban,3.013962096017783
+Academy of Art,writer,Integrity_First,Ban,3.963962096017783
+Academy of Art,writer,Sustainability_First,Ban,3.986462096017783
+Academy of Art,writer,Equity_First,Allow_with_Audit,3.6533555925072516

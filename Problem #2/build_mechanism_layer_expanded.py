@@ -1,6 +1,8 @@
 """
 Build expanded mechanism layer using full O*NET database (db_30_1_text).
 Computes 5 mechanism scores for ALL occupations, normalized by percentile.
+Also computes an additional sensitivity-only channel for construct validity:
+  - accountability_responsibility (from Work Context: consequence of error + impact of decisions)
 """
 from pathlib import Path
 import pandas as pd
@@ -49,10 +51,23 @@ DIMENSION_DESCRIPTORS = {
         "Technology Design",
         "Interacting With Computers",
     ],
+    # Sensitivity-only channel to capture accountability/system responsibility.
+    # Source: O*NET Work Context (CX scale) items.
+    "accountability_responsibility": [
+        "Consequence of Error",
+        "Impact of Decisions on Co-workers or Company Results",
+    ],
 }
 
-def load_onet_file(filename: str) -> pd.DataFrame:
-    """Load O*NET text file (tab-separated), filter for Scale ID = IM (Importance)."""
+def load_onet_file(filename: str, scale_id: str | None = "IM") -> pd.DataFrame:
+    """
+    Load O*NET text file (tab-separated).
+    If `scale_id` is not None and a 'Scale ID' column exists, filter to that scale.
+
+    Notes:
+      - Work Activities / Abilities / Skills use Scale ID = IM for importance.
+      - Work Context uses Scale ID = CX for the mean context rating.
+    """
     path = ONET_DIR / filename
     if not path.exists():
         print(f"Warning: {path} not found.")
@@ -61,26 +76,34 @@ def load_onet_file(filename: str) -> pd.DataFrame:
     # O*NET text files are tab-separated
     df = pd.read_csv(path, sep="\t", on_bad_lines='skip')
     
-    # Filter for Importance (IM)
-    if "Scale ID" in df.columns:
-        df = df[df["Scale ID"] == "IM"].copy()
+    # Filter by requested scale id if possible.
+    if scale_id is not None and "Scale ID" in df.columns:
+        df = df[df["Scale ID"] == str(scale_id)].copy()
     
     return df[["O*NET-SOC Code", "Element ID", "Element Name", "Data Value"]]
 
 def build_expanded_mechanism():
     print(f"Loading O*NET files from {ONET_DIR}...")
     # Load the three main descriptor files
-    activities = load_onet_file("Work Activities.txt")
+    activities = load_onet_file("Work Activities.txt", scale_id="IM")
     activities["domain_file"] = "Work Activities"
     
-    abilities = load_onet_file("Abilities.txt")
+    abilities = load_onet_file("Abilities.txt", scale_id="IM")
     abilities["domain_file"] = "Abilities"
     
-    skills = load_onet_file("Skills.txt")
+    skills = load_onet_file("Skills.txt", scale_id="IM")
     skills["domain_file"] = "Skills"
+
+    # Work Context items for accountability/system responsibility (CX scale)
+    context = load_onet_file("Work Context.txt", scale_id="CX")
+    if not context.empty:
+        context["domain_file"] = "Work Context"
     
     # Combine
-    full = pd.concat([activities, abilities, skills], ignore_index=True)
+    frames = [activities, abilities, skills]
+    if not context.empty:
+        frames.append(context)
+    full = pd.concat(frames, ignore_index=True)
     
     if full.empty:
         print("No O*NET data loaded. Check data/onet folder.")

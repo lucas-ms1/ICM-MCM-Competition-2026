@@ -109,10 +109,11 @@ def build_counterfactual_table(
         elim_observed = ev.get("observed_eliminated_index")
         if elim_observed is None:
             elim_observed = -1
+        is_elim_week = 1 if elim_observed >= 0 else 0
         rows.append({
             "season": ev["season"],
             "week": ev["week"],
-            "is_elimination_week": 1,
+            "is_elimination_week": is_elim_week,
             "elim_observed": elim_observed,
             "elim_rank": cf["elim_rank"],
             "elim_percent": cf["elim_percent"],

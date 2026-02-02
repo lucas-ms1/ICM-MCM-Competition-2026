@@ -1,0 +1,25 @@
+\begin{table}[H]
+\centering
+\caption{Policy regime scoring (Balanced objective; higher is better). Component scores are in $[0,1]$. We report Employability $E$ and Access $A$ as benefits, and convert cost components to benefits via Integrity benefit $(1-I)$ and Sustainability benefit $(1-S)$, so the Total score is an all-positive sum in $[0,4]$. The recommended regime is the within-institution argmax.}
+\label{tab:policy_decision_compact}
+\setlength{\tabcolsep}{4pt}
+\scriptsize
+\begin{tabular}{llrrrrr}
+\toprule
+Institution & Policy regime & Total & $E$ & $(1-I)$ & $(1-S)$ & $A$\\
+\midrule
+Academy of Art & \textbf{Ban} & \textbf{3.014} & \textbf{0.472} & \textbf{0.950} & \textbf{0.973} & \textbf{0.620}\\
+Academy of Art & Allow with Audit & 2.935 & 0.691 & 0.664 & 0.863 & 0.718\\
+Academy of Art & Require & 2.563 & 0.579 & 0.483 & 0.807 & 0.694\\
+\midrule
+LATTC & Ban & 2.794 & 0.217 & 0.950 & 0.978 & 0.650\\
+LATTC & Allow with Audit & 3.368 & 0.848 & 0.920 & 0.888 & 0.712\\
+LATTC & \textbf{Require} & \textbf{3.442} & \textbf{0.926} & \textbf{0.900} & \textbf{0.843} & \textbf{0.773}\\
+\midrule
+SDSU & Ban & 3.067 & 0.526 & 0.950 & 0.985 & 0.606\\
+SDSU & \textbf{Allow with Audit} & \textbf{3.342} & \textbf{0.808} & \textbf{0.828} & \textbf{0.925} & \textbf{0.781}\\
+SDSU & Require & 2.776 & 0.597 & 0.512 & 0.895 & 0.772\\
+\bottomrule
+\end{tabular}
+% Values taken from data/policy_decision_scores.csv (Balanced weight_regime).
+\end{table}

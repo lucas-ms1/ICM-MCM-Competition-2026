@@ -104,6 +104,7 @@ def bootstrap_fan_share_intervals(
     seasons = cw["season"].dropna().unique()
     if len(seasons) < 2:
         return pd.DataFrame(), []
+    n_contestants = int(cw["contestant_id"].max()) + 1 if "contestant_id" in cw.columns else None
     p_lo, p_hi = percentiles
     # Collect per (season, week, celebrity_name, ballroom_partner) list of f across runs
     store: dict[tuple, list[float]] = {}
@@ -122,6 +123,7 @@ def bootstrap_fan_share_intervals(
                 beta_init, tau_init, cw_boot, raw,
                 elimination_events=elim,
                 finals_events=finals,
+                n_contestants=n_contestants,
             )
             if not result.success:
                 continue
@@ -173,6 +175,7 @@ def bootstrap_fan_share_intervals_by_weeks(
     rng = np.random.default_rng(random_state)
     store: dict[tuple, list[float]] = {}
     bootstrap_results: list[tuple[dict, float]] = []
+    n_contestants = int(cw["contestant_id"].max()) + 1 if "contestant_id" in cw.columns else None
     seasons = cw["season"].dropna().unique()
     for season in seasons:
         season_df = cw[cw["season"] == season]
@@ -194,6 +197,7 @@ def bootstrap_fan_share_intervals_by_weeks(
                     beta_init, tau_init, cw_boot, raw,
                     elimination_events=elim,
                     finals_events=finals,
+                    n_contestants=n_contestants,
                 )
                 if not result.success:
                     continue

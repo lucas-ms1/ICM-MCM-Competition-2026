@@ -1,0 +1,4 @@
+career_key,career_label,A_min,A_max,r_min,r_max,one_minus_eps_min,one_minus_eps_max,notes
+software_engineer,Software Developers (STEM),0.6,0.9,0.25,0.6,0.4,0.9,"Adoption high; automability medium-high; demand response mixed"
+electrician,Electricians (Trade),0.3,0.7,0.05,0.2,0.2,0.7,"Adoption moderate; automability low; demand response bounded by bottlenecks/licensing"
+writer,Writers and Authors (Arts),0.5,0.9,0.15,0.5,0.4,1.0,"Adoption high; automability medium; demand response weak-to-moderate"

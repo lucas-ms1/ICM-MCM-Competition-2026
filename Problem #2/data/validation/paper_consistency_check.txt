@@ -3,15 +3,15 @@ Paper consistency check
 Overall: PASS (47/47 checks passed)
 
 [OK] table_inputs_exist
-  Found 30 inputs; all exist.
+  Found 27 inputs; all exist.
 [OK] figures_exist
   Found 4 figures; all exist.
 [OK] scenario_macros_software_engineer
-  got=(base=2075300,high=1490209,ramp=1789549), expected=(base=2075300,high=1490209,ramp=1789549)
+  got=(base=2075300,high=1490209,ramp=1707148), expected=(base=2075300,high=1490209,ramp=1707148)
 [OK] scenario_macros_electrician
-  got=(base=962800,high=964621,ramp=963619), expected=(base=962800,high=964621,ramp=963619)
+  got=(base=962800,high=964621,ramp=963548), expected=(base=962800,high=964621,ramp=963548)
 [OK] scenario_macros_writer
-  got=(base=313700,high=249054,ramp=282882), expected=(base=313700,high=249054,ramp=282882)
+  got=(base=313700,high=249054,ramp=271505), expected=(base=313700,high=249054,ramp=271505)
 [OK] summary_headline_fragment_uses_macros
   OK
 [OK] summary_headline_fragment_no_literals
@@ -23,7 +23,7 @@ Overall: PASS (47/47 checks passed)
 [OK] summary_sheet_end_on_page_1
   page:summary_end=1 (expected 1)
 [OK] toc_starts_on_page_2
-  page:toc_start=2 (expected 2)
+  page:toc_start=1 (expected 1 or 2 depending on page counter reset)
 [OK] scenario_table_netrisk_software_engineer
   got=0.88, expected=0.879587081544674
 [OK] scenario_table_emp2024_software_engineer
@@ -33,11 +33,11 @@ Overall: PASS (47/47 checks passed)
 [OK] scenario_table_emp_2034_Moderate_Substitution_software_engineer
   got=1760980, expected=1760980
 [OK] scenario_table_emp_2034_Ramp_Moderate_software_engineer
-  got=1927878, expected=1927878
+  got=1883541, expected=1883541
 [OK] scenario_table_emp_2034_High_Disruption_software_engineer
   got=1490209, expected=1490209
 [OK] scenario_table_emp_2034_Ramp_High_software_engineer
-  got=1789549, expected=1789549
+  got=1707148, expected=1707148
 [OK] scenario_table_netrisk_electrician
   got=-0.888, expected=-0.8883107222665543
 [OK] scenario_table_emp2024_electrician
@@ -47,11 +47,11 @@ Overall: PASS (47/47 checks passed)
 [OK] scenario_table_emp_2034_Moderate_Substitution_electrician
   got=963710, expected=963710
 [OK] scenario_table_emp_2034_Ramp_Moderate_electrician
-  got=963209, expected=963209
+  got=963174, expected=963174
 [OK] scenario_table_emp_2034_High_Disruption_electrician
   got=964621, expected=964621
 [OK] scenario_table_emp_2034_Ramp_High_electrician
-  got=963619, expected=963619
+  got=963548, expected=963548
 [OK] scenario_table_netrisk_writer
   got=0.61, expected=0.60974730678522
 [OK] scenario_table_emp2024_writer
@@ -61,11 +61,11 @@ Overall: PASS (47/47 checks passed)
 [OK] scenario_table_emp_2034_Moderate_Substitution_writer
   got=279700, expected=279700
 [OK] scenario_table_emp_2034_Ramp_Moderate_writer
-  got=297949, expected=297949
+  got=291944, expected=291944
 [OK] scenario_table_emp_2034_High_Disruption_writer
   got=249054, expected=249054
 [OK] scenario_table_emp_2034_Ramp_High_writer
-  got=282882, expected=282882
+  got=271505, expected=271505
 [OK] program_sizing_openings_SDSU
   got=1718, expected=1718
 [OK] program_sizing_seats_SDSU_5pct

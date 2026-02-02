@@ -7,9 +7,10 @@
 \toprule
 Regime (Weight Dominance) & Policy Stance & Assessment Changes & Tool Restrictions\\
 \midrule
-Balanced ($w_E \approx w_I$) & Permit with disclosure & Verify outputs, oral defense of code/text & Standard commercial models \\
-Integrity-First ($w_I \gg w_E$) & Strict audit \& provenance & In-person blue book exams; full edit history required & Local-only or logged enterprise instances \\
-Sustainability-First ($w_S \gg w_E$) & Minimal compute & Focus on logic/structure; limit GenAI for drafting & Small SLMs only; quota on token usage \\
+Balanced ($w_E=w_I=w_S=w_A=1$) & Permit with disclosure & Verify outputs, oral defense of code/text & Standard commercial models \\
+Integrity-First ($w_E=1,w_I=2,w_S=1,w_A=1$) & Strict audit \& provenance & In-person blue book exams; full edit history required & Local-only or logged enterprise instances \\
+Sustainability-First ($w_E=1,w_I=1,w_S=2,w_A=1$) & Minimal compute & Focus on logic/structure; limit GenAI for drafting & Small SLMs only; quota on token usage \\
+Equity-First ($w_E=1,w_I=1,w_S=1,w_A=2$) & Low-barrier access & Structured scaffolding; accommodations + equitable tool access & Institution-provided accounts; accessibility-first tooling \\
 \bottomrule
 \end{tabular}%
 }

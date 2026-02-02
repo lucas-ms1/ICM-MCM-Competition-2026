@@ -62,6 +62,25 @@ def _almost_equal(a: float, b: float, tol: float = 1e-6) -> bool:
     return abs(float(a) - float(b)) <= tol
 
 
+def _extract_summary_sheet_block(main_tex_text: str) -> str | None:
+    """
+    Extract the Summary Sheet block from main.tex.
+
+    This codebase uses explicit page labels rather than a \\section*{Summary Sheet} heading:
+      \\label{page:summary_start}
+      ...
+      \\label{page:summary_end}
+    """
+    m = re.search(
+        r"\\label\{page:summary_start\}(?P<body>.+?)\\label\{page:summary_end\}",
+        main_tex_text,
+        flags=re.DOTALL,
+    )
+    if not m:
+        return None
+    return m.group("body")
+
+
 @dataclass(frozen=True)
 class CheckResult:
     name: str
@@ -234,13 +253,14 @@ def check_summary_sheet_one_page(main_tex: Path) -> list[CheckResult]:
             details=f"page:summary_end={p_end} (expected 1)",
         )
     )
-    # Optional sanity: TOC should start on page 2
+    # Optional sanity: TOC is often reset to page 1 after the unnumbered Summary Sheet
+    # in MCM/ICM templates. Accept either 1 or 2.
     if p_toc is not None:
         checks.append(
             CheckResult(
                 "toc_starts_on_page_2",
-                ok=(p_toc == 2),
-                details=f"page:toc_start={p_toc} (expected 2)",
+                ok=(p_toc in (1, 2)),
+                details=f"page:toc_start={p_toc} (expected 1 or 2 depending on page counter reset)",
             )
         )
     return checks
@@ -252,11 +272,15 @@ def check_summary_sheet_refs(main_tex: Path) -> list[CheckResult]:
     somewhere in main.tex or any input'd table fragments.
     """
     text = _read_text(main_tex)
-    # Extract Summary Sheet block (up to the explicit page break after it).
-    m = re.search(r"\\section\*\{Summary Sheet\}(.+?)\\newpage", text, flags=re.DOTALL)
-    if not m:
-        return [CheckResult("summary_sheet_block_parse", False, "Could not locate Summary Sheet block.")]
-    block = m.group(1)
+    block = _extract_summary_sheet_block(text)
+    if block is None:
+        return [
+            CheckResult(
+                "summary_sheet_block_parse",
+                False,
+                "Could not locate Summary Sheet block (expected labels page:summary_start/page:summary_end).",
+            )
+        ]
     refs = sorted(set(re.findall(r"\\ref\{([^}]+)\}", block)))
     if not refs:
         return [CheckResult("summary_sheet_refs_present", True, "No refs in Summary Sheet.")]
@@ -290,11 +314,15 @@ def check_model_definition_claims(main_tex: Path) -> list[CheckResult]:
     """
     text = _read_text(main_tex)
 
-    # Summary Sheet block (up to the explicit page break after it).
-    msum = re.search(r"\\section\*\{Summary Sheet\}(.+?)\\newpage", text, flags=re.DOTALL)
-    if not msum:
-        return [CheckResult("model_claims_summary_parse", False, "Could not locate Summary Sheet block.")]
-    summary = msum.group(1)
+    summary = _extract_summary_sheet_block(text)
+    if summary is None:
+        return [
+            CheckResult(
+                "model_claims_summary_parse",
+                False,
+                "Could not locate Summary Sheet block (expected labels page:summary_start/page:summary_end).",
+            )
+        ]
 
     # Model section block
     mmodel = re.search(r"\\section\{Model\}(.+?)\\section\{Results\}", text, flags=re.DOTALL)

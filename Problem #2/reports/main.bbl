@@ -1,4 +1,4 @@
-\begin{thebibliography}{10}
+\begin{thebibliography}{12}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -12,6 +12,14 @@ Erik Brynjolfsson, Danielle Li, and Lindsey Raymond.
 \newblock \url{https://www.nber.org/papers/w31161}, 2023.
 \newblock NBER Working Paper 31161. Accessed 2026-01-31.
 
+\bibitem[Brynjolfsson et~al.(2025)Brynjolfsson, Li, and
+  Raymond]{brynjolfsson2025genaiwork}
+Erik Brynjolfsson, Danielle Li, and Lindsey Raymond.
+\newblock Generative {AI} at work.
+\newblock \emph{The Quarterly Journal of Economics}, 140\penalty0 (2):\penalty0
+  889--942, 2025.
+\newblock \doi{10.1093/qje/qjae044}.
+
 \bibitem[Felten et~al.(2021)Felten, Raj, and Seamans]{felten2021aioe}
 Edward~W. Felten, Manav Raj, and Robert Seamans.
 \newblock Occupational, industry, and geographic exposure to artificial
@@ -20,31 +28,38 @@ Edward~W. Felten, Manav Raj, and Robert Seamans.
   2195--2217, 2021.
 \newblock \doi{10.1002/smj.3286}.
 
-\bibitem[{MIT Shaping the Future of Work}(2026)]{mit_tasks_based_framing}
+\bibitem[{MIT Shaping the Future of Work}(n.d.)]{mit_tasks_based_framing}
 {MIT Shaping the Future of Work}.
 \newblock Why are there still so many jobs? the history and future of workplace
   automation.
 \newblock
   \url{https://shapingwork.mit.edu/research/why-are-there-still-so-many-jobs-the-history-and-future-of-workplace-automation/},
-  2026.
+  n.d.
 \newblock Accessed 2026-01-31.
 
-\bibitem[{O*NET Resource Center}(2026{\natexlab{a}})]{onet_database}
+\bibitem[Noy and Zhang(2023)]{noy2023experimental}
+Shakked Noy and Whitney Zhang.
+\newblock Experimental evidence on the productivity effects of generative
+  artificial intelligence.
+\newblock \emph{Science}, 381\penalty0 (6654):\penalty0 187--192, 2023.
+\newblock \doi{10.1126/science.adh2586}.
+
+\bibitem[{O*NET Resource Center}(2024{\natexlab{a}})]{onet_database}
 {O*NET Resource Center}.
 \newblock O*net database.
-\newblock \url{https://www.onetcenter.org/database.html}, 2026{\natexlab{a}}.
+\newblock \url{https://www.onetcenter.org/database.html}, 2024{\natexlab{a}}.
 \newblock Accessed 2026-01-31.
 
-\bibitem[{O*NET Resource Center}(2026{\natexlab{b}})]{onet_license}
+\bibitem[{O*NET Resource Center}(2024{\natexlab{b}})]{onet_license}
 {O*NET Resource Center}.
 \newblock O*net\textsuperscript{\textregistered} database content license.
-\newblock \url{https://www.onetcenter.org/license_db.html}, 2026{\natexlab{b}}.
+\newblock \url{https://www.onetcenter.org/license_db.html}, 2024{\natexlab{b}}.
 \newblock Accessed 2026-01-31.
 
-\bibitem[{O*NET Resource Center}(2026{\natexlab{c}})]{onet_taxonomy}
+\bibitem[{O*NET Resource Center}(2024{\natexlab{c}})]{onet_taxonomy}
 {O*NET Resource Center}.
 \newblock O*net-soc taxonomy.
-\newblock \url{https://www.onetcenter.org/taxonomy.html}, 2026{\natexlab{c}}.
+\newblock \url{https://www.onetcenter.org/taxonomy.html}, 2024{\natexlab{c}}.
 \newblock Accessed 2026-01-31.
 
 \bibitem[{OpenAI}(2023)]{openai_llm_exposure}

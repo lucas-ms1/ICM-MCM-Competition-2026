@@ -72,8 +72,9 @@ def build_pro_dancer_effect_table(
     df["fan_minus_judge"] = df["fan_FE"] - df["judge_FE"]
 
     # Ranks for reporting
-    df["rank_fan"] = df["fan_FE"].rank(ascending=False, method="dense").astype(int)
-    df["rank_judge"] = df["judge_FE"].rank(ascending=False, method="dense").astype(int)
+    # Use nullable integer dtype so NaNs (e.g., if a regression failed) don't crash the pipeline.
+    df["rank_fan"] = df["fan_FE"].rank(ascending=False, method="dense").astype("Int64")
+    df["rank_judge"] = df["judge_FE"].rank(ascending=False, method="dense").astype("Int64")
     df["rank_gap"] = df["rank_fan"] - df["rank_judge"]
 
     return df.sort_values(["fan_minus_judge", "fan_FE"], ascending=False)

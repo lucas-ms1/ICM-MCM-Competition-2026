@@ -1,10 +1,13 @@
 institution,weight_regime,baseline_policy,robustness
-SDSU,Balanced,Allow_with_Audit,Stable (9/9)
-SDSU,Integrity_First,Ban,Stable (9/9)
-SDSU,Sustainability_First,Allow_with_Audit,Stable (9/9)
-LATTC,Balanced,Require,Stable (9/9)
-LATTC,Integrity_First,Require,Stable (9/9)
-LATTC,Sustainability_First,Ban,Stable (9/9)
-Academy of Art,Balanced,Ban,Stable (9/9)
-Academy of Art,Integrity_First,Ban,Stable (9/9)
-Academy of Art,Sustainability_First,Ban,Stable (9/9)
+SDSU,Balanced,Allow_with_Audit,Stable (27/27)
+SDSU,Integrity_First,Allow_with_Audit,Flips (23/27); seen: Ban
+SDSU,Sustainability_First,Allow_with_Audit,Stable (27/27)
+SDSU,Equity_First,Allow_with_Audit,Stable (27/27)
+LATTC,Balanced,Require,Stable (27/27)
+LATTC,Integrity_First,Require,Stable (27/27)
+LATTC,Sustainability_First,Require,Flips (25/27); seen: Allow_with_Audit
+LATTC,Equity_First,Require,Stable (27/27)
+Academy of Art,Balanced,Ban,Flips (24/27); seen: Allow_with_Audit
+Academy of Art,Integrity_First,Ban,Stable (27/27)
+Academy of Art,Sustainability_First,Ban,Stable (27/27)
+Academy of Art,Equity_First,Allow_with_Audit,Flips (17/27); seen: Ban

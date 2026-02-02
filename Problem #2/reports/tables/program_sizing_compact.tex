@@ -1,0 +1,20 @@
+\begin{table}[H]
+\centering
+\caption{Local context and program-sizing inputs for the three institutions (consolidated). ``Openings (used)'' scales national EP annual openings to the local market using (local total employment share)$\times$(clipped LQ). Seat ranges assume a baseline 10\% share and program efficiency (completion$\times$placement) in [0.39, 0.72].}
+% Preserve legacy labels referenced throughout the paper (all point to this consolidated table).
+\label{tab:local_context}\label{tab:program_sizing}\label{tab:program_anchor}\label{tab:openings_scaling_robustness}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lp{4.4cm}rrrrp{4.8cm}}
+\toprule
+Institution & Metro & LQ & Openings (used) & Seats/yr @10\% & Anchor (public proxy)\\
+\midrule
+SDSU & San Diego--Chula Vista--Carlsbad, CA & 1.647 & 1,718 & 238--440 & IPEDS completions (B.S. CS, CIP4 1107): 295 (latest)\\
+LATTC & Los Angeles--Long Beach--Anaheim, CA & 0.706 & 2,298 & 319--589 & Program completions proxy (electrician pathway cert.): 91 (2022)\\
+Academy of Art & San Francisco--Oakland--Fremont, CA & 1.577 & 314 & 43--80 & Program completions proxy (media/writing-adjacent CIP): 30 (latest)\\
+\bottomrule
+\end{tabular}%
+}
+\vspace{2pt}
+{\footnotesize Other planning shares (seats/yr): 5\% = SDSU 119--220, LATTC 159--294, AAU 21--40; 15\% = SDSU 357--660, LATTC 478--883, AAU 65--120. Anchor sources/notes recorded in \texttt{data/program\_anchor\_inputs.csv}.}
+\end{table}
+

@@ -49,8 +49,10 @@ def _smooth_min_approx(x: np.ndarray, k: float = 20.0) -> float:
     x = np.asarray(x, dtype=float)
     if len(x) == 0:
         return np.nan
-    mx = x.max()
-    return mx - np.log(np.exp(k * (x - mx)).sum()) / k
+    # Stable log-sum-exp for min:
+    # min(x) = -(1/k) * log(sum_i exp(-k * x_i))
+    mn = x.min()
+    return float(mn - np.log(np.exp(-k * (x - mn)).sum()) / k)
 
 
 def margin_to_flip_radius(

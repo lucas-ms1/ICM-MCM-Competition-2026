@@ -42,12 +42,17 @@ def preference_scores(
     underdog: np.ndarray,
     X: np.ndarray | None,
     beta: dict,
+    *,
+    theta: np.ndarray | None = None,
+    contestant_id: np.ndarray | None = None,
 ) -> np.ndarray:
     """
-    u_{i,t} = beta0 + beta_J*z_J + beta_X'*X + beta_P*p_prev + beta_U*underdog.
+    u_{i,t} = theta_i + beta0 + beta_J*z_J + beta_X'*X + beta_P*p_prev + beta_U*underdog.
+    theta_i = contestant-specific baseline (unobserved popularity); optional, with ridge.
     z_J, p_prev, underdog: 1d arrays (length n = active set size).
     X: optional n x k matrix; if None, no X term.
-    beta: dict with keys beta0, beta_J, beta_P, beta_U, and optionally beta_X (length k).
+    beta: dict with keys beta0, beta_J, beta_P, beta_U, and optionally beta_X (length k), theta (1d).
+    theta, contestant_id: if both provided, u[i] += theta[contestant_id[i]]; else use beta["theta"] if present and contestant_id provided.
     """
     n = len(z_J)
     u = np.full(n, float(beta["beta0"]))
@@ -58,6 +63,10 @@ def preference_scores(
         X = np.asarray(X)
         beta_X = np.atleast_1d(beta["beta_X"])
         u += np.dot(X, beta_X)
+    th = theta if theta is not None else beta.get("theta")
+    if th is not None and contestant_id is not None:
+        cid = np.asarray(contestant_id, dtype=int)
+        u += np.asarray(th, dtype=float)[cid]
     return u
 
 
@@ -68,20 +77,25 @@ def fan_shares_from_beta(
     underdog: np.ndarray,
     X: np.ndarray | None,
     beta: dict,
+    *,
+    theta: np.ndarray | None = None,
+    contestant_id: np.ndarray | None = None,
 ) -> np.ndarray:
     """
     Combined forward map: u = preference_scores(...), f = shares_from_preference(u).
     J is unused in u but can be used by caller to compute z_J; we take z_J precomputed.
+    Optional theta, contestant_id for contestant baseline popularity (see preference_scores).
     Returns f (fan shares) for the active set.
     """
-    u = preference_scores(z_J, p_prev, underdog, X, beta)
+    u = preference_scores(z_J, p_prev, underdog, X, beta, theta=theta, contestant_id=contestant_id)
     return shares_from_preference(u)
 
 
 def build_contestant_week_covariates(cw: pd.DataFrame, raw: pd.DataFrame) -> pd.DataFrame:
     """
-    Build covariates for the preference model: z_J, age, industry_dummy, p_prev, underdog.
+    Build covariates for the preference model: z_J, age, industry_dummy, p_prev, underdog, contestant_id.
     Adds columns to a copy of cw; align by (season, celebrity_name, ballroom_partner).
+    - contestant_id: unique id 0..N-1 per (season, celebrity_name, ballroom_partner) for theta_i.
     - z_J: J / max(J) within (season, week) among active; 0 if max(J)==0.
     - age: celebrity_age_during_season from raw (fill missing with 0).
     - industry_dummy: 1 if celebrity_industry == "Actor/Actress", else 0.
@@ -89,6 +103,14 @@ def build_contestant_week_covariates(cw: pd.DataFrame, raw: pd.DataFrame) -> pd.
     - underdog: 1 if J <= median J in that (season, week) among active, else 0.
     """
     cw = cw.copy()
+    # contestant_id: one per (season, celebrity_name, ballroom_partner) for baseline popularity theta_i
+    keys = cw[["season", "celebrity_name", "ballroom_partner"]].drop_duplicates().sort_values(
+        ["season", "celebrity_name", "ballroom_partner"]
+    )
+    key_to_id = {tuple(r): i for i, r in enumerate(keys.values)}
+    cw["contestant_id"] = cw.apply(
+        lambda r: key_to_id[(r["season"], r["celebrity_name"], r["ballroom_partner"])], axis=1
+    )
     # Merge raw demographics (minimal: age, industry_dummy)
     demo_cols = ["season", "celebrity_name", "ballroom_partner"]
     if "celebrity_age_during_season" in raw.columns:
@@ -112,12 +134,12 @@ def build_contestant_week_covariates(cw: pd.DataFrame, raw: pd.DataFrame) -> pd.
             mx = 1.0
         cw.loc[grp.index, "z_J"] = j / mx
 
-    # p_prev: rank by J in previous week (1 = best); week 1 = 0
+    # p_prev: rank by J in previous week among active contestants (1 = best); week 1 = 0
     cw["p_prev"] = 0.0
     for (season, week), grp in cw.groupby(["season", "week"]):
         if week == 1:
             continue
-        prev = cw[(cw["season"] == season) & (cw["week"] == week - 1)]
+        prev = cw[(cw["season"] == season) & (cw["week"] == week - 1) & (cw["active"] == 1)]
         if prev.empty:
             continue
         j_prev = prev.set_index(["celebrity_name", "ballroom_partner"])["score_week_total"]

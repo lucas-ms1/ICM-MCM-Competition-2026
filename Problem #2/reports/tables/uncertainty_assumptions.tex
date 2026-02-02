@@ -1,0 +1,19 @@
+\begin{table}[H]
+\centering
+\caption{Monte Carlo uncertainty specification (what is sampled for Table~\ref{tab:uncertainty_summary}).}
+\label{tab:uncertainty_assumptions}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{p{3.2cm}p{2.4cm}p{6.6cm}p{5.5cm}}
+\toprule
+Quantity & Distribution & Parameters & Notes\\
+\midrule
+s (scenario strength) & Uniform & [(0.8*s\_used), (1.2*s\_used)] clipped at 0 & s\_used is the scenario s value (calibrated if available).\\
+NetRisk & Empirical (descriptor LOO) or Normal fallback & delta \textasciitilde{} sample(variant\_net\_risk - baseline) from mechanism\_sensitivity.csv; else Normal(risk\_base, 0.15*max(|risk\_base|,0.05)) & Descriptor leave-one-out + normalization variants for focal SOCs; fallback used only if sensitivity file missing.\\
+m\_i (complementarity cap) & Uniform & [0.5*m\_comp, 1.5*m\_comp] bounded to [0,0.5] & m\_comp is bundle-avg from scenario\_summary.csv (bottleneck×elasticity, capped by m\_max in main model).\\
+Adoption curve (ramp only) & Logistic (scaled) with parameter jitter & A(t)=logistic(k*(t-t0)) scaled to map 2024->0 and 2034->1; k \textasciitilde{} Uniform(k0±0.25, clipped >0), t0 \textasciitilde{} Uniform(t00±1.0y) (±1.5y for writers) & Career-level defaults (k0,t00) set in build\_uncertainty.py to mirror run\_scenarios.py; affects uncertainty\_summary\_ramp.csv only.\\
+Held fixed & — & g\_base, E\_2024 & Baseline growth and starting employment taken from EP bundle artifacts.\\
+Simulation & — & 10000 draws; seed=42 & Report P5/P50/P95 of E\_2034 across draws (immediate scenarios) and ramped variants in uncertainty\_summary\_ramp.csv.\\
+\bottomrule
+\end{tabular}%
+}
+\end{table}

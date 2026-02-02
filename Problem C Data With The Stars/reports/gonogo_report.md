@@ -15,5 +15,5 @@
 
 ## 5. Uncertainty varies by week
 - **PASS**: Margin-to-flip (robustness_radius) shows variation across weeks.
-- Example: Tight week: Season 10, Week 1 — robustness_radius = 0.0000 (small margin to flip)
-- Example: Blowout week: Season 12, Week 3 — robustness_radius = inf (large margin)
+- Example: Tight week: Season 1, Week 1 — robustness_radius = 0.0000 (small margin to flip)
+- Example: Blowout week: Season 1, Week 5 — robustness_radius = inf (large margin)

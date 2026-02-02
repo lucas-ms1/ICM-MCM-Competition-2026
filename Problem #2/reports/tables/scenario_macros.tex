@@ -3,21 +3,48 @@
 
 \newcommand{\EBaseSoftware}{\num{2075300}}
 \newcommand{\EHighSoftware}{\num{1490209}}
-\newcommand{\ERampHighSoftware}{\num{1789549}}
+\newcommand{\ERampHighSoftware}{\num{1707148}}
 \newcommand{\DeltaEHighSoftware}{\num{-585091}}
-\newcommand{\DeltaERampHighSoftware}{\num{-285751}}
+\newcommand{\DeltaERampHighSoftware}{\num{-368152}}
+\newcommand{\ECareerPriorHighSoftware}{\num{1347948}}
+\newcommand{\DeltaECareerPriorHighSoftware}{\num{-727352}}
+\newcommand{\ECareerPriorModerateSoftware}{\num{1632290}}
+\newcommand{\DeltaECareerPriorModerateSoftware}{\num{-443010}}
 \newcommand{\EBaseElectrician}{\num{962800}}
 \newcommand{\EHighElectrician}{\num{964621}}
-\newcommand{\ERampHighElectrician}{\num{963619}}
+\newcommand{\ERampHighElectrician}{\num{963548}}
 \newcommand{\DeltaEHighElectrician}{\num{1821}}
-\newcommand{\DeltaERampHighElectrician}{\num{819}}
+\newcommand{\DeltaERampHighElectrician}{\num{748}}
+\newcommand{\ECareerPriorHighElectrician}{\num{963276}}
+\newcommand{\DeltaECareerPriorHighElectrician}{\num{476}}
+\newcommand{\ECareerPriorModerateElectrician}{\num{963045}}
+\newcommand{\DeltaECareerPriorModerateElectrician}{\num{245}}
 \newcommand{\EBaseWriter}{\num{313700}}
 \newcommand{\EHighWriter}{\num{249054}}
-\newcommand{\ERampHighWriter}{\num{282882}}
+\newcommand{\ERampHighWriter}{\num{271505}}
 \newcommand{\DeltaEHighWriter}{\num{-64646}}
-\newcommand{\DeltaERampHighWriter}{\num{-30818}}
+\newcommand{\DeltaERampHighWriter}{\num{-42195}}
+\newcommand{\ECareerPriorHighWriter}{\num{237640}}
+\newcommand{\DeltaECareerPriorHighWriter}{\num{-76060}}
+\newcommand{\ECareerPriorModerateWriter}{\num{270778}}
+\newcommand{\DeltaECareerPriorModerateWriter}{\num{-42922}}
 
 % Scenario strength parameters (s)
+\newcommand{\sModerateSubstitution}{\num{0.0187}}
+\newcommand{\sHighDisruption}{\num{0.0375}}
+\newcommand{\sRampModerate}{\num{0.0187}}
+\newcommand{\sRampHigh}{\num{0.0375}}
+
+% Implied effective wedge (kappa = 10*s)
+\newcommand{\KappaImpliedModerate}{\num{0.187}}
+\newcommand{\KappaImpliedHigh}{\num{0.375}}
+
+% Microfoundation anchor: tau_p90 (substitution_score | net_risk > 0)
+\newcommand{\TauPninetyPosNetRisk}{\num{0.86}}
+\newcommand{\KappaFromTauPninetyModerate}{\num{0.174}}
+\newcommand{\KappaFromTauPninetyHigh}{\num{0.349}}
+\newcommand{\SFromTauPninetyModerate}{\num{0.0174}}
+\newcommand{\SFromTauPninetyHigh}{\num{0.0349}}
 
 % AIOE benchmark correlations (NetRisk calibrated/pipeline-used vs AIOE)
 \newcommand{\AIOEPearson}{\num{0.942}}
@@ -25,4 +52,4 @@
 \newcommand{\AIOENMatched}{\num{682}}
 
 % Audit/provenance stamp
-\newcommand{\ScenarioArtifactsStamp}{Artifacts: \texttt{scenario\_summary.csv} (sha256:15fdeed5ddec), built 2026-02-01 22:17 UTC}
+\newcommand{\ScenarioArtifactsStamp}{Artifacts: \texttt{scenario\_summary.csv} (sha256:47f8a7bc3eab), built 2026-02-02 19:26 UTC}

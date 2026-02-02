@@ -179,10 +179,11 @@ def predictability_summary(
                 f_cap = softcap_fan_share(f_prime, "power", alpha=alpha)
                 return w * j_norm + (1.0 - w) * f_cap
 
-            radius, _ = margin_to_flip_radius_combined(J, f, elim, combined_fn)
-            if use_l2_f and radius != np.inf:
-                # L2 in share space not returned by margin_to_flip_radius_combined; use log-space radius
-                pass
+            radius_z, f_opt = margin_to_flip_radius_combined(J, f, elim, combined_fn)
+            if use_l2_f:
+                radius = float(np.linalg.norm(f_opt - f)) if f_opt is not None else np.inf
+            else:
+                radius = float(radius_z)
         elif rule_name == "percent_trigger":
             elim = _elim_proposed_trigger(J, V, threshold)
             j_norm = J / J.sum() if J.sum() > 0 else np.ones(n) / n
@@ -284,7 +285,7 @@ def run_k_evaluation(
             obs = ev.get("observed_eliminated_index")
             if obs is None or len(ev["J"]) < 2:
                 continue
-            _, rad = margin_to_flip_radius_l2_f(ev["J"], ev["f"], r, obs)
+            rad, _ = margin_to_flip_radius_l2_f(ev["J"], ev["f"], r, obs)
             radii_current.append({
                 "season": ev["season"],
                 "week": ev["week"],

@@ -81,11 +81,27 @@
 \begin{itemize}[leftmargin=*, itemsep=0.25em, topsep=0.25em]
   \item \textbf{Careers + institutions.} Software Developers (SDSU), Electricians (LATTC), Writers \& Authors (Academy of Art). National results use employment-weighted SOC bundles (Table~\ref{tab:scenario_summary}).
   \item \textbf{Data \& audit.} BLS OEWS + EP + O*NET; independent reality-check vs AIOE: \(r=\AIOEPearson\), \(\rho=\AIOESpearman\) (Table~\ref{tab:external_benchmark}).
-  \item \textbf{Model (1 line).} \(\NetRisk=\frac{\mathrm{Writing}+\mathrm{ToolTech}}{2}-\frac{\mathrm{Physical}+\mathrm{Social}+\mathrm{Creativity}}{3}\); define \(s_{\mathrm{comp}}:=m_i\,s\) with \(m_i\le m_{\max}=0.2\), then \(\gadj=\gbase-s\max(\NetRisk,0)+s_{\mathrm{comp}}\max(-\NetRisk,0)\). \textbf{Projections use calibrated NetRisk when available.}
+  \item \textbf{Model (1 line).} Define task shares \(\tau_i:=\SubScore_i=\frac{\mathrm{Writing}+\mathrm{ToolTech}}{2}\) and \(\delta_i:=\DefScore_i=\frac{\mathrm{Physical}+\mathrm{Social}+\mathrm{Creativity}}{3}\), so \(\NetRisk_i=\tau_i-\delta_i\). Our scenario mapping is
+  \[
+    \gadj=\gbase-s\max(\tau_i-\delta_i,0)+(\,m_i\,s\,)\max(\delta_i-\tau_i,0),\qquad 0\le m_i\le m_{\max}=0.2,
+  \]
+  where \(m_i\) is a \emph{capacity/demand-response limiter} (bottlenecks + diminishing returns) so uplift is structurally smaller than headwind. \textbf{Index use (avoid whiplash): we use \(\NetRisk_{\text{uncal}}\) (equal-weight) for mechanism explanation and \(\NetRisk_{\text{cal}}\) (calibrated) as the projection driver when available (else fall back to \(\NetRisk_{\text{uncal}}\)).} \textbf{Plain English: positive NetRisk = exposed share exceeds defenses (headwind); negative NetRisk = defenses exceed exposure (capped uplift).} \textbf{Calibration weights shown use a minimum-weight (interpretable) fit; sparse zero-weight optima are a collinearity artifact and do not change rankings.}
   \item \textbf{Headline findings (national 2034; SOC bundles).}\IfFileExists{tables/summary_headline_fragment.tex}{\input{tables/summary_headline_fragment.tex}}{ (see Table~\ref{tab:scenario_summary}).}\par
   \item \textbf{Recommendations.} SDSU CS: maintain/slight growth; LATTC Electric: grow capacity; Academy of Art Writing: consolidate/specialize toward higher-originality niches and editing/production workflows (Section~\ref{sec:recommendations}).
-  \item \textbf{Limitations.} Scenarios treat \(s\) as a transparent stress-test knob (not a causal estimate); careers are small SOC bundles; local sizing uses scaled openings as a proxy (Section~\ref{sec:robustness}).
+  \item \textbf{Limitations.} Scenarios treat \(s\) as a transparent stress-test knob (not a causal estimate); careers are small SOC bundles; local sizing uses scaled openings as a proxy: \(O_{\mathrm{local}}=O_{\mathrm{US}}\cdot \mathrm{EmpShare}_{\mathrm{local}}\cdot \min(\mathrm{LQ},\mathrm{cap})\) (Section~\ref{sec:robustness}).
 \end{itemize}
+\vspace{-3pt}
+\begin{center}
+\fbox{\begin{minipage}{0.97\textwidth}
+\small
+\textbf{Model pipeline (1 box).} \textbf{Data} (BLS EP baseline growth + openings; OEWS local context + wages; O*NET task dimensions; external benchmarks) \(\rightarrow\)
+\textbf{Mechanism layer} (\(\SubScore,\DefScore\Rightarrow \NetRisk_{\text{uncal}}\) for explainability) \(\rightarrow\)
+\textbf{Calibration} (fit \(\NetRisk_{\text{cal}}\) to external AI applicability; used for projections) \(\rightarrow\)
+\textbf{Scenarios} (\(\gadj\) mapping; immediate + ramp adoption) \(\rightarrow\)
+\textbf{Openings} (EP annual openings; local scaling with LQ + clipping) \(\rightarrow\)
+\textbf{Recommendations} (program sizing + curriculum/policy).
+\end{minipage}}
+\end{center}
 \vspace{-2pt}
 {\scriptsize \ScenarioArtifactsStamp}
 \label{page:summary_end}
@@ -108,6 +124,7 @@
 \section{Problem framing and choices}
 \label{sec:framing}
 We aim to advise leaders of three post-secondary programs on how to address GenAI, using an auditable model grounded in public labor-market data and an explainable O*NET mechanism layer. Our framing follows tasks-based technology theories: GenAI can substitute for some language/cognitive tasks while complementing others, changing task composition and productivity rather than deterministically eliminating whole occupations \citep{mit_tasks_based_framing, openai_llm_exposure, nber_generative_ai_at_work}. We choose the three careers to match the prompt's STEM/trade/arts categories and to span a wide range of task structures (software = tool/knowledge work; electricians = physical/manual, onsite; writers = writing-intensive creative production).
+\par\textbf{Why these institutions} We pair each career with a real institution situated in a relevant labor market so recommendations are operational (Table~\ref{tab:local_context}): (i) SDSU is embedded in a large regional market for software and adjacent tech roles; (ii) LATTC is embedded in the Los Angeles construction/electrical labor market where apprenticeship pipelines are central; (iii) Academy of Art is embedded in the Bay Area creative economy where writing roles increasingly intersect with media production and content operations.
 
 \section{Data and preprocessing}
 \label{sec:data}
@@ -136,13 +153,24 @@ Let \(d\in\{\mathrm{Writing},\mathrm{ToolTech},\mathrm{Physical},\mathrm{Social}
   x_{i,d} \in [0,1] \quad \text{(percentile among occupations)}.
 \]
 
+\subsubsection{Construct validity (what we capture vs.\ what we omit)}
+Our five dimensions are designed to be \emph{explainable} and \emph{auditable} in an ICM setting: (i) Writing and Tool/Tech capture tasks where GenAI can substitute for or accelerate codified language and computer-mediated workflows; (ii) Physical, Social, and Creativity capture defenses where outputs depend on onsite manipulation, interpersonal coordination, and originality/voice.\par
+\textbf{What we omit.} For STEM roles in particular, GenAI exposure is not only about writing or tool use; it also interacts with \emph{system-level responsibility}: safety/liability, integration complexity, and the consequences of errors. These channels are hard to represent with a small, stable, public feature set without overfitting.\par
+\textbf{Sensitivity check.} To address this construct-validity gap without expanding the core model, we add a sensitivity-only ``accountability/system responsibility'' channel from O*NET Work Context (consequence of error and impact of decisions) into the defense score and show our focal-career conclusions remain stable (Table~\ref{tab:mechanism_accountability_sensitivity}).\par
+\textbf{Interpreting calibrated weights.} Because the five dimensions are correlated, nonnegative calibration can push a correlated dimension’s weight toward zero under the sparse optimum; we therefore report a \emph{minimum-weight} calibration as the headline (to avoid face-validity issues) and note that rankings are unchanged.
+
 \subsection{Net Risk index}
 Define substitution and defense scores:
 \[
   \SubScore_i = \frac{x_{i,\mathrm{Writing}} + x_{i,\mathrm{ToolTech}}}{2}, \qquad
   \DefScore_i = \frac{x_{i,\mathrm{Physical}} + x_{i,\mathrm{Social}} + x_{i,\mathrm{Creativity}}}{3},
 \]
-and \(\NetRisk_i = \SubScore_i - \DefScore_i\). Positive \(\NetRisk\) implies higher exposure to substitution; negative \(\NetRisk\) implies relative sheltering/complementarity.
+and \(\NetRisk_i = \SubScore_i - \DefScore_i\). For the microfoundation spine, we interpret these as explicit task shares:
+\[
+  \tau_i := \SubScore_i \in [0,1] \quad \text{(AI-exposed/codified task share)}, \qquad
+  \delta_i := \DefScore_i \in [0,1] \quad \text{(defense/complementarity share)}.
+\]
+Thus \(\NetRisk_i=\tau_i-\delta_i\) is the \emph{net exposed share}: positive \(\NetRisk\) implies exposed tasks dominate defenses (headwind), while negative \(\NetRisk\) implies defenses dominate exposure (potential uplift, but bounded by capacity/diminishing returns).
 
 Table~\ref{tab:netrisk_summary} provides summary statistics for the \NetRisk{} distribution across all scored occupations, and the interpretation examples below illustrates the interpretation by listing extreme examples from both tails of the distribution.
 
@@ -158,13 +186,15 @@ Table~\ref{tab:netrisk_summary} provides summary statistics for the \NetRisk{} d
 
 \subsection{External calibration to AI applicability}
 To improve rigor, we calibrate the mechanism weights against an external occupation-level AI applicability measure from the \emph{Working with AI} dataset (Tomlinson et al., 2025), which provides SOC-level applicability scores derived from real-world GenAI usage patterns \citep{tomlinson2025working}. We fit nonnegative weights on the five dimensions with defense dimensions entering with negative sign. Because the five dimensions are correlated, the nonnegativity constraint can yield sparse solutions (some weights at or near zero), which should be interpreted as ``adds little predictive power given the other dimensions'' rather than ``dimension is irrelevant.''\par
-In other words, multiple dimensions can be jointly informative but redundant: when two percentile features move together across occupations, the constrained fit may assign weight primarily to one and drive the other toward zero without meaning that the underlying mechanism is absent. To guard against over-interpreting a single fitted weight vector, we include a simple weight-robustness check (Table~\ref{tab:weight_sensitivity}).\par
-To reconcile interpretability vs.\ prediction, we explicitly report \textbf{two} indices: (i) the equal-weight mechanism index \(\NetRisk_{\text{uncal}}\) (used for the substitution/defense narrative), and (ii) the calibrated predictive index \(\NetRisk_{\text{cal}}\) (used for scenario projections when available). Tables~\ref{tab:netrisk_index_compare}--\ref{tab:netrisk_index_disagree} quantify how closely these indices align and show concrete cases where they differ.\par
+In other words, multiple dimensions can be jointly informative but redundant: when two percentile features move together across occupations, the constrained fit may assign weight primarily to one and drive the other toward zero without meaning that the underlying mechanism is absent. We therefore treat any single fitted weight vector as a summary rather than a mechanistic truth.\par
+To reconcile interpretability vs.\ prediction, we explicitly report \textbf{two} indices: (i) the equal-weight mechanism index \(\NetRisk_{\text{uncal}}\) (used for the substitution/defense narrative), and (ii) the calibrated predictive index \(\NetRisk_{\text{cal}}\) (used for scenario projections when available). Table~\ref{tab:netrisk_index_compare} quantifies how closely these indices align.\par
 The calibrated weights define \(\NetRisk_{\text{cal}}\) by taking the signed weighted sum, centering it to mean zero across occupations, and rescaling to approximately \([-1,1]\). When calibration outputs are available, the pipeline uses \(\NetRisk_{\text{cal}}\) in downstream scenario projections; otherwise it uses \(\NetRisk_{\text{uncal}}\).
 
+\IfFileExists{tables/calibration_interpretability.tex}{\input{tables/calibration_interpretability.tex}}{}
 \IfFileExists{tables/calibration_summary.tex}{\input{tables/calibration_summary.tex}}{}
+Table~\ref{tab:calibration_interpretability} reports the feature correlation matrix and the headline (minimum-weight) calibration weights. The sparse optimum (Table~\ref{tab:calibration_summary}) is included for reference only; rankings are unchanged.
 \IfFileExists{tables/netrisk_index_compare.tex}{\input{tables/netrisk_index_compare.tex}}{}
-\IfFileExists{tables/netrisk_index_disagree.tex}{\input{tables/netrisk_index_disagree.tex}}{}
+\par\textbf{Note on index differences.} The calibrated and uncalibrated indices are strongly aligned overall (Table~\ref{tab:netrisk_index_compare}); for space, we omit extended disagreement examples.
 
 \begin{figure}[H]
 \centering
@@ -176,45 +206,66 @@ The calibrated weights define \(\NetRisk_{\text{cal}}\) by taking the signed wei
 \subsection{Scenario employment projection}
 Let \(\Emp{2024}\) be the 2024 employment level used for the projection base (from BLS EP for national scenarios) and \(\gbase\) the EP annual baseline growth. OEWS is used for \emph{local} labor market context and program sizing (Section~\ref{sec:recommendations}). For a scenario parameter \(s\ge 0\), define adjusted growth:
 \[
-  \gadj = \begin{cases} 
-    \gbase - s \cdot \NetRisk & \text{if } \NetRisk \ge 0 \\
-    \gbase + (\,m_i\, s\,)\cdot(-\NetRisk) & \text{if } \NetRisk < 0 
-  \end{cases}
+  \gadj = \gbase - s\cdot\max(\NetRisk,0) + (\,m_i\,s\,)\cdot\max(-\NetRisk,0)
 \]
 \begin{center}
 \fbox{\begin{minipage}{0.97\textwidth}
 \small
-\textbf{Minimal microfoundation (task share $\rightarrow$ productivity $\rightarrow$ labor demand).} Interpret our substitution score as an \emph{AI-exposed task share} \(\tau_i=\SubScore_i\in[0,1]\). Let \(A\in[0,1]\) be adoption intensity by 2034 and \(r\in[0,1]\) be the fraction of exposed tasks that become effectively automatable/time-saving. A reduced-form productivity shift is
+\textbf{Microfoundation spine (task shares $\rightarrow$ effective exposure $\rightarrow$ growth mapping).}
+\emph{Step 1: define task shares from the mechanism layer.} Let
 \[
-  \Delta \ln \mathrm{Prod}_i \approx A\,r\,\tau_i.
+  \tau_i := \SubScore_i \in [0,1] \quad \text{(AI-exposed/codified share)},\qquad
+  \delta_i := \DefScore_i \in [0,1] \quad \text{(defense/complementarity share)},
+\]
+so \(\NetRisk_i=\tau_i-\delta_i\). We interpret \(\delta_i\) as a structural \emph{offset} to exposure: tasks that are physical/onsite, highly social, or originality-driven are harder to automate and/or turn GenAI into a productivity tool rather than a substitute.\par
+\emph{Step 2: substitution headwind scales with net exposed share.} Let \(A_i\in[0,1]\) be adoption intensity by 2034 and \(r_i\in[0,1]\) the fraction of exposed tasks that become effectively automatable/time-saving. A reduced-form productivity shift on the exposed block is
+\[
+  \Delta \ln \mathrm{Prod}^{(\text{sub})}_i \approx A_i\,r_i\,(\tau_i-\delta_i)_+,
 \]
 If cost reductions pass through and output demand has elasticity \(\varepsilon_i\), then (linearizing) employment responds as
 \[
-  \Delta \ln L_i \approx (\varepsilon_i-1)\,\Delta \ln \mathrm{Prod}_i \approx (\varepsilon_i-1)\,A\,r\,\tau_i.
+  \Delta \ln L_i \approx (\varepsilon_i-1)\,\Delta \ln \mathrm{Prod}^{(\text{sub})}_i \approx (\varepsilon_i-1)\,A_i\,r_i\,(\tau_i-\delta_i)_+.
 \]
 This yields an annualized growth headwind/uplift over a decade:
 \[
-  \Delta g_i \approx \frac{(\,1-\varepsilon_i\,)\,A\,r}{10}\;\tau_i \quad \Rightarrow \quad s \approx \frac{(\,1-\varepsilon\,)\,A\,r}{10},
+  \Delta g_i^{(\text{headwind})} \approx \frac{(\,1-\varepsilon_i\,)\,A_i\,r_i}{10}\;(\tau_i-\delta_i)_+.
 \]
-so \(s\) has a concrete interpretation as an \emph{adoption $\times$ automability $\times$ elasticity-wedge} parameter (Table~\ref{tab:scenario_params}). Our \(\NetRisk_i=\SubScore_i-\DefScore_i\) then acts as the signed shifter: defense raises the extent to which productivity gains translate into complementarity rather than displacement.\par
-\textbf{Numeric anchor matching Moderate/High.} Empirically, \(p90(\tau \mid \NetRisk>0)\approx 0.86\) in our scored mechanism layer. Using \(A=0.6\), \(r=0.3\), and \(\tau_{p90}\approx 0.86\), we get \(A r \tau \approx 0.155\), which annualizes to \(\approx 1.5\%\)/yr---matching the Moderate reference point. Increasing \(A\) and/or \(r\) yields \(\approx 3\%\)/yr for High.
-\end{minipage}}
-\end{center}
-We use the microfoundation to interpret \(s\) (units and magnitude), while \(\NetRisk\) supplies the signed direction (substitution vs.\ defense) in a reduced-form scenario mapping.\par
-We interpret complementarity uplift as demand-side growth that is \emph{bounded} by (i) how hard it is to scale quantity (physical/onsite constraints, credentialing) and (ii) effective demand elasticity. Concretely, we define an occupation-level multiplier
+\textbf{Step 3: complementarity uplift is bounded by capacity and diminishing returns.} When \(\delta_i>\tau_i\), GenAI is more likely to act as a tool on the defended block (better planning, diagnostics, documentation, coordination), but realized demand-side uplift is \emph{bottlenecked}: physical throughput, credentialing/apprenticeship pipelines, and organizational capacity limit how much extra quantity can be produced/sold within a decade. We encode this with a conservative multiplier \(m_i\in[0,m_{\max}]\) and treat \(m_{\max}<1\) as a structural asymmetry constraint (uplift smaller than headwind).\par
+\textbf{Operationalizing the bound.} We set
 \[
   m_i=\min\{m_{\max},(1-B_i)\tilde{\varepsilon}_i\},
 \]
-where \(B_i\in[0,1]\) is a bottleneck index (computed from our existing Physical percentile plus a coarse licensing proxy by SOC major group), and \(\tilde{\varepsilon}_i\in[0,1]\) is a normalized demand-responsiveness proxy (not a literal elasticity; binned by career type / SOC major group).\par
-\textbf{Interpretation.} We treat \(\tilde{\varepsilon}_i\) as a conservative \textbf{rank-based demand-responsiveness proxy} (not an elasticity); sensitivity checks (Tables~\ref{tab:comp_cap_components} and \ref{tab:comp_factor_sensitivity}) show conclusions are unchanged under reasonable variation.\par
+where \(B_i\in[0,1]\) is a bottleneck index (Physical percentile + coarse licensing proxy by SOC major group) and \(\tilde{\varepsilon}_i\in[0,1]\) is a conservative demand-responsiveness proxy (binned by SOC major group; not a literal elasticity). This makes the \emph{sign asymmetry structural}: uplift is limited by scaling constraints, so \(m_i\le m_{\max}\ll 1\).\par
+\textbf{One interpretable wedge } Define
+\[
+  \kappa_i := (\,1-\varepsilon_i\,)\,A_i\,r_i \in [0,1],
+\]
+so \(\Delta g_i^{(\text{headwind})} \approx \frac{\kappa_i}{10}(\tau_i-\delta_i)_+\) and our scenario knob remains
+\[
+  s \approx \kappa/10.
+\]
+This keeps the scenario mapping unchanged while making the knob interpretable as a \emph{defensible prior} over adoption $\times$ automability $\times$ demand-response wedge (Tables~\ref{tab:scenario_params} and \ref{tab:scenario_param_priors}).\par
+
+\textbf{Mechanical reproduction of the chosen \(s\) values.} Empirically, \(p90(\tau \mid \NetRisk>0)=\TauPninetyPosNetRisk\) in our scored mechanism layer. Targeting \(\Delta g_{p90}=0.015\) (Moderate) and \(0.03\) (High), the microfoundation implies
+\[
+  \kappa = \frac{10\,\Delta g_{p90}}{\tau_{p90}}.
+\]
+Thus Moderate gives \(\kappa\approx\KappaFromTauPninetyModerate\Rightarrow s\approx\SFromTauPninetyModerate\), and High gives \(\kappa\approx\KappaFromTauPninetyHigh\Rightarrow s\approx\SFromTauPninetyHigh\), which is close to the implemented pipeline values \(s_{\text{Moderate}}=\sModerateSubstitution\) and \(s_{\text{High}}=\sHighDisruption\) (Table~\ref{tab:scenario_params}). Table~\ref{tab:scenario_kappa_implied} reports the implied \(\kappa=10s\) under those same scenario strengths for transparency.
+\end{minipage}}
+\end{center}
+We use the microfoundation to interpret \(s\) (units and magnitude), while \(\NetRisk=\tau-\delta\) supplies the signed direction. Table~\ref{tab:comp_cap_components} reports the bottleneck and demand-response components used to compute \(m_i\).\par
 \IfFileExists{tables/comp_cap_components.tex}{\input{tables/comp_cap_components.tex}}{}
+\IfFileExists{tables/comp_cap_major_groups.tex}{\input{tables/comp_cap_major_groups.tex}}{}
+\IfFileExists{tables/comp_factor_sensitivity.tex}{\input{tables/comp_factor_sensitivity.tex}}{}
 \textbf{Numeric anchor for \(m_{\max}=0.2\).} We choose \(m_{\max}\) so that even under High disruption, the implied \emph{maximum} annual uplift for a strongly sheltered occupation remains well below 1\%/yr. For example, for Electricians (bundle \(\NetRisk\approx-0.888\)) under High (\(s_{\text{High}}=0.0375\); Table~\ref{tab:scenario_params}), the uplift term is bounded by
 \[
   \Delta g_{\text{uplift}} \le m_{\max}\,s_{\text{High}}\,|\NetRisk|
   = 0.2 \cdot 0.0375 \cdot 0.888 \approx 0.0067 \quad (\approx 0.67\%\text{/yr}),
 \]
-which cumulates to \(\lesssim 6.8\%\) extra employment over 10 years. In our base bottleneck/elasticity construction, Electricians have \(m_{\mathrm{eff}}\approx 0.01\) (Table~\ref{tab:comp_cap_components}), so the realized uplift is far smaller than the 0.67\%/yr upper bound. Thus, even at High disruption, complementarity can add at most sub-1\% annual growth for strongly sheltered occupations, preventing implausible booms from the uplift channel alone. Table~\ref{tab:comp_factor_sensitivity} shows sensitivity to the cap.\par
+which cumulates to \(\lesssim 6.8\%\) extra employment over 10 years. In our base bottleneck/elasticity construction, Electricians have \(m_{\mathrm{eff}}\approx 0.01\) (Table~\ref{tab:comp_cap_components}), so the realized uplift is far smaller than the 0.67\%/yr upper bound. Thus, even at High disruption, complementarity can add at most sub-1\% annual growth for strongly sheltered occupations, preventing implausible booms from the uplift channel alone.\par
 Why calibrate to the \(p90\) tail? Anchoring Moderate/High at \(p90(\NetRisk_+)\) (instead of the maximum) targets ``highly exposed but not extreme'' occupations, yielding a stable reference point that is less sensitive to outliers and measurement noise while still representing the upper-risk tail.\par
+\textbf{Outside evidence for the anchor magnitudes.} Task-level and firm-level studies of deployed GenAI typically find \emph{double-digit} productivity gains on suitable tasks. For example, in a field setting with 5,172 customer-support agents, \citet{brynjolfsson2025genaiwork} find roughly a 15\% increase in issues resolved per hour on average after introducing a GenAI assistant (with larger gains for less experienced workers). In a preregistered experiment on professional writing tasks, \citet{noy2023experimental} find a 40\% reduction in time-to-completion and an 18\% increase in output quality when participants can use ChatGPT.\par
+\textbf{Translating to our wedge \(\kappa=(1-\varepsilon)Ar\).} Interpreting these studies as plausible \emph{task-time/throughput} effects conditional on effective use suggests \(Ar\) on the order of \(0.15\) (conservative) up to \(0.50\) (aggressive) for highly exposed work by 2034, depending on adoption saturation and how much of the exposed block is actually time-saving. With a conservative demand-response wedge \(1-\varepsilon\in[0.3,0.8]\), this implies \(\kappa\approx(1-\varepsilon)Ar\in[0.05,0.40]\). Our Moderate/High anchors correspond to \(\kappa\approx\KappaFromTauPninetyModerate\) and \(\kappa\approx\KappaFromTauPninetyHigh\) via \(\kappa=10\Delta g_{p90}/\tau_{p90}\), placing them within an empirically motivated range while still being used transparently as \emph{stress-test} magnitudes rather than causal estimates.\par
 Scenario strengths are defined by this reference-point calibration: we target a growth headwind of 1.5\% (Moderate) or 3\% (High) for the 90th percentile of the \emph{positive} \(\NetRisk\) distribution. Concretely, the pipeline computes \(p90(\NetRisk_+)\) from the calibrated mechanism layer, then sets
 \[
   s_{\text{Moderate}} = 0.015 / p90(\NetRisk_+), \qquad s_{\text{High}} = 0.03 / p90(\NetRisk_+),
@@ -222,6 +273,8 @@ Scenario strengths are defined by this reference-point calibration: we target a 
 so that the 90th-percentile exposed occupation experiences the intended annual headwind under the piecewise mapping. Table~\ref{tab:scenario_params} reports the scenario parameters actually used (including whether they came from calibration outputs or defaults). We project 2034 employment as \(\Emp{2034} = \Emp{2024}(1+\gadj)^{10}\). We treat \(s\) as a scenario knob rather than an estimated causal effect; Section~\ref{sec:robustness} reports a sensitivity grid.
 
 \IfFileExists{tables/scenario_params.tex}{\input{tables/scenario_params.tex}}{}
+\IfFileExists{tables/scenario_param_priors.tex}{\input{tables/scenario_param_priors.tex}}{}
+\IfFileExists{tables/scenario_kappa_implied.tex}{\input{tables/scenario_kappa_implied.tex}}{}
 
 \subsection{Definitions \& Provenance (auditability)}
 \label{sec:definitions_provenance}
@@ -236,7 +289,7 @@ so that the 90th-percentile exposed occupation experiences the intended annual h
   \]
   This equal-weight form is used to \emph{explain} substitution vs.\ defense mechanisms (what drives risk).
   \item \textbf{NetRisk (calibrated; predictive index).} A signed weighted sum calibrated to an external occupation-level AI applicability score (Tomlinson et al., 2025), then centered and rescaled to approximately \([-1,1]\). Because the O*NET dimensions are correlated and weights are constrained nonnegative, calibration can push one of a correlated pair (e.g., Writing vs.\ Tool/Tech) toward zero without implying the underlying mechanism is absent.
-  \item \textbf{Which index drives scenarios?} Scenario projections use \textbf{calibrated NetRisk when available}; otherwise they fall back to the uncalibrated index. See Tables~\ref{tab:netrisk_index_compare}--\ref{tab:netrisk_index_disagree} for correlation and disagreement examples.
+  \item \textbf{Which index drives scenarios?} Scenario projections use \textbf{calibrated NetRisk when available}; otherwise they fall back to the uncalibrated index. Table~\ref{tab:netrisk_index_compare} summarizes alignment between indices.
 \end{itemize}
 
 \textbf{What drives scenarios (national 2024--2034).}
@@ -244,9 +297,9 @@ so that the 90th-percentile exposed occupation experiences the intended annual h
   \item \textbf{Baseline trajectory.} $E_{2024}$ and baseline growth $\gbase$ come from BLS Employment Projections (EP). Baseline 2034 is $E_{2034}=E_{2024}(1+\gbase)^{10}$.
   \item \textbf{Disruption mapping.} We adjust growth with a transparent scenario knob $s$:
   \[
-    \gadj = \gbase - s\cdot\max(\NetRisk,0) + (\,m_i\, s\,)\cdot\max(-\NetRisk,0), \qquad m_i \le m_{\max}=0.2,
+    \gadj = \gbase - s\cdot\max(\NetRisk,0) + (\,m_i\, s\,)\cdot\max(-\NetRisk,0), \qquad 0\le m_i \le m_{\max}=0.2,
   \]
-  and project $E_{2034}=E_{2024}(1+\gadj)^{10}$. \textbf{Ramp} scenarios linearly increase $s(t)$ from 0 (2024) to $s$ (2034).
+  and project $E_{2034}=E_{2024}(1+\gadj)^{10}$. \textbf{Ramp} scenarios phase in disruption with a logistic diffusion curve $s(t)$ (S-curve) scaled so that $s(2024)=0$ and $s(2034)=s$, with adoption timing allowed to differ by career (software earlier than trades).
   \item \textbf{How Moderate/High are set.} When calibration outputs exist, we set $s$ so that the 90th percentile of the positive NetRisk tail experiences a $1.5\%$ (Moderate) or $3.0\%$ (High) annual growth headwind; the exact values used are reported in Table~\ref{tab:scenario_params}.
 \end{itemize}
 
@@ -258,10 +311,27 @@ so that the 90th-percentile exposed occupation experiences the intended annual h
 
 \section{Results}
 \label{sec:results}
+\begin{center}
+\fbox{\begin{minipage}{0.97\textwidth}
+\small
+\textbf{NetRisk legend (to avoid index whiplash).} We report \textbf{$\NetRisk_{\text{uncal}}$} for mechanism interpretation and stability checks, and \textbf{$\NetRisk_{\text{cal}}$} as the projection driver when calibration is available (otherwise scenarios fall back to $\NetRisk_{\text{uncal}}$).
+\end{minipage}}
+\end{center}
+\IfFileExists{tables/netrisk_focal_compare.tex}{\input{tables/netrisk_focal_compare.tex}}{}
+
 \subsection{National outcomes for the three careers}
 Each career is represented by a small bundle of SOC occupations (e.g., 2--3 codes per career); outcomes are employment-weighted over the bundle so that larger occupations contribute more to the career-level projection. Table~\ref{tab:scenario_summary} reports baseline vs.\ disruption outcomes and the \(\NetRisk\) range (min--max across the bundle) as a robustness check.
+\par\textbf{Two scenario anchors.} We report both (i) \textbf{Global Moderate/High} scenarios using a single shock parameter \(s\) calibrated at the high-exposure tail (an upper-bound stress test), and (ii) \textbf{Career-prior Moderate/High} scenarios using career-specific \(s_i\approx \kappa_i/10\) implied by the microfoundation wedge priors (Table~\ref{tab:scenario_param_priors}). The career-prior columns are intended as the \emph{most plausible} magnitude checks; the global columns are conservative stress tests for planning under uncertainty. \textbf{For trades in particular, the global scenarios are intentionally conservative upper-bound stress tests; the career-prior columns are the plausible magnitude check.}
 
 \IfFileExists{tables/scenario_summary.tex}{\input{tables/scenario_summary.tex}}{}
+\IfFileExists{tables/bundle_soc_breakdown.tex}{\input{tables/bundle_soc_breakdown.tex}}{}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.98\textwidth]{figures/visual_spine.png}
+\caption{Visual spine for judge skimming: (left) NetRisk distribution with markers for the three careers, (middle) scenario outcomes for 2034 employment, and (right) institution recommendation summary.}
+\label{fig:visual_spine}
+\end{figure}
 
 \begin{figure}[H]
 \centering
@@ -271,7 +341,21 @@ Each career is represented by a small bundle of SOC occupations (e.g., 2--3 code
 \end{figure}
 
 \subsection{Dynamic Adoption}
-The scenarios above assume immediate adoption of GenAI at full impact. In reality, adoption may ramp gradually over the decade. Table~\ref{tab:scenario_summary} includes `Ramp Moderate'' and `Ramp High'' scenarios that model gradual adoption, where disruption effects increase linearly from zero in 2024 to full scenario strength by 2034. Across all three careers, the ramp outcomes lie between the baseline and immediate-disruption outcomes reported in Table~\ref{tab:scenario_summary}, consistent with a gradual diffusion of GenAI impacts over time. These ramp scenarios suggest that institutions have a window to adapt curricula and program structures as adoption accelerates, rather than facing immediate disruption.
+The scenarios above assume immediate adoption of GenAI at full impact. In reality, adoption ramps gradually and often follows an S-curve (slow initial diffusion, then rapid uptake, then saturation). Table~\ref{tab:scenario_summary} therefore includes `Ramp Moderate'' and `Ramp High'' scenarios that phase in disruption with a logistic diffusion curve $s(t)$, scaled so that $s(2024)=0$ and $s(2034)$ matches the same Moderate/High severity used in the immediate scenarios. We allow adoption timing to differ by career (e.g., software earlier than trades) as a realistic mechanism rather than an extra free parameter. Across all three careers, ramp outcomes lie between baseline and immediate-disruption outcomes, implying institutions have a window to adapt curricula and assessment as adoption accelerates.
+\begin{table}[H]
+\centering
+\caption{Career-specific adoption curve parameters used for ramp scenarios (logistic midpoint \(t_0\) and slope \(k\)).}
+\label{tab:adoption_params}
+\begin{tabular}{lrr}
+\toprule
+Career & \(t_0\) & \(k\)\\
+\midrule
+Software Developers & 2027.5 & 1.10\\
+Electricians & 2029.5 & 0.70\\
+Writers and Authors & 2027.0 & 0.95\\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \subsection{Job openings and program sizing}
 Beyond net employment growth, annual job openings drive training demand. Table~\ref{tab:openings_summary} reports annual openings from EP projections and their implications for program sizing decisions.
@@ -280,12 +364,13 @@ Beyond net employment growth, annual job openings drive training demand. Table~\
 
 \subsection{Sensitivity and sanity checks}
 \label{sec:robustness}
-We conduct extensive robustness checks to validate the stability of our model components.
+We conduct robustness checks to validate the stability of our model components; for space, we report only the checks that directly support judge-critical credibility (sign stability, calibration stability, and one independent external reality check).
 
 \subsubsection{Mechanism Layer Stability}
 The O*NET mechanism layer relies on specific descriptor choices and normalization methods. To test structural stability, we perturbed the descriptor set (leave-one-out) and tested alternative normalization (percentiles, z-score mapped to \([0,1]\) via Normal CDF, min--max scaling, and within-major-group ranks). Table~\ref{tab:mechanism_sensitivity} summarizes the results: the sign of \(\NetRisk\) for our three focal careers remains stable across perturbations, confirming that the classification of careers as ``exposed'' vs.\ ``sheltered'' is not an artifact of specific element selection.
 
 \IfFileExists{tables/mechanism_sensitivity.tex}{\input{tables/mechanism_sensitivity.tex}}{}
+\IfFileExists{tables/mechanism_accountability_sensitivity.tex}{\input{tables/mechanism_accountability_sensitivity.tex}}{}
 
 \subsubsection{Calibration Validation}
 We validate the calibration weights using 5-fold cross-validation and bootstrap resampling (Table~\ref{tab:calibration_validation}). The model achieves stable out-of-sample performance, and bootstrap analysis confirms that the negative weights on defense dimensions are statistically robust. We also compare the calibrated index against an uncalibrated (equal-weight) baseline; the ranking of focal careers is preserved, though the magnitude of separation increases under calibration.
@@ -293,42 +378,53 @@ We validate the calibration weights using 5-fold cross-validation and bootstrap 
 \IfFileExists{tables/calibration_validation.tex}{\input{tables/calibration_validation.tex}}{}
 
 \subsubsection{External benchmark reality check}
-As an additional independent check, we compare our NetRisk indices against a published occupation-level AI exposure measure: the AI Occupational Exposure (AIOE) dataset of \citet{felten2021aioe}. We report correlation of both the uncalibrated mechanism index and the calibrated predictive index with AIOE (Table~\ref{tab:external_benchmark}), and show a few large-disagreement examples to guide interpretation (Table~\ref{tab:external_benchmark_disagree}). Because these measures were constructed with different assumptions and targets, perfect agreement is not expected; we use this check to ensure our ranking is broadly plausible and to transparently flag where our mechanism differs from a widely-cited benchmark.
+As an additional independent check, we compare our NetRisk indices against a published occupation-level AI exposure measure: the AI Occupational Exposure (AIOE) dataset of \citet{felten2021aioe}. We report the correlation of both the uncalibrated mechanism index and the calibrated predictive index with AIOE (Table~\ref{tab:external_benchmark}). Because these measures were constructed with different assumptions and targets, perfect agreement is not expected; we use this check to ensure our ranking is broadly plausible.
 
 \IfFileExists{tables/external_benchmark.tex}{\input{tables/external_benchmark.tex}}{}
-\IfFileExists{tables/external_benchmark_disagree.tex}{\input{tables/external_benchmark_disagree.tex}}{}
+\par\textbf{Interpretation.} Because these exposure measures target different constructs, perfect agreement is not expected; the correlation is used as a plausibility check rather than a requirement for pointwise agreement.
 
 \subsubsection{Scenario and Parameter Sensitivity}
-We include three compact robustness checks for the scenario projections: (i) a sensitivity grid over plausible \(s\) values (Table~\ref{tab:sensitivity_grid}); (ii) a sanity-check table listing the most exposed and most sheltered occupations by \(\NetRisk\) in the full scored set (Table~\ref{tab:top_exposed_sheltered}); and (iii) Monte Carlo uncertainty intervals for 2034 employment under Moderate and High disruption (Table~\ref{tab:uncertainty_summary}).
-These checks highlight that while the exact 2034 employment level depends on \(s\), the \emph{direction} of impact is structurally determined by the mechanism layer.
+Scenario outcomes vary with the severity knob \(s\), but the \emph{direction} of impact by career is structurally determined by the mechanism layer. We therefore report a single uncertainty summary for 2034 outcomes under Moderate and High disruption (Table~\ref{tab:uncertainty_summary}) and omit extended grids and auxiliary sensitivity tables for space.
 
-\IfFileExists{tables/sensitivity_grid.tex}{\input{tables/sensitivity_grid.tex}}{}
-\IfFileExists{tables/comp_factor_sensitivity.tex}{\input{tables/comp_factor_sensitivity.tex}}{}
-\IfFileExists{tables/weight_sensitivity.tex}{\input{tables/weight_sensitivity.tex}}{}
-\IfFileExists{tables/top_exposed_sheltered.tex}{\input{tables/top_exposed_sheltered.tex}}{}
 \IfFileExists{tables/uncertainty_summary.tex}{\input{tables/uncertainty_summary.tex}}{}
 
 \subsubsection{Local openings scaling robustness}
-Local program sizing requires scaling national EP annual openings to a metro/state labor market. Because location quotients (LQ) already encode relative local concentration, multiplying both a local occupation-share factor and LQ can double-count concentration. We therefore use the standard decomposition (local total employment share $\times$ LQ); when LQ is computed from the same OEWS employment counts, this is algebraically equivalent to scaling by local occupation share alone. We apply a conservative LQ clip as a stress-test and report a robustness comparison across scaling rules in Table~\ref{tab:openings_scaling_robustness}.
-
-\IfFileExists{tables/openings_scaling_robustness.tex}{\input{tables/openings_scaling_robustness.tex}}{}
+Local program sizing requires scaling national EP annual openings to a metro/state labor market. Because location quotients (LQ) already encode relative local concentration, multiplying both a local occupation-share factor and LQ can double-count concentration. We therefore use the standard decomposition (local total employment share $\times$ LQ) with conservative clipping for planning.
 
 \section{Institution-specific recommendations}
 \label{sec:recommendations}
 Recommendations are organized to answer the prompt: (i) whether to grow or shrink program size and how, and (ii) what to teach about GenAI to best support employability, tied back to model outputs and local context.
+\par\textbf{Wages (not modeled explicitly).} Our scenarios project \emph{employment levels}, not wages. However, GenAI adoption can shift the \emph{composition} of work toward higher-responsibility ``verifier/overseer'' tasks (testing, security, compliance, QA, editorial judgment, and provenance). When such verifier-type skills become the binding constraint, \emph{wage premia can rise even if employment growth slows}. This motivates our curriculum emphasis on verification and accountability: software programs should prioritize testing/security/evaluation; electrician programs should prioritize code-compliance documentation and diagnostic reasoning; writing programs should emphasize editing, provenance, and production workflows where human judgment remains scarce.
+
+\paragraph{Common policy framework (Integrity / Access / Sustainability).}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Integrity / attribution.} Require disclosure (tools + prompts/versions) for graded work when AI use is permitted; use oral defenses and in-class components for authenticity.
+  \item \textbf{Equity / access.} Do not require paid subscriptions; provide institution-supported accounts and lab workflows, with accessibility accommodations.
+  \item \textbf{Sustainability.} Prefer efficient workflows (editing-first, retrieval, smaller/local models when feasible); set reasonable limits on high-compute generation.
+\end{itemize}
+
+\paragraph{Policy decision rule (why these recommendations).}
+We evaluate policy/curriculum regimes using a simple multi-criteria rule that explicitly includes \textbf{equity/access} alongside integrity and sustainability, using transparent proxy inputs (e.g., assessment/auditability burden, student access to tooling, and operational resource constraints). Each component is scored on \([0,1]\). We treat Employability \(E\) and Access \(A\) as \emph{benefits} (higher is better), while Integrity \(I\) and Sustainability \(S\) are \emph{risks/costs} (higher is worse). To keep the objective judge-readable (no negative totals), we score policies using an all-positive benefit form:
+\[
+  \text{Score} = w_E E + w_I(1-I) + w_S(1-S) + w_A A.
+\]
+The Balanced objective uses equal weights \(w_E=w_I=w_S=w_A=1\), so \(\text{Score}\in[0,4]\). Table~\ref{tab:policy_decision_compact} reports the regime scores under the Balanced objective and the within-institution argmax.
+
+\IfFileExists{tables/policy_decision_compact.tex}{\input{tables/policy_decision_compact.tex}}{}
 
 Table~\ref{tab:local_context} provides local labor market context including location quotients (LQ). We define an auxiliary \textit{Attractiveness Score} to inform positioning:
 \[ \text{Attractiveness} = 0.4 \cdot (\text{Wage Premium}) + 0.3 \cdot (\text{Normalized Local Emp}) + 0.3 \cdot (\text{Normalized LQ}) \]
-where normalized employment and LQ are min-max scaled across the three institutions. Table~\ref{tab:program_sizing} provides quantitative guidance on program sizing (annual intake) derived from estimated local annual openings. Local openings are computed from national EP openings using a standard decomposition (local total employment share $\times$ LQ, with conservative clipping); Table~\ref{tab:openings_scaling_robustness} shows a robustness comparison to alternative scaling rules. To account for uncertainty in program efficiency (completion rates and placement rates), we report recommended intake ranges rather than single point estimates.
+where normalized employment and LQ are min-max scaled across the three institutions. Table~\ref{tab:program_sizing} provides quantitative guidance on program sizing (annual intake) derived from estimated local annual openings. Local openings are computed from national EP openings using a standard decomposition (local total employment share $\times$ LQ, with conservative clipping). To account for uncertainty in program efficiency (completion rates and placement rates), we report recommended intake ranges rather than single point estimates.
+To make these ranges feel grounded beyond model outputs, we also include a small public \emph{reality-check anchor} per program (e.g., recent completions or a close proxy; used for context only, not as a fitted input) in Table~\ref{tab:program_anchor}.
 Why target 5\% / 10\% / 15\% of local openings? These shares are not claims about market power; they are \emph{planning heuristics} spanning realistic capacity regimes: 5\% represents a conservative seat target for resource-constrained programs, 10\% is an aspirational ``steady-state'' target for a strong regional program with sustained placement partnerships, and 15\% represents an aggressive expansion scenario (e.g., additional faculty/labs, expanded apprenticeships) that may be feasible for high-demand fields. The resulting seat ranges translate openings into intake while explicitly accounting for completion$\times$placement uncertainty.
 
-\IfFileExists{tables/local_context.tex}{\input{tables/local_context.tex}}{}
-\IfFileExists{tables/program_sizing.tex}{\input{tables/program_sizing.tex}}{}
+\IfFileExists{tables/program_sizing_compact.tex}{\input{tables/program_sizing_compact.tex}}{}
 
 \subsection{SDSU (Software Developers)}
-\textbf{Program size.} Maintain or modestly grow cohorts; disruption primarily reduces growth rate rather than reversing demand (Table~\ref{tab:scenario_summary}).\par
+\textbf{Program size.} Maintain or modestly grow cohorts; disruption primarily reduces growth rate rather than reversing demand (Table~\ref{tab:scenario_summary}). For planning, we recommend \textbf{10\% share as the baseline} (Table~\ref{tab:program_sizing}), with 15\% as an expansion case; this aligns with the public completion anchor (Table~\ref{tab:program_anchor}).\par
 \textbf{Curriculum.} Shift emphasis from boilerplate coding to system design, testing, security, and AI-assisted development with audit trails; make students fluent in evaluating and verifying model outputs.\par
-\textbf{Policy.} Permit GenAI use in advanced courses with required disclosure and reproducibility; constrain use in early courses to ensure fundamentals.
+\textbf{Policy.} Permit GenAI use in advanced courses with required disclosure and reproducibility; constrain use in early courses to ensure fundamentals.\par
+\textbf{Policy constraints.} Apply the common framework above; SDSU’s key delta is assessment design that forces verification (tests/CI, reproducibility, and audit trails) rather than polished outputs.
 \par\textbf{Concrete actions (measurable).}
 \begin{itemize}[leftmargin=*]
   \item \textbf{AI-assisted software engineering rubric.} Require every capstone/upper-division project to include (i) tests and CI, (ii) a model-output verification checklist, and (iii) an AI usage disclosure appendix.\newline
@@ -340,9 +436,10 @@ Why target 5\% / 10\% / 15\% of local openings? These shares are not claims abou
 \end{itemize}
 
 \subsection{LATTC (Electricians)}
-\textbf{Program size.} Grow capacity and apprenticeship pathways; the career is sheltered by high physical/manual defense and remains strong across scenarios (Table~\ref{tab:scenario_summary}).\par
+\textbf{Program size.} Grow capacity and apprenticeship pathways; the career is sheltered by high physical/manual defense and remains strong across scenarios (Table~\ref{tab:scenario_summary}). For planning, we recommend \textbf{5\% share as the near-term baseline} (Table~\ref{tab:program_sizing}), with 10\% as an expansion case contingent on employer/apprenticeship capacity; current completions are far below the 10\% implied intake (Table~\ref{tab:program_anchor}).\par
 \textbf{Curriculum.} Double down on hands-on competencies while adding `AI as a tool'' modules for diagnostics, scheduling, documentation, and code-compliant planning.\par
-\textbf{Policy.} Teach safe, privacy-preserving, low-compute uses (templates, checklists) appropriate for small contractors.
+\textbf{Policy.} Teach safe, privacy-preserving, low-compute uses (templates, checklists) appropriate for small contractors.\par
+\textbf{Policy constraints.} Apply the common framework above; LATTC’s key delta is keeping evaluation performance-based (hands-on practicals) and requiring code-compliance verification for any AI-assisted documentation.
 \par\textbf{Concrete actions (measurable).}
 \begin{itemize}[leftmargin=*]
   \item \textbf{AI-assisted job documentation.} Require students to produce work orders, inspection-ready notes, and material lists using structured templates (GenAI optional) with verification against NEC/local code excerpts.\newline
@@ -354,9 +451,17 @@ Why target 5\% / 10\% / 15\% of local openings? These shares are not claims abou
 \end{itemize}
 
 \subsection{Academy of Art University (Writers and Authors)}
-\textbf{Program size.} Consolidate and specialize toward higher-originality work and editing/production roles; high disruption can flip the field to contraction (Table~\ref{tab:scenario_summary}).\par
+\textbf{Program size.} Consolidate and specialize toward higher-originality work and editing/production roles; high disruption can flip the field to contraction (Table~\ref{tab:scenario_summary}). For planning, we recommend \textbf{5\% share as the baseline} (Table~\ref{tab:program_sizing}), with 10\% only as a long-run target if the program successfully pivots toward absorber roles (editing/technical writing/content operations) and can document placement outcomes; this is consistent with the public completion anchor (Table~\ref{tab:program_anchor}).\par
 \textbf{Curriculum.} Emphasize narrative strategy, editing, and provenance-aware workflows. Teach students to use GenAI as a draft accelerator while differentiating through voice, revision quality, and IP-aware sourcing.\par
-\textbf{Policy.} Require disclosure and provenance in portfolios; adopt rubrics that reward originality and documented creative process.
+\textbf{Policy.} Require disclosure and provenance in portfolios; adopt rubrics that reward originality and documented creative process.\par
+\textbf{Policy constraints.} Apply the common framework above; AAU’s key delta is a stricter default (ban in assessment-heavy courses unless provenance auditing is feasible), with grading centered on revision quality and documented process.
+\par\textbf{Why the writing ``career bundle'' includes Editors and Technical Writers.}
+\begin{center}
+\fbox{\begin{minipage}{0.97\textwidth}
+\small
+We model ``Writers \& Authors'' as an \emph{adjacent labor market} bundle (SOC 27-3043 Writers and Authors, 27-3041 Editors, 27-3042 Technical Writers) because writing-program graduates frequently compete for and transition into editing, technical communication, and content-operations roles. These occupations share core writing/editing task foundations and are plausible absorber markets when pure authorship roles contract. As a robustness check, we also ran the projections using only SOC 27-3043; conclusions were qualitatively similar (not shown for space).
+\end{minipage}}
+\end{center}
 \par\textbf{Concrete actions (measurable).}
 \begin{itemize}[leftmargin=*]
   \item \textbf{Portfolio provenance standard.} Require every portfolio piece to include a process log (outline $\to$ drafts $\to$ revisions) and a disclosure statement for any tool-assisted content.\newline
@@ -380,57 +485,12 @@ For students currently enrolled in the Writers and Authors program, we recommend
 
 These absorber programs are justified by the model: each exhibits a \NetRisk{} profile more favorable than Writers and Authors due to higher \DefScore{} (particularly Social and Creativity dimensions) relative to \SubScore{}, indicating that GenAI serves as a complementary tool rather than a direct substitute for core competencies.
 
-\section{Beyond employability: other success metrics}
-\label{sec:other_factors}
-Employability is necessary but not sufficient. We propose additional success metrics the prompt highlights: learning integrity and attribution compliance, equity/access, and sustainability (energy/water/compute cost). 
-
-We formalize the trade-offs with a robust rule-based decision model that maps institution-specific constraints to three policy regimes: \textit{Ban} (restrict use in assessment), \textit{Allow-with-Audit} (permit with strict provenance), and \textit{Require} (integrate into workflow).
-The rules consider:
-\begin{itemize}
-    \item \textbf{Exposure Risk:} If \(\NetRisk > 0\), GenAI is a substitute that threatens skill acquisition. This requires either \textit{Ban} (if audit capacity is low) or \textit{Allow-with-Audit} (if audit capacity is high).
-    \item \textbf{Sheltering:} If \(\NetRisk < 0\), GenAI is a complement. We recommend \textit{Require} to capture productivity, unless sustainability is the dominant constraint (in which case \textit{Ban} or limit usage to save compute).
-\end{itemize}
-
-Table~\ref{tab:policy_regimes} summarizes the policy requirements. Table~\ref{tab:policy_decision} reports the resulting recommended policy per institution under alternative weight regimes (Balanced, Integrity-First, Sustainability-First). We test these rules against perturbations in risk scores and audit capacity estimates; Table~\ref{tab:policy_sensitivity} reports the stability of these recommendations.
-
-\IfFileExists{tables/policy_regimes.tex}{\input{tables/policy_regimes.tex}}{}
-\IfFileExists{tables/policy_decision.tex}{\input{tables/policy_decision.tex}}{}
-\IfFileExists{tables/policy_sensitivity.tex}{\input{tables/policy_sensitivity.tex}}{}
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.85\textwidth,keepaspectratio]{figures/policy_tradeoff.png}
-\caption{Policy trade-offs under balanced weights (generated from \texttt{data/policy\_decision\_scores.csv}).}
-\label{fig:policy_tradeoff}
-\end{figure}
-
-\section{Generalization}
-\label{sec:generalization}
-The mechanism layer and scenario framework generalize to other programs by: (i) swapping the occupation(s), (ii) recomputing local OEWS context for the institution's region, and (iii) choosing scenario parameters \(s\) appropriate for the institution's risk tolerance. Institution-specific recommendations vary primarily through local labor market demand, program mission, and constraints (e.g., resources, accreditation, student population).
-
-\section{Prompt coverage checklist}
-\label{sec:checklist}
-\begin{itemize}[leftmargin=*]
-  \item \textbf{Grow/shrink programs and transitions:} Section~\ref{sec:recommendations}.
-  \item \textbf{What to teach about GenAI (including energy/water + attribution):} Sections~\ref{sec:recommendations} and \ref{sec:other_factors}.
-  \item \textbf{Other success metrics beyond employment and how recs change:} Section~\ref{sec:other_factors}.
-  \item \textbf{Generalization beyond one institution/program:} Section~\ref{sec:generalization}.
-\end{itemize}
-
-\newpage
 \section*{References}
 \bibliographystyle{plainnat}
 \bibliography{references}
 
 % AI Use Report (does not count toward 25 pages)
 \clearpage
-\appendix
-\section{Mechanism Layer Details}
-\label{app:mechanism}
-Table~\ref{tab:onet_elements_appendix} lists the specific O*NET elements (Importance scale) selected for each mechanism dimension.
-
-\IfFileExists{tables/onet_elements_appendix.tex}{\input{tables/onet_elements_appendix.tex}}{}
-
 \section*{AI Use Report}
 \input{ai_use_report.tex}
 

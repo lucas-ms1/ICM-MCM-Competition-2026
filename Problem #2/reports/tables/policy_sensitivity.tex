@@ -1,21 +1,24 @@
 \begin{table}[H]
 \centering
-\caption{Robustness of policy recommendations to modest perturbations of institution capacity parameters (audit and sustainability varied by $\pm 0.1$; 9 combinations per cell).}
+\caption{Robustness of policy recommendations to modest perturbations of inputs (NetRisk varied by $\pm 0.1$, audit capacity by $\pm 0.1$, and access capacity by $\pm 0.1$; 27 combinations per cell; sustainability held fixed).}
 \label{tab:policy_sensitivity}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{llll}
 \toprule
 Institution & Weight Regime & Baseline Policy & Robustness\\
 \midrule
-Academy of Art & Balanced & Ban & Stable (9/9)\\
-Academy of Art & Integrity First & Ban & Stable (9/9)\\
-Academy of Art & Sustainability First & Ban & Stable (9/9)\\
-LATTC & Balanced & Require & Stable (9/9)\\
-LATTC & Integrity First & Require & Stable (9/9)\\
-LATTC & Sustainability First & Ban & Stable (9/9)\\
-SDSU & Balanced & Allow with Audit & Stable (9/9)\\
-SDSU & Integrity First & Ban & Stable (9/9)\\
-SDSU & Sustainability First & Allow with Audit & Stable (9/9)\\
+Academy of Art & Balanced & Ban & Flips (24/27); seen: Allow\_with\_Audit\\
+Academy of Art & Equity First & Allow with Audit & Flips (17/27); seen: Ban\\
+Academy of Art & Integrity First & Ban & Stable (27/27)\\
+Academy of Art & Sustainability First & Ban & Stable (27/27)\\
+LATTC & Balanced & Require & Stable (27/27)\\
+LATTC & Equity First & Require & Stable (27/27)\\
+LATTC & Integrity First & Require & Stable (27/27)\\
+LATTC & Sustainability First & Require & Flips (25/27); seen: Allow\_with\_Audit\\
+SDSU & Balanced & Allow with Audit & Stable (27/27)\\
+SDSU & Equity First & Allow with Audit & Stable (27/27)\\
+SDSU & Integrity First & Allow with Audit & Flips (23/27); seen: Ban\\
+SDSU & Sustainability First & Allow with Audit & Stable (27/27)\\
 \bottomrule
 \end{tabular}%
 }

@@ -1,0 +1,7 @@
+quantity,distribution,parameters,notes
+s (scenario strength),Uniform,"[(0.8*s_used), (1.2*s_used)] clipped at 0",s_used is the scenario s value (calibrated if available).
+NetRisk,Empirical (descriptor LOO) or Normal fallback,"delta ~ sample(variant_net_risk - baseline) from mechanism_sensitivity.csv; else Normal(risk_base, 0.15*max(|risk_base|,0.05))",Descriptor leave-one-out + normalization variants for focal SOCs; fallback used only if sensitivity file missing.
+m_i (complementarity cap),Uniform,"[0.5*m_comp, 1.5*m_comp] bounded to [0,0.5]","m_comp is bundle-avg from scenario_summary.csv (bottleneck×elasticity, capped by m_max in main model)."
+Adoption curve (ramp only),Logistic (scaled) with parameter jitter,"A(t)=logistic(k*(t-t0)) scaled to map 2024->0 and 2034->1; k ~ Uniform(k0±0.25, clipped >0), t0 ~ Uniform(t00±1.0y) (±1.5y for writers)","Career-level defaults (k0,t00) set in build_uncertainty.py to mirror run_scenarios.py; affects uncertainty_summary_ramp.csv only."
+Held fixed,—,"g_base, E_2024",Baseline growth and starting employment taken from EP bundle artifacts.
+Simulation,—,10000 draws; seed=42,Report P5/P50/P95 of E_2034 across draws (immediate scenarios) and ramped variants in uncertainty_summary_ramp.csv.

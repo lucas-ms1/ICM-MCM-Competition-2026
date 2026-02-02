@@ -23,6 +23,7 @@ REQUIRED_CSVS = [
     "judges_save_alpha.json",
     "fitted_params.json",
     "fit_diagnostics.csv",
+    "fit_diagnostics_summary.tex",
     "proposed_system_eval.csv",
     "proposed_system_robustness.csv",
 ]
@@ -208,12 +209,15 @@ def check_fit_quality(base: Path) -> tuple[bool, list[str]]:
         if not order or len(order) < 2:
             continue
         X = fev.get("X", np.ones((len(order), 1)))
-        strengths = fan_shares_from_beta(
+        cid = fev.get("contestant_id")
+        f = fan_shares_from_beta(
             fev["J"], fev.get("z_J", np.ones(len(order)) / len(order)),
             fev.get("p_prev", np.zeros(len(order))),
             fev.get("underdog", np.zeros(len(order))),
             X, beta_opt,
+            contestant_id=cid,
         )
+        strengths = f  # Plackett-Luce uses strengths = combined score (percent) or -rank (rank)
         ll = plackett_luce_log_prob(strengths, order)
         finals_ll.append(ll)
     if finals_ll:

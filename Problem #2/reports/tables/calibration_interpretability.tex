@@ -1,0 +1,31 @@
+\begin{table}[H]
+\centering
+\caption{Collinearity and calibration weights. Panel A reports Pearson correlations among the five mechanism percentiles. Panel B reports our \emph{headline} minimum-weight calibration (Writing/Creativity constrained to be nonzero for interpretability). Rankings are unchanged relative to the sparse optimum (not shown).}
+\label{tab:calibration_interpretability}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lccccc}
+\toprule
+\multicolumn{6}{l}{\textbf{Panel A: Feature correlations (Pearson $r$)}} \\
+\midrule
+ & Writing & Tool/Tech & Physical & Social & Creativity \\
+Writing & 1.00 & 0.69 & -0.63 & 0.61 & 0.60 \\
+Tool/Tech & 0.69 & 1.00 & -0.56 & 0.26 & 0.62 \\
+Physical & -0.63 & -0.56 & 1.00 & -0.37 & -0.50 \\
+Social & 0.61 & 0.26 & -0.37 & 1.00 & 0.41 \\
+Creativity & 0.60 & 0.62 & -0.50 & 0.41 & 1.00 \\
+\midrule
+\multicolumn{6}{l}{\textbf{Panel B: Headline calibration weights (raw-scale weights)}} \\
+\midrule
+Dimension & Headline (min-weight) & Boot P50 (sparse) & Boot [P05,P95] (sparse) & $P(w\approx 0)$ (sparse) & Notes \\
+\midrule
+Writing & 0.005 & 0.000 & [0.000,0.000] & 1.00 & constrained \\
+Tool/Tech & 0.065 & 0.066 & [0.046,0.088] & 0.00 & \\
+Physical & 0.203 & 0.202 & [0.184,0.226] & 0.00 & \\
+Social & 0.020 & 0.019 & [0.002,0.036] & 0.04 & \\
+Creativity & 0.005 & 0.000 & [0.000,0.009] & 0.79 & constrained \\
+\midrule
+\multicolumn{6}{l}{\footnotesize Minimum-weight calibration enforces: Writing $\ge 0.005$, Creativity $\ge 0.005$ (with $\lambda=0.00$). NetRisk correlation (sparse vs min-weight): Pearson $r=1.000$, Spearman $\rho=1.000$. Focal percentile ranks (sparse $\rightarrow$ min-weight): Software Dev 0.98$\to$0.98; Electrician 0.01$\to$0.01; Writer 0.83$\to$0.83.} \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}

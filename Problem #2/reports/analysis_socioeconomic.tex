@@ -1,0 +1,27 @@
+\subsection{Socioeconomic correlates of exposure}
+\label{sec:socioeconomic}
+To understand the equity implications of GenAI exposure, we analyze how \NetRisk{} correlates with annual wages and education levels (proxied by O*NET Job Zones).
+
+\subsubsection{Wage Correlation}
+We hypothesize that unlike previous automation waves which targeted lower-wage routine tasks, GenAI exposure increases with wage. Figure~\ref{fig:wage_risk} plots the Annual Mean Wage (BLS OEWS 2024) against \NetRisk{}. The analysis confirms a distinct positive correlation ($r \approx 0.38$, $\rho \approx 0.51$), indicating that higher-paid occupations face greater exposure. This reversal of historical trends suggests that GenAI targets the cognitive premiums of high earners rather than the manual labor of low earners. Table~\ref{tab:analysis_wage_corr} details the correlation statistics.
+
+\IfFileExists{tables/analysis_wage_corr.tex}{\input{tables/analysis_wage_corr.tex}}{}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth,keepaspectratio]{figures/wage_risk_scatter.png}
+\caption{Correlation between Annual Mean Wage and GenAI Exposure (\NetRisk{}). Higher wages are associated with higher exposure.}
+\label{fig:wage_risk}
+\end{figure}
+
+\subsubsection{Education and Preparation}
+We examine exposure across O*NET Job Zones (1=Little Prep to 5=Extensive Prep). Figure~\ref{fig:job_zone} reveals a structural ``risk cliff'' between medium and considerable preparation. Zones 1--3 remain sheltered with negative average \NetRisk{} ($-0.48$, $-0.35$, and $-0.12$ respectively), shielded by physical and onsite requirements. However, risk shifts sharply positive in Zone 4 (Considerable Prep, Mean Risk $+0.50$) and Zone 5 (Extensive Prep, $+0.45$). This implies that the bachelor's degree barrier, traditionally a moat against automation, now defines the zone of highest exposure.
+
+\IfFileExists{tables/analysis_job_zone.tex}{\input{tables/analysis_job_zone.tex}}{}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth,keepaspectratio]{figures/job_zone_boxplot.png}
+\caption{Distribution of GenAI Exposure by O*NET Job Zone. Zone 5 (Extensive Preparation) shows the highest median exposure.}
+\label{fig:job_zone}
+\end{figure}

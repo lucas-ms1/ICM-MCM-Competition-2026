@@ -67,7 +67,15 @@ def forward_pass_week_by_week(
             if X_cols
             else np.ones((len(active), 1))
         )
-        f = fan_shares_from_beta(J, z_J, p_prev, underdog, X, beta)
+        contestant_id = (
+            active["contestant_id"].astype(int).values
+            if "contestant_id" in active.columns
+            else None
+        )
+        f = fan_shares_from_beta(
+            J, z_J, p_prev, underdog, X, beta,
+            contestant_id=contestant_id,
+        )
         V = shares_to_index_totals(f)
         contestant_keys = list(
             zip(

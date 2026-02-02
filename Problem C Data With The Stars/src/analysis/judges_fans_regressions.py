@@ -12,7 +12,7 @@ from statsmodels.regression.linear_model import OLSResults
 
 from src.preprocess import add_zscore_judge
 from src.models.vote_latent import build_contestant_week_covariates
-from src.fit.fit_elimination import fit
+from src.fit.fit_elimination import fit_multistart
 from src.fit.forward_pass import forward_pass_week_by_week, forward_pass_to_dataframe
 
 
@@ -90,6 +90,8 @@ def build_regression_table(
         f_ref["week"] = f_ref["week"].astype(int)
         f_merge = f_merge.merge(f_ref, on=["season", "week"], how="left")
         f_merge["f_ref"] = f_merge["f_ref"].clip(lower=F_REF_EPS)
+        # Numerical safety: f can underflow to 0.0 in extreme softmax cases; clip to keep log finite.
+        f_merge["f"] = pd.to_numeric(f_merge["f"], errors="coerce").clip(lower=F_REF_EPS)
         f_merge["log_f_ratio"] = np.log(f_merge["f"] / f_merge["f_ref"])
         reg["season"] = reg["season"].astype(int)
         reg["week"] = reg["week"].astype(int)
@@ -267,7 +269,14 @@ def run_full_pipeline(
             "beta_X": np.array([0.0, 0.0]),
         }
     cw = build_contestant_week_covariates(cw, raw)
-    beta_opt, tau_opt, fit_result = fit(beta_init, tau_init, cw, raw)
+    tau_inits = [0.5, 1.0, 2.0]
+    beta_opt, tau_opt, fit_result = fit_multistart(beta_init, tau_inits, cw, raw)
+    if not fit_result.success:
+        import warnings
+        warnings.warn(
+            "Fit did not converge after multi-start (optimizer.success=False); "
+            "using best objective fit for artifact generation."
+        )
     events = forward_pass_week_by_week(cw, beta_opt)
     f_df = forward_pass_to_dataframe(events)
     reg_df = build_regression_table(cw, raw, f_df=f_df)

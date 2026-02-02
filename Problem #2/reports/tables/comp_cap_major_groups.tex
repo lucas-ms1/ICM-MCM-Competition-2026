@@ -1,0 +1,21 @@
+\begin{table}[H]
+\centering
+\caption{Complementarity-cap proxy examples across SOC major groups (one representative SOC per group from the scored mechanism layer). $B$ is a bottleneck index (constructed in the pipeline as $B=\tfrac{1}{2}(\text{Physical}+\text{LicensingProxy})$; LicensingProxy=1 for SOC 47 and 0 otherwise). $\tilde{\varepsilon}$ is a coarse demand-responsiveness proxy by major group (used only to bound uplift): 15$\to 1.0$, 47/49$\to 0.6$, 27$\to 0.4$, otherwise $\to 0.7$. $m_{\mathrm{raw}}=(1-B)\tilde{\varepsilon}$ and $m_{\mathrm{eff}}=\min(m_{\max},m_{\mathrm{raw}})$ with baseline $m_{\max}=0.2$.}
+\label{tab:comp_cap_major_groups}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{rllrrrrr}
+\toprule
+Major & SOC & Example title & Physical & $B$ & $\tilde{\varepsilon}$ & $m_{\mathrm{raw}}$ & $m_{\mathrm{eff}}$\\
+\midrule
+15 & 15-1242 & Database Administrators & 0.17 & 0.08 & 1.00 & 0.92 & 0.20\\
+27 & 27-1022 & Fashion Designers & 0.34 & 0.17 & 0.40 & 0.33 & 0.20\\
+29 & 29-2051 & Dietetic Technicians & 0.50 & 0.25 & 0.70 & 0.52 & 0.20\\
+41 & 41-9022 & Real Estate Sales Agents & 0.25 & 0.12 & 0.70 & 0.61 & 0.20\\
+43 & 43-4151 & Order Clerks & 0.27 & 0.13 & 0.70 & 0.61 & 0.20\\
+47 & 47-5023 & Earth Drillers, Except Oil and Gas & 0.89 & 0.95 & 0.60 & 0.03 & 0.03\\
+49 & 49-2022 & Telecommunications Equipment Installers a… & 0.94 & 0.47 & 0.60 & 0.32 & 0.20\\
+53 & 53-3032 & Heavy and Tractor-Trailer Truck Drivers & 0.70 & 0.35 & 0.70 & 0.45 & 0.20\\
+\bottomrule
+\end{tabular}%
+}
+\end{table}

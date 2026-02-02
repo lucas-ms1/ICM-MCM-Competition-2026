@@ -87,6 +87,12 @@ def build_elimination_events(cw: pd.DataFrame) -> list[dict]:
         # Exactly one (or take first) eliminated
         e_row = active.loc[eliminated_mask].iloc[0]
         observed_e_idx = int(active.index.get_loc(e_row.name))
+        contestant_keys = list(
+            zip(
+                active["celebrity_name"].values,
+                active["ballroom_partner"].values,
+            )
+        )
         # Covariates for active set (same row order as active)
         J = active["score_week_total"].astype(float).values
         z_J = active["z_J"].astype(float).values if "z_J" in active.columns else np.ones(len(active)) / len(active)
@@ -94,17 +100,22 @@ def build_elimination_events(cw: pd.DataFrame) -> list[dict]:
         underdog = active["underdog"].astype(float).values if "underdog" in active.columns else np.zeros(len(active))
         X_cols = [c for c in ["age", "industry_dummy"] if c in active.columns]
         X = active[X_cols].astype(float).values if X_cols else np.ones((len(active), 1))
+        contestant_id = active["contestant_id"].astype(int).values if "contestant_id" in active.columns else None
         rule = get_rule_for_season(int(season))
         events.append({
             "season": int(season),
             "week": int(week),
             "rule": rule,
+            "contestant_keys": contestant_keys,
             "J": J,
             "z_J": z_J,
             "p_prev": p_prev,
             "underdog": underdog,
             "X": X,
             "observed_e_idx": observed_e_idx,
+            "observed_eliminated_name": str(e_row.get("celebrity_name", "")),
+            "observed_eliminated_partner": str(e_row.get("ballroom_partner", "")),
+            "contestant_id": contestant_id,
         })
     return events
 
@@ -153,6 +164,7 @@ def build_finals_events(cw: pd.DataFrame) -> list[dict]:
         underdog = active["underdog"].astype(float).values if "underdog" in active.columns else np.zeros(len(active))
         X_cols = [c for c in ["age", "industry_dummy"] if c in active.columns]
         X = active[X_cols].astype(float).values if X_cols else np.ones((len(active), 1))
+        contestant_id = active["contestant_id"].astype(int).values if "contestant_id" in active.columns else None
         rule = get_rule_for_season(s)
         events.append({
             "season": s,
@@ -164,6 +176,7 @@ def build_finals_events(cw: pd.DataFrame) -> list[dict]:
             "underdog": underdog,
             "X": X,
             "placement_order": placement_order,
+            "contestant_id": contestant_id,
         })
     return events
 
@@ -182,8 +195,10 @@ def compute_fit_diagnostics(
     for ev in elimination_events:
         n = len(ev["J"])
         J = np.asarray(ev["J"], dtype=float)
+        cid = ev.get("contestant_id")
         f = fan_shares_from_beta(
-            ev["J"], ev["z_J"], ev["p_prev"], ev["underdog"], ev["X"], beta
+            ev["J"], ev["z_J"], ev["p_prev"], ev["underdog"], ev["X"], beta,
+            contestant_id=cid,
         )
         V = shares_to_index_totals(f)
         rule = ev["rule"]
@@ -197,6 +212,7 @@ def compute_fit_diagnostics(
         )
         p = np.exp(log_p)
         obs_idx = ev["observed_e_idx"]
+        model_log_prob_observed = float(log_p[obs_idx])
         model_elim_prob_observed = float(p[obs_idx])
         # Rank: 1 = most likely eliminated (strictly higher p => better rank)
         rank_of_observed = 1 + int((p > p[obs_idx]).sum())
@@ -205,6 +221,7 @@ def compute_fit_diagnostics(
 
         # Random baseline: Pr(elim=i) = 1/n
         random_log_prob_observed = -np.log(n)
+        random_elim_prob_observed = 1.0 / n
         random_match_expected = 1.0 / n
 
         # Judges-only baseline: percent-era c_i = j_i (fan uniform); rank-era R_i = r^J_i (fan uniform)
@@ -220,8 +237,10 @@ def compute_fit_diagnostics(
             ]
         )
         p_jo = np.exp(log_p_jo)
-        judges_only_log_prob_observed = float(p_jo[obs_idx])
-        judges_only_map_matches_observed = int(np.argmax(p_jo)) == obs_idx
+        judges_only_log_prob_observed = float(log_p_jo[obs_idx])
+        judges_only_elim_prob_observed = float(p_jo[obs_idx])
+        judges_only_map_elim = int(np.argmax(p_jo))
+        judges_only_map_matches_observed = judges_only_map_elim == obs_idx
 
         rows.append({
             "season": ev["season"],
@@ -229,12 +248,19 @@ def compute_fit_diagnostics(
             "rule_regime": rule,
             "n_active": n,
             "observed_eliminated": obs_idx,
+            "observed_eliminated_name": ev.get("observed_eliminated_name", ""),
+            "observed_eliminated_partner": ev.get("observed_eliminated_partner", ""),
+            "model_map_eliminated": map_elim,
             "model_elim_prob_observed": model_elim_prob_observed,
+            "model_log_prob_observed": model_log_prob_observed,
             "rank_of_observed_eliminated": rank_of_observed,
             "map_matches_observed": map_matches_observed,
             "random_log_prob_observed": float(random_log_prob_observed),
+            "random_elim_prob_observed": float(random_elim_prob_observed),
             "random_match_expected": float(random_match_expected),
             "judges_only_log_prob_observed": judges_only_log_prob_observed,
+            "judges_only_elim_prob_observed": judges_only_elim_prob_observed,
+            "judges_only_map_eliminated": judges_only_map_elim,
             "judges_only_map_matches_observed": judges_only_map_matches_observed,
         })
     return pd.DataFrame(rows)
@@ -245,14 +271,19 @@ def neg_log_likelihood(
     tau: float,
     elimination_events: list[dict],
     finals_events: list[dict],
+    *,
+    lambda_ridge: float = 0.0,
 ) -> float:
     """
     Negative total log-likelihood: eliminations + finals (Plackett-Luce).
+    If beta contains "theta", add ridge penalty lambda_ridge * sum(theta^2).
     """
     nll = 0.0
     for ev in elimination_events:
+        cid = ev.get("contestant_id")
         f = fan_shares_from_beta(
-            ev["J"], ev["z_J"], ev["p_prev"], ev["underdog"], ev["X"], beta
+            ev["J"], ev["z_J"], ev["p_prev"], ev["underdog"], ev["X"], beta,
+            contestant_id=cid,
         )
         V = shares_to_index_totals(f)
         if ev["rule"] == "percent":
@@ -263,8 +294,10 @@ def neg_log_likelihood(
             log_p = elimination_log_prob("rank", R, ev["observed_e_idx"], tau)
         nll -= log_p
     for ev in finals_events:
+        cid = ev.get("contestant_id")
         f = fan_shares_from_beta(
-            ev["J"], ev["z_J"], ev["p_prev"], ev["underdog"], ev["X"], beta
+            ev["J"], ev["z_J"], ev["p_prev"], ev["underdog"], ev["X"], beta,
+            contestant_id=cid,
         )
         V = shares_to_index_totals(f)
         if ev["rule"] == "percent":
@@ -275,6 +308,10 @@ def neg_log_likelihood(
             strengths = -R
         log_p = plackett_luce_log_prob(strengths, ev["placement_order"])
         nll -= log_p
+    theta = beta.get("theta")
+    if theta is not None and lambda_ridge > 0:
+        theta = np.asarray(theta, dtype=float)
+        nll += lambda_ridge * float(np.sum(theta**2))
     return nll
 
 
@@ -313,11 +350,15 @@ def fit(
     bounds: dict | None = None,
     elimination_events: list[dict] | None = None,
     finals_events: list[dict] | None = None,
+    lambda_ridge: float = 0.5,
+    n_contestants: int | None = None,
 ):
     """
-    Maximize log-likelihood over beta and tau using L-BFGS-B.
-    cw must have covariates (run build_contestant_week_covariates(cw, raw) first).
-    Returns beta_opt, tau_opt, scipy result.
+    Maximize log-likelihood over beta, theta (contestant baselines), and tau using L-BFGS-B.
+    Ridge penalty: lambda_ridge * sum(theta^2). cw must have covariates and contestant_id
+    (run build_contestant_week_covariates(cw, raw) first).
+    n_contestants: if provided (e.g. from full cw for bootstrap), theta has this length; else from cw.
+    Returns beta_opt (with key "theta"), tau_opt, scipy result.
     """
     if elimination_events is None:
         elimination_events = build_elimination_events(cw)
@@ -326,30 +367,95 @@ def fit(
     beta_keys = ["beta0", "beta_J", "beta_P", "beta_U"]
     if "beta_X" in beta_init:
         beta_keys.append("beta_X")
-    x0 = np.concatenate([_pack_beta(beta_init, beta_keys), [tau_init]])
+    n_theta = n_contestants
+    if n_theta is None and "contestant_id" in cw.columns:
+        n_theta = int(cw["contestant_id"].max()) + 1
+    if n_theta is None or n_theta <= 0:
+        n_theta = 0
+    n_beta = len(_pack_beta(beta_init, beta_keys))
+    x0 = np.concatenate([
+        _pack_beta(beta_init, beta_keys),
+        np.zeros(n_theta),
+        [tau_init],
+    ])
 
     def objective(x: np.ndarray) -> float:
-        beta = _unpack_beta(x[:-1], beta_keys, beta_init)
+        beta = _unpack_beta(x[:n_beta], beta_keys, beta_init)
+        theta = x[n_beta : n_beta + n_theta].copy() if n_theta > 0 else np.array([])
         tau = float(x[-1])
         if tau <= 0:
             tau = 1e-10
-        return neg_log_likelihood(beta, tau, elimination_events, finals_events)
+        beta_with_theta = {**beta, "theta": theta} if n_theta > 0 else beta
+        return neg_log_likelihood(
+            beta_with_theta, tau, elimination_events, finals_events,
+            lambda_ridge=lambda_ridge,
+        )
 
-    # Bounds: tau > 0; beta unbounded by default
-    n_beta = len(x0) - 1
+    # Bounds: beta and theta unbounded, tau > 0
+    n_x = len(x0)
     if bounds is None:
-        bounds_list = [(None, None)] * n_beta + [(1e-10, None)]
+        bounds_list = [(None, None)] * (n_x - 1) + [(1e-10, None)]
     else:
         beta_lb = bounds.get("beta_lb", None)
         beta_ub = bounds.get("beta_ub", None)
         tau_lb = bounds.get("tau_lb", 1e-10)
         tau_ub = bounds.get("tau_ub", None)
-        bounds_list = [(beta_lb, beta_ub)] * n_beta + [(tau_lb, tau_ub)]
-    result = minimize(objective, x0, method="L-BFGS-B", bounds=bounds_list)
+        bounds_list = [(beta_lb, beta_ub)] * (n_x - 1) + [(tau_lb, tau_ub)]
+    result = minimize(
+        objective, x0, method="L-BFGS-B", bounds=bounds_list,
+        options={"maxfun": 60000},
+    )
     x_opt = result.x
-    beta_opt = _unpack_beta(x_opt[:-1], beta_keys, beta_init)
+    beta_opt = _unpack_beta(x_opt[:n_beta], beta_keys, beta_init)
+    if n_theta > 0:
+        beta_opt["theta"] = x_opt[n_beta : n_beta + n_theta].copy()
     tau_opt = float(x_opt[-1])
     return beta_opt, tau_opt, result
+
+
+def fit_multistart(
+    beta_init: dict,
+    tau_inits: list[float],
+    cw: pd.DataFrame,
+    raw: pd.DataFrame,
+    *,
+    bounds: dict | None = None,
+    elimination_events: list[dict] | None = None,
+    finals_events: list[dict] | None = None,
+    lambda_ridge: float = 0.5,
+    n_contestants: int | None = None,
+):
+    """
+    Try multiple tau initializations and keep the best successful fit.
+    Returns (beta_opt, tau_opt, result). If no successful fit, returns best by objective.
+    """
+    best = None
+    best_success = None
+    for tau_init in tau_inits:
+        try:
+            beta_opt, tau_opt, result = fit(
+                beta_init,
+                tau_init,
+                cw,
+                raw,
+                bounds=bounds,
+                elimination_events=elimination_events,
+                finals_events=finals_events,
+                lambda_ridge=lambda_ridge,
+                n_contestants=n_contestants,
+            )
+        except Exception:
+            continue
+        if best is None or result.fun < best[2].fun:
+            best = (beta_opt, tau_opt, result)
+        if result.success:
+            if best_success is None or result.fun < best_success[2].fun:
+                best_success = (beta_opt, tau_opt, result)
+    if best_success is not None:
+        return best_success
+    if best is not None:
+        return best
+    raise RuntimeError("fit_multistart failed: no fits completed.")
 
 
 def fitted_params_to_dict(
@@ -358,8 +464,9 @@ def fitted_params_to_dict(
     result,
 ) -> dict:
     """
-    Build a JSON-serializable dict for reproducibility: named beta, tau, optimizer status.
+    Build a JSON-serializable dict for reproducibility: named beta, tau, theta summary, optimizer status.
     beta_X (length-2: age, industry_dummy) is serialized as beta_age, beta_actor.
+    theta: summary (mean, std, n_contestants) and full list for reproducibility.
     """
     beta_names = ["intercept", "beta_J", "beta_P", "beta_U"]
     beta_src = ["beta0", "beta_J", "beta_P", "beta_U"]
@@ -383,4 +490,12 @@ def fitted_params_to_dict(
             "final_objective": float(result.fun),
         },
     }
+    if "theta" in beta_opt:
+        th = np.asarray(beta_opt["theta"], dtype=float)
+        out["theta_summary"] = {
+            "n_contestants": int(len(th)),
+            "mean": float(np.mean(th)),
+            "std": float(np.std(th)) if len(th) > 1 else 0.0,
+        }
+        out["theta"] = th.tolist()
     return out
